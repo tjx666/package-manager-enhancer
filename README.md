@@ -2,38 +2,17 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/YuTengjing.awesome-vscode-extension-boilerplate)](https://marketplace.visualstudio.com/items/YuTengjing.awesome-vscode-extension-boilerplate/changelog) [![Installs](https://img.shields.io/visual-studio-marketplace/i/YuTengjing.awesome-vscode-extension-boilerplate)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.awesome-vscode-extension-boilerplate) [![Downloads](https://img.shields.io/visual-studio-marketplace/d/YuTengjing.awesome-vscode-extension-boilerplate)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.awesome-vscode-extension-boilerplate) [![Rating Star](https://img.shields.io/visual-studio-marketplace/stars/YuTengjing.awesome-vscode-extension-boilerplate)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.awesome-vscode-extension-boilerplate&ssr=false#review-details) [![Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/YuTengjing.awesome-vscode-extension-boilerplate)](https://github.com/tjx666/awesome-vscode-extension-boilerplate)
+[![Version](https://img.shields.io/visual-studio-marketplace/v/YuTengjing.package-manager-enhancer)](https://marketplace.visualstudio.com/items/YuTengjing.package-manager-enhancer/changelog) [![Installs](https://img.shields.io/visual-studio-marketplace/i/YuTengjing.package-manager-enhancer)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.package-manager-enhancer) [![Downloads](https://img.shields.io/visual-studio-marketplace/d/YuTengjing.package-manager-enhancer)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.package-manager-enhancer) [![Rating Star](https://img.shields.io/visual-studio-marketplace/stars/YuTengjing.package-manager-enhancer)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.package-manager-enhancer&ssr=false#review-details) [![Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/YuTengjing.package-manager-enhancer)](https://github.com/tjx666/package-manager-enhancer)
 
-![test](https://github.com/tjx666/awesome-vscode-extension-boilerplate/actions/workflows/test.yml/badge.svg) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![Github Open Issues](https://img.shields.io/github/issues/tjx666/awesome-vscode-extension-boilerplate)](https://github.com/tjx666/awesome-vscode-extension-boilerplate/issues) [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg?style=flat-square)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
+![test](https://github.com/tjx666/package-manager-enhancer/actions/workflows/test.yml/badge.svg) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![Github Open Issues](https://img.shields.io/github/issues/tjx666/package-manager-enhancer)](https://github.com/tjx666/package-manager-enhancer/issues) [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg?style=flat-square)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
 </div>
 
 ## Features
 
-- github actions support publish extension to both vs marketplace and open vsx
-- pnpm/eslint/prettier/ling-staged/simple-git-hooks/stale-dep
-- use esbuild to bundle extension
+## pnpm-workspace.yaml codelens
 
-## Development
-
-Install dependencies by:
-
-```shell
-pnpm install
-```
-
-Then run and debug extension like in [official documentation](https://code.visualstudio.com/api/get-started/your-first-extension)
-
-## Publish
-
-You need set two github actions secrets:
-
-- VS_MARKETPLACE_TOKEN: [Visual Studio Marketplace token](https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)
-- OPEN_VSX_TOKEN: [Open VSX Registry token](https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#3-create-an-access-token)
-
-```shell
-pnpm release
-```
+![pnpm-workspace.yaml codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif.gif?raw=true)
 
 ## My extensions
 

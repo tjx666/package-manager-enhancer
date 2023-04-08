@@ -1,8 +1,8 @@
 {
     "name": "package-manager-enhancer",
-    "displayName": "Awesome VSCode Extension Boilerplate",
-    "version": "0.0.11",
-    "description": "An awesome vscode extension boilerplate",
+    "displayName": "Package Manager Enhancer",
+    "version": "0.0.0",
+    "description": "A vscode extension enhance package manager ability",
     "publisher": "YuTengjing",
     "private": true,
     "preview": true,
@@ -22,8 +22,13 @@
         "email": "ytj2713151713@gmail.com"
     },
     "keywords": [
-        "boilerplate",
-        "template"
+        "npm",
+        "pnpm",
+        "yarn",
+        "corepack",
+        "node",
+        "workspace",
+        "monorepo"
     ],
     "categories": [
         "Other"
