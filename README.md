@@ -12,7 +12,7 @@
 
 ## pnpm-workspace.yaml codelens
 
-![pnpm-workspace.yaml codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif.gif?raw=true)
+![pnpm-workspace.yaml codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif?raw=true)
 
 ## My extensions
 
