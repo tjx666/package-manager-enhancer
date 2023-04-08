@@ -1,0 +1,109 @@
+{
+    "name": "awesome-vscode-extension-boilerplate",
+    "displayName": "Awesome VSCode Extension Boilerplate",
+    "version": "0.0.11",
+    "description": "An awesome vscode extension boilerplate",
+    "publisher": "YuTengjing",
+    "private": true,
+    "preview": true,
+    "author": {
+        "name": "YuTengjing",
+        "url": "https://github.com/tjx666",
+        "email": "ytj2713151713@gmail.com"
+    },
+    "license": "SEE LICENSE IN LICENSE",
+    "homepage": "https://github.com/tjx666/awesome-vscode-extension-boilerplate/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tjx666/awesome-vscode-extension-boilerplate"
+    },
+    "bugs": {
+        "url": "https://github.com/tjx666/awesome-vscode-extension-boilerplate/issues",
+        "email": "ytj2713151713@gmail.com"
+    },
+    "keywords": [
+        "boilerplate",
+        "template"
+    ],
+    "categories": [
+        "Other"
+    ],
+    "main": "./out/extension.js",
+    "icon": "assets/logo.png",
+    "engines": {
+        "vscode": "^1.77.0"
+    },
+    "badges": [
+        {
+            "url": "https://img.shields.io/badge/PRs-welcome-brightgreen.svg",
+            "description": "PRs Welcome",
+            "href": "https://github.com/tjx666/awesome-vscode-extension-boilerplate"
+        }
+    ],
+    "activationEvents": [],
+    "contributes": {
+        "commands": [
+            {
+                "command": "awesome-vscode-extension-boilerplate.helloWorld",
+                "title": "Hello World"
+            }
+        ]
+    },
+    "eslintConfig": {
+        "extends": "@yutengjing/eslint-config-typescript",
+        "ignorePatterns": [
+            "test-workspace"
+        ]
+    },
+    "prettier": "@yutengjing/prettier-config",
+    "lint-staged": {
+        "*.{js,ts,json,md}": [
+            "eslint --fix",
+            "prettier --write"
+        ]
+    },
+    "simple-git-hooks": {
+        "pre-commit": "npx lint-staged"
+    },
+    "scripts": {
+        "vscode:prepublish": "pnpm esbuild:base --minify",
+        "preinstall": "npx only-allow pnpm",
+        "postinstall": "stale-dep -u",
+        "clean": "rimraf -rf ./out",
+        "esbuild:base": "stale-dep && tsx scripts/esbuild.ts",
+        "esbuild:watch": "pnpm esbuild:base --sourcemap --watch",
+        "esbuild:analyze": "pnpm esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
+        "compile:test": "pnpm clean && tsc -b ./test/tsconfig.json",
+        "lint": "eslint src --ext ts",
+        "test": "stale-dep && pnpm compile:test && node ./out/test/runTests.js",
+        "package": "vsce package --no-dependencies",
+        "release": "bumpp -c \"release: v%s\" package.json",
+        "publish:vs-marketplace": "vsce publish --no-dependencies",
+        "publish:open-vsx": "ovsx publish --no-dependencies",
+        "prepare": "simple-git-hooks"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^18.15.11",
+        "@types/vscode": "^1.77.0",
+        "@vscode/test-electron": "^2.3.0",
+        "@vscode/vsce": "^2.18.0",
+        "@yutengjing/eslint-config-typescript": "^0.2.8",
+        "@yutengjing/prettier-config": "^0.0.1",
+        "bumpp": "^9.1.0",
+        "esbuild": "^0.17.15",
+        "esbuild-visualizer": "^0.4.0",
+        "eslint": "^8.37.0",
+        "glob": "^9.3.4",
+        "lint-staged": "^13.2.0",
+        "mocha": "^10.2.0",
+        "ovsx": "^0.8.0",
+        "prettier": "^2.8.7",
+        "rimraf": "^4.4.1",
+        "simple-git-hooks": "^2.8.1",
+        "stale-dep": "^0.6.0",
+        "tsx": "^3.12.6",
+        "typescript": "^5.0.3"
+    }
+}
