@@ -14,6 +14,10 @@
 
 ![pnpm-workspace.yaml codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif?raw=true)
 
+## package.json pnpm configuration schema
+
+![package.json pnpm configuration schema](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-schema.png?raw=true)
+
 ## My extensions
 
 - [Open in External App](https://github.com/tjx666/open-in-external-app)
