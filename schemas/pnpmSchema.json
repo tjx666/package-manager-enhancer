@@ -1,0 +1,173 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "definitions": {
+        "dependency": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    },
+    "properties": {
+        "engines": {
+            "type": "object",
+            "properties": {
+                "pnpm": {
+                    "markdownDescription": "During local development, pnpm will always fail with an error message if its version does not match the one specified in the `engines` field.\n\nUnless the user has set the `engine-strict` config flag (see [.npmrc](https://pnpm.io/npmrc#engine-strict)), this field is advisory only and will only produce warnings when your package is installed as a dependency.\n\n[engines](https://pnpm.io/package_json#engines)",
+                    "type": "string"
+                }
+            }
+        },
+        "dependenciesMeta": {
+            "type": "object",
+            "markdownDescription": "Additional meta information used for dependencies declared inside `dependencies`, `optionalDependencies`, and `devDependencies`.\n\n[dependenciesMeta](https://pnpm.io/package_json#dependenciesmeta)",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "injected": {
+                        "type": "boolean",
+                        "markdownDescription": "If this is set to true for a local dependency, the package will be hard linked to the modules directory, not symlinked.\n\n[dependenciesMeta.*.injected](https://pnpm.io/package_json#dependenciesmetainjected)"
+                    }
+                }
+            }
+        },
+        "peerDependenciesMeta": {
+            "type": "object",
+            "markdownDescription": "This field lists some extra information related to the dependencies listed in the `peerDependencies` field.\n\n[peerDependenciesMeta](https://pnpm.io/package_json#peerdependenciesmeta)",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "optional": {
+                        "type": "boolean",
+                        "markdownDescription": "If this is set to `true`, the selected peer dependency will be marked as optional by the package manager. Therefore, the consumer omitting it will no longer be reported as an error.\n\n[peerDependenciesMeta.*.optional](https://pnpm.io/package_json#peerdependenciesmetaoptional)"
+                    }
+                }
+            }
+        },
+        "publishConfig": {
+            "type": "object",
+            "markdownDescription": "It is possible to override some fields in the manifest before the package is packed. The [following fields](https://github.com/stereobooster/package.json) may be overridden: \"bin\", \"main\", \"exports\", \"types\",  \"typings\", \"module\", \"browser\", \"esnext\", \"es2015\", \"unpkg\", \"umd\":main, \"typesVersions\", \"cpu\", \"os\".\n\nTo override a field, add the publish version of the field to publishConfig.\n\n[publishConfig](https://pnpm.io/package_json#publishconfig)",
+            "properties": {
+                "executableFiles": {
+                    "type": "array",
+                    "markdownDescription": "By default, for portability reasons, no files except those listed in the bin field will be marked as executable in the resulting package archive. The `executableFiles` field lets you declare additional fields that must have the executable flag (+x) set even if they aren't directly accessible through the bin field.\n\n[publishConfig.executableFiles](https://pnpm.io/package_json#publishconfigexecutablefiles)"
+                },
+                "directory": {
+                    "type": "string",
+                    "markdownDescription": "You also can use the field `publishConfig.directory` to customize the published subdirectory relative to the current `package.json`.\n\nIt is expected to have a modified version of the current package in the specified directory (usually using third party build tools).\n\n[publishConfig.directory](https://pnpm.io/package_json#publishconfigdirectory)"
+                },
+                "linkDirectory": {
+                    "type": "boolean",
+                    "markdownDescription": "When set to `true`, the project will be symlinked from the `publishConfig.directory` location during local development.\n\n[publishConfig.linkDirectory](https://pnpm.io/package_json#publishconfiglinkdirectory)"
+                }
+            }
+        },
+        "pnpm": {
+            "type": "object",
+            "markdownDescription": "[Pnpm Configuration](https://pnpm.io/package_json)",
+            "properties": {
+                "overrides": {
+                    "$ref": "#/definitions/dependency",
+                    "markdownDescription": "This field allows you to instruct pnpm to override any dependency in the dependency graph. This is useful to enforce all your packages to use a single version of a dependency, backport a fix, or replace a dependency with a fork.\n\nNote that the overrides field can only be set at the root of the project.\n\n[pnpm.overrides](https://pnpm.io/package_json#pnpmoverrides)"
+                },
+                "packageExtensions": {
+                    "type": "object",
+                    "markdownDescription": "The `packageExtensions` fields offer a way to extend the existing package definitions with additional information.\n\n[pnpm.packageExtensions](https://pnpm.io/package_json#pnpmpackageextensions)",
+                    "additionalProperties": {
+                        "$ref": "https://json.schemastore.org/package.json"
+                    }
+                },
+                "peerDependencyRules": {
+                    "type": "object",
+                    "markdownDescription": "[pnpm.peerDependencyRules](https://pnpm.io/package_json#pnpmpeerdependencyrules)",
+                    "properties": {
+                        "ignoreMissing": {
+                            "type": "array",
+                            "markdownDescription": "pnpm will not print warnings about missing peer dependencies from this list.\n\n[pnpm.peerDependencyRules.ignoreMissing](https://pnpm.io/package_json#pnpmpeerdependencyrulesignoremissing)",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "allowedVersions": {
+                            "type": "object",
+                            "markdownDescription": "Unmet peer dependency warnings will not be printed for peer dependencies of the specified range.\n\n[pnpm.peerDependencyRules.allowedVersions](https://pnpm.io/package_json#pnpmpeerdependencyrulesallowedversions)",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "allowAny": {
+                            "type": "array",
+                            "markdownDescription": "`allowAny` is an array of package name patterns, any peer dependency matching the pattern will be resolved from any version, regardless of the range specified in `peerDependencies`.\n\n[pnpm.peerDependencyRules.allowAny](https://pnpm.io/package_json#pnpmpeerdependencyrulesallowany)",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "neverBuiltDependencies": {
+                    "type": "array",
+                    "markdownDescription": "This field allows to ignore the builds of specific dependencies. The \"preinstall\", \"install\", and \"postinstall\" scripts of the listed packages will not be executed during installation.\n\n[pnpm.neverBuiltDependencies](https://pnpm.io/package_json#pnpmneverbuiltdependencies)",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "onlyBuiltDependencies": {
+                    "type": "array",
+                    "markdownDescription": "A list of package names that are allowed to be executed during installation. If this field exists, only the listed packages will be able to run install scripts.\n\n[pnpm.onlyBuiltDependencies](https://pnpm.io/package_json#pnpmonlybuiltdependencies)",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "allowedDeprecatedVersions": {
+                    "$ref": "#/definitions/dependency",
+                    "markdownDescription": "This setting allows muting deprecation warnings of specific packages.\n\n[pnpm.allowedDeprecatedVersions](https://pnpm.io/package_json#pnpmalloweddeprecatedversions)"
+                },
+                "patchedDependencies": {
+                    "type": "object",
+                    "markdownDescription": "This field is added/updated automatically when you run [pnpm patch-commit](https://pnpm.io/cli/patch-commit). It is a dictionary where the key should be the package name and exact version. The value should be a relative path to a patch file.\n\n[pnpm.patchedDependencies](https://pnpm.io/package_json#pnpmpatcheddependencies)",
+                    "additionalProperties": {
+                        "type": "string",
+                        "pattern": "^patches/"
+                    }
+                },
+                "allowNonAppliedPatches": {
+                    "type": "boolean",
+                    "markdownDescription": "When `true`, installation won't fail if some of the patches from the `patchedDependencies` field were not applied.\n\n[pnpm.allowNonAppliedPatches](https://pnpm.io/package_json#pnpmallownonappliedpatches)"
+                },
+                "updateConfig": {
+                    "type": "object",
+                    "markdownDescription": "[pnpm.updateConfig](https://pnpm.io/package_json#pnpmupdateconfig)",
+                    "properties": {
+                        "ignoreDependencies": {
+                            "type": "array",
+                            "markdownDescription": "Sometimes you can't update a dependency. For instance, the latest version of the dependency started to use ESM but your project is not yet in ESM. Annoyingly, such a package will be always printed out by the `pnpm outdated` command and updated, when running `pnpm update --latest`. However, you may list packages that you don't want to upgrade in the `ignoreDependencies` field.\n\nPatterns are also supported, so you may ignore any packages from a scope: `@babel/*`.\n\n[pnpm.updateConfig.ignoreDependencies](https://pnpm.io/package_json#pnpmupdateconfigignoredependencies)",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "auditConfig": {
+                    "type": "object",
+                    "markdownDescription": "[pnpm.auditConfig](https://pnpm.io/package_json#pnpmauditconfig)",
+                    "properties": {
+                        "ignoreCves": {
+                            "type": "array",
+                            "markdownDescription": "A list of CVE IDs that will be ignored by the [pnpm audit](https://pnpm.io/cli/audit) command.\n\n[pnpm.auditConfig.ignoreCves](https://pnpm.io/package_json#pnpmauditconfigignorecves)",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "requiredScripts": {
+                    "type": "array",
+                    "markdownDescription": "Scripts listed in this array will be required in each project of the workspace. Otherwise, `pnpm -r run <script name>` will fail.\n\n[pnpm.auditConfig.requiredScripts](https://pnpm.io/package_json#pnpmrequiredscripts)",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

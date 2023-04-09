@@ -49,7 +49,12 @@
         "onLanguage:yaml"
     ],
     "contributes": {
-        "commands": []
+        "jsonValidation": [
+            {
+                "fileMatch": "package.json",
+                "url": "./schemas/pnpmSchema.json"
+            }
+        ]
     },
     "eslintConfig": {
         "extends": "@yutengjing/eslint-config-typescript",
