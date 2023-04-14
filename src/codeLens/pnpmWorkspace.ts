@@ -1,9 +1,11 @@
-import path from 'node:path';
+import path, { dirname } from 'node:path';
 
 import { globby } from 'globby';
-import type { CancellationToken, CodeLensProvider, TextDocument, Event, Position } from 'vscode';
+import type { CancellationToken, CodeLensProvider, TextDocument, Event } from 'vscode';
 import { window, CodeLens, EventEmitter, Range, workspace } from 'vscode';
 import { Parser } from 'yaml';
+
+import { resolveReferencesCodeLens, type CodeLensData } from './utils';
 
 const packagesLiteral = 'packages';
 const ignoredGlobs = ['!**/node_modules'];
@@ -20,14 +22,7 @@ function sourceToString(source: string) {
 export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
     private _document: TextDocument | undefined;
     private _negativeGlobs: string[] = [];
-    private _codeLensData = new Map<
-        CodeLens,
-        {
-            type: 'all' | 'include' | 'exclude';
-            position: Position;
-            getPackagesPromise: Promise<string[]>;
-        }
-    >();
+    private _codeLensData: CodeLensData = new Map();
 
     private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
@@ -52,12 +47,7 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
     ): Promise<CodeLens[] | undefined> {
         this._reset(document);
 
-        const isOnlyOneRootWorkspace = workspace.workspaceFolders?.length === 1;
-        if (!isOnlyOneRootWorkspace) {
-            return;
-        }
-        const cwd = workspace.workspaceFolders![0].uri.fsPath;
-
+        const cwd = dirname(document.uri.fsPath);
         const source = document.getText();
         let yamlDoc: any | undefined;
         const parser = new Parser();
@@ -113,22 +103,21 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
                 if (!item.isNegated) {
                     const slash = item.pattern.endsWith('/') ? '' : '/';
                     const packageJSONGlob = `${item.pattern}${slash}package.json`;
-                    const globs = [packageJSONGlob, ...this._negativeGlobs, ...ignoredGlobs];
-                    matchedPackages = await globby(globs, { cwd });
+                    const patterns = [packageJSONGlob, ...this._negativeGlobs, ...ignoredGlobs];
+                    matchedPackages = await globby(patterns, { cwd });
                 } else {
-                    const glob = item.pattern.slice(1);
-                    const slash = glob.endsWith('/') ? '' : '/';
-                    const packageJSONGlob = `${glob}${slash}package.json`;
+                    const pattern = item.pattern.slice(1);
+                    const slash = pattern.endsWith('/') ? '' : '/';
+                    const packageJSONGlob = `${pattern}${slash}package.json`;
                     matchedPackages = await globby([packageJSONGlob, ...ignoredGlobs], { cwd });
                 }
-                matchedPackages = matchedPackages.map((pkg) => {
+                return matchedPackages.map((pkg) => {
                     const absPath = path.resolve(cwd, pkg);
                     if (!item.isNegated) {
                         totalPackages.add(absPath);
                     }
                     return absPath;
                 });
-                return matchedPackages;
             })();
             if (!item.isNegated) {
                 promises.push(getPackagesPromise);
@@ -136,7 +125,7 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
             this._codeLensData.set(codeLens, {
                 type: item.isNegated ? 'exclude' : 'include',
                 position: item.range.start,
-                getPackagesPromise,
+                getReferenceFilesPromise: getPackagesPromise,
             });
         }
 
@@ -147,7 +136,7 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
         this._codeLensData.set(codeLens, {
             type: 'all',
             position: start,
-            getPackagesPromise: (async () => {
+            getReferenceFilesPromise: (async () => {
                 await Promise.all(promises);
                 return [...totalPackages];
             })(),
@@ -159,20 +148,6 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
         codeLens: CodeLens,
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {
-        const data = this._codeLensData.get(codeLens);
-        if (!data) return;
-
-        const packages = await data.getPackagesPromise;
-        const packagesCount = packages.length;
-        const title = (data.type === 'exclude' ? '- ' : '') + packagesCount;
-
-        return {
-            ...codeLens,
-            command: {
-                title,
-                command: 'package-manager-enhancer.showReferencesInPanel',
-                arguments: [this._document!.uri, data.position, packages],
-            },
-        };
+        return resolveReferencesCodeLens(codeLens, this._codeLensData, this._document!);
     }
 }

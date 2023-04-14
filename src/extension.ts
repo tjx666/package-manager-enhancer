@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 import { PackageJsonCodeLensProvider } from './codeLens/packageJson';
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
+import { openDocument } from './utils/editor';
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
     subscriptions.push(
@@ -25,6 +26,11 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             'package-manager-enhancer.showReferencesInPanel',
             async (uri: vscode.Uri, position: vscode.Position, fileNames: string[]) => {
+                if (fileNames.length === 1) {
+                    await openDocument(vscode.Uri.file(fileNames[0]));
+                    return;
+                }
+
                 const config = vscode.workspace.getConfiguration('references');
                 const existingSetting = config.get('preferredLocation');
                 // !: will open peek view by default

@@ -3,22 +3,16 @@ import { dirname, resolve } from 'node:path';
 import { globby } from 'globby';
 import type { Node } from 'jsonc-parser';
 import { parseTree, findNodeAtLocation } from 'jsonc-parser';
-import type { CancellationToken, CodeLensProvider, TextDocument, Event, Position } from 'vscode';
+import type { CancellationToken, CodeLensProvider, TextDocument, Event } from 'vscode';
 import { EventEmitter, workspace, window, Range, CodeLens } from 'vscode';
+
+import { resolveReferencesCodeLens, type CodeLensData } from './utils';
 
 const filesLiteral = 'files';
 
 export class PackageJsonCodeLensProvider implements CodeLensProvider {
     private _document: TextDocument | undefined;
-    private _codeLensData = new Map<
-        CodeLens,
-        {
-            type: 'all' | 'include' | 'exclude';
-            position: Position;
-            getReferencedFiles: Promise<string[]>;
-        }
-    >();
-
+    private _codeLensData: CodeLensData = new Map();
     private _negativePatterns: string[] = [];
 
     private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
@@ -114,7 +108,7 @@ export class PackageJsonCodeLensProvider implements CodeLensProvider {
             this._codeLensData.set(codeLens, {
                 type: item.isNegated ? 'exclude' : 'include',
                 position: item.range.start,
-                getReferencedFiles: promise,
+                getReferenceFilesPromise: promise,
             });
         }
 
@@ -125,7 +119,7 @@ export class PackageJsonCodeLensProvider implements CodeLensProvider {
         this._codeLensData.set(codelens, {
             type: 'all',
             position: start,
-            getReferencedFiles: (async () => {
+            getReferenceFilesPromise: (async () => {
                 await Promise.all(promises);
                 return [...totalFiles];
             })(),
@@ -138,20 +132,6 @@ export class PackageJsonCodeLensProvider implements CodeLensProvider {
         codeLens: CodeLens,
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {
-        const data = this._codeLensData.get(codeLens);
-        if (!data) return;
-
-        const referencedFiles = await data.getReferencedFiles;
-        const packagesCount = referencedFiles.length;
-        const title = (data.type === 'exclude' ? '- ' : '') + packagesCount;
-
-        return {
-            ...codeLens,
-            command: {
-                title,
-                command: 'package-manager-enhancer.showReferencesInPanel',
-                arguments: [this._document!.uri, data.position, referencedFiles],
-            },
-        };
+        return resolveReferencesCodeLens(codeLens, this._codeLensData, this._document!);
     }
 }

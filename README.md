@@ -20,8 +20,9 @@
 
 ## TODO
 
-- [ ] `package.json` files reference
+- [x] `package.json` files reference
 - [ ] `package.json` deps reference
+- [ ] refactor codeLens classes with BaseCodeLensClass
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
 
