@@ -20,6 +20,8 @@
 
 ## TODO
 
+- [ ] `package.json` files reference
+- [ ] `package.json` deps reference
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
 
