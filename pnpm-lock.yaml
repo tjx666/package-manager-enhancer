@@ -4,6 +4,9 @@ dependencies:
   globby:
     specifier: ^13.1.4
     version: 13.1.4
+  jsonc-parser:
+    specifier: ^3.2.0
+    version: 3.2.0
   yaml:
     specifier: ^2.2.1
     version: 2.2.1
@@ -72,6 +75,9 @@ devDependencies:
   tsx:
     specifier: ^3.12.6
     version: 3.12.6
+  type-fest:
+    specifier: ^3.8.0
+    version: 3.8.0
   typescript:
     specifier: ^5.0.4
     version: 5.0.4
@@ -2657,7 +2663,6 @@ packages:
 
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
-    dev: true
 
   /jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
@@ -4095,6 +4100,11 @@ packages:
   /type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
+    dev: true
+
+  /type-fest@3.8.0:
+    resolution: {integrity: sha512-FVNSzGQz9Th+/9R6Lvv7WIAkstylfHN2/JYxkyhhmKFYh9At2DST8t6L6Lref9eYO8PXFTfG9Sg1Agg0K3vq3Q==}
+    engines: {node: '>=14.16'}
     dev: true
 
   /typed-rest-client@1.8.9:

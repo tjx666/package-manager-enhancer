@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 
+import { PackageJsonCodeLensProvider } from './codeLens/packageJson';
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
@@ -11,11 +12,18 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
             },
             new PnpmWorkspaceCodeLensProvider(),
         ),
+        vscode.languages.registerCodeLensProvider(
+            {
+                language: 'json',
+                pattern: '**/package.json',
+            },
+            new PackageJsonCodeLensProvider(),
+        ),
     );
 
     subscriptions.push(
         vscode.commands.registerCommand(
-            'package-manager-enhancer.showPnpmWorkspacePackages',
+            'package-manager-enhancer.showReferencesInPanel',
             async (uri: vscode.Uri, position: vscode.Position, fileNames: string[]) => {
                 const config = vscode.workspace.getConfiguration('references');
                 const existingSetting = config.get('preferredLocation');

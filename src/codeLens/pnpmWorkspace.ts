@@ -2,20 +2,11 @@ import path from 'node:path';
 
 import { globby } from 'globby';
 import type { CancellationToken, CodeLensProvider, TextDocument, Event, Position } from 'vscode';
-import { CodeLens, EventEmitter, Range, workspace } from 'vscode';
+import { window, CodeLens, EventEmitter, Range, workspace } from 'vscode';
 import { Parser } from 'yaml';
 
 const packagesLiteral = 'packages';
 const ignoredGlobs = ['!**/node_modules'];
-const codeLensData = new Map<
-    CodeLens,
-    {
-        type: 'all' | 'include' | 'exclude';
-        position: Position;
-        glob?: string;
-        getPackagesPromise: Promise<string[]>;
-    }
->();
 
 function sourceToString(source: string) {
     if (
@@ -29,6 +20,14 @@ function sourceToString(source: string) {
 export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
     private _document: TextDocument | undefined;
     private _negativeGlobs: string[] = [];
+    private _codeLensData = new Map<
+        CodeLens,
+        {
+            type: 'all' | 'include' | 'exclude';
+            position: Position;
+            getPackagesPromise: Promise<string[]>;
+        }
+    >();
 
     private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
@@ -39,24 +38,25 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
                 this._onDidChangeCodeLenses.fire();
             }
         });
-        workspace.onDidChangeConfiguration((_e) => {
-            this._onDidChangeCodeLenses.fire();
-        });
+    }
+
+    private _reset(document: TextDocument) {
+        this._document = document;
+        this._negativeGlobs = [];
+        this._codeLensData.clear();
     }
 
     async provideCodeLenses(
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
+        this._reset(document);
+
         const isOnlyOneRootWorkspace = workspace.workspaceFolders?.length === 1;
         if (!isOnlyOneRootWorkspace) {
             return;
         }
         const cwd = workspace.workspaceFolders![0].uri.fsPath;
-
-        this._document = document;
-        this._negativeGlobs = [];
-        codeLensData.clear();
 
         const source = document.getText();
         let yamlDoc: any | undefined;
@@ -69,8 +69,8 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
                 }
             }
         } catch (error) {
-            console.error('parse pnpm-workspace.yaml failed!');
             console.error(error);
+            window.showErrorMessage('parse pnpm-workspace.yaml failed!');
             return;
         }
         if (!yamlDoc) return;
@@ -80,9 +80,10 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
         ) as any | undefined;
         if (!packagesNode) return;
 
-        const globList: Array<{
+        const patternList: Array<{
+            isNegated: boolean;
             range: Range;
-            glob: string;
+            pattern: string;
         }> = [];
         for (const globNode of packagesNode.value.items) {
             if (globNode.value.type !== 'single-quoted-scalar') continue;
@@ -94,44 +95,47 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
 
             const start = document.positionAt(globNode.value!.offset);
             const end = document.positionAt(globNode.value!.offset + glob.length);
-            globList.push({
+            patternList.push({
+                isNegated: glob.startsWith('!'),
                 range: new Range(start, end),
-                glob,
+                pattern: glob,
             });
         }
 
         const codeLensList: CodeLens[] = [];
         const totalPackages = new Set<string>([]);
-        const getPackagesPromiseList: Array<Promise<string[]>> = [];
-        for (const globItem of globList.values()) {
-            const codeLens = new CodeLens(globItem.range);
+        const promises: Array<Promise<string[]>> = [];
+        for (const item of patternList.values()) {
+            const codeLens = new CodeLens(item.range);
             codeLensList.push(codeLens);
-            const isInclude = !globItem.glob.startsWith('!');
             const getPackagesPromise = (async () => {
                 let matchedPackages: string[] = [];
-                if (isInclude) {
-                    const slash = globItem.glob.endsWith('/') ? '' : '/';
-                    const packageJSONGlob = `${globItem.glob}${slash}package.json`;
+                if (!item.isNegated) {
+                    const slash = item.pattern.endsWith('/') ? '' : '/';
+                    const packageJSONGlob = `${item.pattern}${slash}package.json`;
                     const globs = [packageJSONGlob, ...this._negativeGlobs, ...ignoredGlobs];
                     matchedPackages = await globby(globs, { cwd });
                 } else {
-                    const glob = globItem.glob.slice(1);
+                    const glob = item.pattern.slice(1);
                     const slash = glob.endsWith('/') ? '' : '/';
                     const packageJSONGlob = `${glob}${slash}package.json`;
                     matchedPackages = await globby([packageJSONGlob, ...ignoredGlobs], { cwd });
                 }
                 matchedPackages = matchedPackages.map((pkg) => {
                     const absPath = path.resolve(cwd, pkg);
-                    totalPackages.add(absPath);
+                    if (!item.isNegated) {
+                        totalPackages.add(absPath);
+                    }
                     return absPath;
                 });
                 return matchedPackages;
             })();
-            getPackagesPromiseList.push(getPackagesPromise);
-            codeLensData.set(codeLens, {
-                type: isInclude ? 'include' : 'exclude',
-                position: globItem.range.start,
-                glob: globItem.glob,
+            if (!item.isNegated) {
+                promises.push(getPackagesPromise);
+            }
+            this._codeLensData.set(codeLens, {
+                type: item.isNegated ? 'exclude' : 'include',
+                position: item.range.start,
                 getPackagesPromise,
             });
         }
@@ -140,11 +144,11 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
         const end = document.positionAt(packagesNode.key!.offset + packagesLiteral.length);
         const codeLens = new CodeLens(new Range(start, end));
         codeLensList.push(codeLens);
-        codeLensData.set(codeLens, {
+        this._codeLensData.set(codeLens, {
             type: 'all',
             position: start,
             getPackagesPromise: (async () => {
-                await Promise.all(getPackagesPromiseList);
+                await Promise.all(promises);
                 return [...totalPackages];
             })(),
         });
@@ -155,7 +159,7 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
         codeLens: CodeLens,
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {
-        const data = codeLensData.get(codeLens);
+        const data = this._codeLensData.get(codeLens);
         if (!data) return;
 
         const packages = await data.getPackagesPromise;
@@ -166,7 +170,7 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
             ...codeLens,
             command: {
                 title,
-                command: 'package-manager-enhancer.showPnpmWorkspacePackages',
+                command: 'package-manager-enhancer.showReferencesInPanel',
                 arguments: [this._document!.uri, data.position, packages],
             },
         };

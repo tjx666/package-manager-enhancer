@@ -46,6 +46,7 @@
         }
     ],
     "activationEvents": [
+        "onLanguage:json",
         "onLanguage:yaml"
     ],
     "contributes": {
@@ -91,6 +92,7 @@
     },
     "dependencies": {
         "globby": "^13.1.4",
+        "jsonc-parser": "^3.2.0",
         "yaml": "^2.2.1"
     },
     "devDependencies": {
@@ -115,6 +117,7 @@
         "simple-git-hooks": "^2.8.1",
         "stale-dep": "^0.6.0",
         "tsx": "^3.12.6",
+        "type-fest": "^3.8.0",
         "typescript": "^5.0.4"
     }
 }
