@@ -1,3 +1,8 @@
 {
-    "name": "test-workspace"
+    "name": "test-workspace",
+    "files": [
+        "src",
+        "dist",
+        "!src/exclude"
+    ]
 }

@@ -10,18 +10,22 @@
 
 ## Features
 
-### pnpm-workspace.yaml codelens
+### pnpm-workspace.yaml codeLens
 
-![pnpm-workspace.yaml codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif?raw=true)
+![pnpm-workspace.yaml codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif?raw=true)
 
 ### package.json pnpm configuration schema
 
 ![package.json pnpm configuration schema](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-schema.png?raw=true)
 
+### package.json files property codeLens
+
+![package.json files property codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-files-codelens.png?raw=true)
+
 ## TODO
 
-- [x] `package.json` files reference
-- [ ] `package.json` deps reference
+- [x] `package.json` files property codeLens
+- [ ] `package.json` deps codeLens
 - [ ] refactor codeLens classes with BaseCodeLensClass
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
