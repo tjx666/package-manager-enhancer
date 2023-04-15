@@ -1,5 +1,6 @@
 {
-    "name": "test-workspace",
+    "name": "pkg-json-codelens",
+    "version": "0.0.1",
     "files": [
         "src",
         "dist",
