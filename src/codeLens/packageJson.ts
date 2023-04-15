@@ -7,8 +7,33 @@ import type { CancellationToken, CodeLensProvider, TextDocument, Event } from 'v
 import { EventEmitter, workspace, window, Range, CodeLens } from 'vscode';
 
 import { resolveReferencesCodeLens, type CodeLensData } from './utils';
+import { pathExists } from '../utils/fs';
 
 const filesLiteral = 'files';
+
+// refs:
+// 1. https://docs.npmjs.com/cli/v9/configuring-npm/package-json#files
+// 2. https://github.com/npm/npm-packlist
+const defaultIncludedFiles = ['package.json', 'README.md', 'LICENSE.md', 'LICENCE.md'];
+const defaultIgnoredPatterns = [
+    'node_modules',
+    'package-lock.json',
+    '**/.gitignore',
+    '**/.npmignore',
+    '**/npm-debug.log',
+    '**/.npmrc',
+    '**/.git',
+    '**/CVS',
+    '**/.svn',
+    '**/.hg',
+    '**/.lock-wscript',
+    '**/.wafpickle-N',
+    '**/.*.swp',
+    '**/.DS_Store',
+    '**/._*',
+    '**/config.gypi',
+    '**/*.orig',
+].map((p) => `!${p}`);
 
 export class PackageJsonCodeLensProvider implements CodeLensProvider {
     private _document: TextDocument | undefined;
@@ -93,7 +118,13 @@ export class PackageJsonCodeLensProvider implements CodeLensProvider {
                 ? [item.pattern.slice(1)]
                 : [item.pattern, ...this._negativePatterns];
             const promise = (async () => {
-                const relativeFiles = await globby(patterns, { cwd });
+                const relativeFiles = await globby([...patterns, ...defaultIgnoredPatterns], {
+                    cwd,
+                    dot: true,
+                    // https://github.com/npm/npm-packlist#interaction-between-packagejson-and-npmignore-rules
+                    gitignore: false,
+                    ignoreFiles: ['*/**/.npmignore'],
+                });
                 return relativeFiles.map((file) => {
                     const absFile = resolve(cwd, file);
                     if (!item.isNegated) {
@@ -121,6 +152,51 @@ export class PackageJsonCodeLensProvider implements CodeLensProvider {
             position: start,
             getReferenceFilesPromise: (async () => {
                 await Promise.all(promises);
+
+                // default included files
+                const addFileWhenExists = async (absPath: string) => {
+                    if (await pathExists(absPath)) {
+                        totalFiles.add(absPath);
+                        return true;
+                    }
+                    return false;
+                };
+
+                for (const file of defaultIncludedFiles) {
+                    const absPath = resolve(cwd, file);
+                    if (absPath.endsWith('.md')) {
+                        const absPathWithoutExtension = resolve(cwd, file.slice(0, -3));
+                        const lowercaseAbsPath = resolve(cwd, file.toLowerCase());
+                        const lowercaseAbsPathWithoutExtension = resolve(
+                            cwd,
+                            file.toLowerCase().slice(0, -3),
+                        );
+                        const candidates = [
+                            absPath,
+                            absPathWithoutExtension,
+                            lowercaseAbsPath,
+                            lowercaseAbsPathWithoutExtension,
+                        ];
+                        for (const p of candidates) {
+                            if (await addFileWhenExists(p)) break;
+                        }
+                    } else {
+                        await addFileWhenExists(absPath);
+                    }
+                }
+
+                // main entry must be included
+                const mainProperty = findNodeAtLocation(root, ['main']);
+                if (
+                    mainProperty &&
+                    mainProperty.type === 'property' &&
+                    mainProperty.children![0].type === 'string' &&
+                    mainProperty.children![0].type === 'string'
+                ) {
+                    const mainEntry = resolve(cwd, mainProperty.value);
+                    await addFileWhenExists(mainEntry);
+                }
+
                 return [...totalFiles];
             })(),
         });

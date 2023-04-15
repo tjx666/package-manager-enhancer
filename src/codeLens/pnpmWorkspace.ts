@@ -8,7 +8,7 @@ import { Parser } from 'yaml';
 import { resolveReferencesCodeLens, type CodeLensData } from './utils';
 
 const packagesLiteral = 'packages';
-const ignoredGlobs = ['!**/node_modules'];
+const defaultIgnoredPatterns = ['!**/node_modules'];
 
 function sourceToString(source: string) {
     if (
@@ -103,13 +103,19 @@ export class PnpmWorkspaceCodeLensProvider implements CodeLensProvider {
                 if (!item.isNegated) {
                     const slash = item.pattern.endsWith('/') ? '' : '/';
                     const packageJSONGlob = `${item.pattern}${slash}package.json`;
-                    const patterns = [packageJSONGlob, ...this._negativeGlobs, ...ignoredGlobs];
+                    const patterns = [
+                        packageJSONGlob,
+                        ...this._negativeGlobs,
+                        ...defaultIgnoredPatterns,
+                    ];
                     matchedPackages = await globby(patterns, { cwd });
                 } else {
                     const pattern = item.pattern.slice(1);
                     const slash = pattern.endsWith('/') ? '' : '/';
                     const packageJSONGlob = `${pattern}${slash}package.json`;
-                    matchedPackages = await globby([packageJSONGlob, ...ignoredGlobs], { cwd });
+                    matchedPackages = await globby([packageJSONGlob, ...defaultIgnoredPatterns], {
+                        cwd,
+                    });
                 }
                 return matchedPackages.map((pkg) => {
                     const absPath = path.resolve(cwd, pkg);
