@@ -25,7 +25,7 @@
 ## TODO
 
 - [x] `package.json` files property codeLens
-- [ ] `package.json` deps codeLens
+- [x] `package.json` deps codeLens
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
 

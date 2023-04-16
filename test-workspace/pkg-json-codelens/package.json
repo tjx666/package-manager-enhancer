@@ -1,9 +1,13 @@
 {
     "name": "pkg-json-codelens",
+    "type": "module",
     "version": "0.0.1",
     "files": [
         "src",
         "dist",
         "!src/exclude"
-    ]
+    ],
+    "dependencies": {
+        "lodash": "^4.17.21"
+    }
 }
