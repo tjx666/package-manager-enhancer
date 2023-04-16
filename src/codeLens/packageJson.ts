@@ -3,10 +3,10 @@ import { dirname, resolve } from 'node:path';
 import { globby } from 'globby';
 import type { Node } from 'jsonc-parser';
 import { parseTree, findNodeAtLocation } from 'jsonc-parser';
-import type { CancellationToken, CodeLensProvider, TextDocument, Event } from 'vscode';
-import { EventEmitter, workspace, window, Range, CodeLens } from 'vscode';
+import type { CancellationToken, TextDocument } from 'vscode';
+import { window, Range, CodeLens } from 'vscode';
 
-import { resolveReferencesCodeLens, type CodeLensData } from './utils';
+import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 import { pathExists } from '../utils/fs';
 
 const filesLiteral = 'files';
@@ -35,33 +35,12 @@ const defaultIgnoredPatterns = [
     '**/*.orig',
 ].map((p) => `!${p}`);
 
-export class PackageJsonCodeLensProvider implements CodeLensProvider {
-    private _document: TextDocument | undefined;
-    private _codeLensData: CodeLensData = new Map();
-    private _negativePatterns: string[] = [];
-
-    private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
-    public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
-
-    constructor() {
-        workspace.onDidChangeTextDocument((e) => {
-            if (e.document === this._document) {
-                this._onDidChangeCodeLenses.fire();
-            }
-        });
-    }
-
-    private _reset(document: TextDocument) {
-        this._document = document;
-        this._negativePatterns = [];
-        this._codeLensData.clear();
-    }
-
+export class PackageJsonCodeLensProvider extends GlobCodeLensProvider {
     async provideCodeLenses(
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
-        this._reset(document);
+        await super.provideCodeLenses(document, _token);
 
         const filePath = document.uri.fsPath;
         const packageJson = document.getText();
@@ -202,12 +181,5 @@ export class PackageJsonCodeLensProvider implements CodeLensProvider {
         });
 
         return codeLensList;
-    }
-
-    async resolveCodeLens(
-        codeLens: CodeLens,
-        _token: CancellationToken,
-    ): Promise<CodeLens | undefined> {
-        return resolveReferencesCodeLens(codeLens, this._codeLensData, this._document!);
     }
 }

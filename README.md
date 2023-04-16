@@ -26,7 +26,6 @@
 
 - [x] `package.json` files property codeLens
 - [ ] `package.json` deps codeLens
-- [ ] refactor codeLens classes with BaseCodeLensClass
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
 
