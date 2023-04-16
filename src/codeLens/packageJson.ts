@@ -1,8 +1,6 @@
 import { dirname, resolve } from 'node:path';
 
-import { globby } from 'globby';
 import type { Node } from 'jsonc-parser';
-import { parseTree, findNodeAtLocation } from 'jsonc-parser';
 import type { CancellationToken, TextDocument } from 'vscode';
 import { window, Range, CodeLens } from 'vscode';
 
@@ -41,6 +39,10 @@ export class PackageJsonCodeLensProvider extends GlobCodeLensProvider {
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
         await super.provideCodeLenses(document, _token);
+
+        // lazy import to improve startup speed
+        const { globby } = await import('globby');
+        const { parseTree, findNodeAtLocation } = await import('jsonc-parser');
 
         const filePath = document.uri.fsPath;
         const packageJson = document.getText();

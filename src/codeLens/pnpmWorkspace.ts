@@ -1,9 +1,7 @@
 import path, { dirname } from 'node:path';
 
-import { globby } from 'globby';
 import type { CancellationToken, TextDocument } from 'vscode';
 import { window, CodeLens, Range } from 'vscode';
-import { Parser } from 'yaml';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
@@ -25,6 +23,10 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
         await super.provideCodeLenses(document, _token);
+
+        // lazy import to improve startup speed
+        const { globby } = await import('globby');
+        const { Parser } = await import('yaml');
 
         const cwd = dirname(document.uri.fsPath);
         const source = document.getText();
