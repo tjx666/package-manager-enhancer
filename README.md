@@ -22,6 +22,10 @@
 
 ![package.json files property codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-files-codelens.png?raw=true)
 
+### package.json dependencies codeLens
+
+![package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-dependencies-codelens.png?raw=true)
+
 ## TODO
 
 - [x] `package.json` files property codeLens
