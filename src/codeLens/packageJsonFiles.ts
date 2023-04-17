@@ -1,10 +1,11 @@
 import { dirname, resolve } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
-import type { CancellationToken, TextDocument } from 'vscode';
+import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { window, Range, CodeLens } from 'vscode';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
+import { configuration } from '../configuration';
 import { pathExists } from '../utils/fs';
 
 const filesLiteral = 'files';
@@ -33,13 +34,15 @@ const defaultIgnoredPatterns = [
     '**/*.orig',
 ].map((p) => `!${p}`);
 
-export class PackageJsonCodeLensProvider extends GlobCodeLensProvider {
-    async provideCodeLenses(
+export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
+    constructor(context: ExtensionContext) {
+        super(context, () => configuration.enablePackageJsonFilesCodeLens);
+    }
+
+    async getCodeLenses(
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
-        await super.provideCodeLenses(document, _token);
-
         // lazy import to improve startup speed
         const { globby } = await import('globby');
         const { parseTree, findNodeAtLocation } = await import('jsonc-parser');
@@ -48,6 +51,7 @@ export class PackageJsonCodeLensProvider extends GlobCodeLensProvider {
         const packageJson = document.getText();
         let root: Node | undefined;
         try {
+            // jsonc has builtin cache
             root = parseTree(packageJson);
         } catch (error) {
             console.error(error);

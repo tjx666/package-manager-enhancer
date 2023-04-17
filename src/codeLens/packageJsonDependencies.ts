@@ -1,21 +1,19 @@
 import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
-import type { CancellationToken, CodeLensProvider, Event, Position, TextDocument } from 'vscode';
-import { CodeLens, EventEmitter, workspace, window, Range } from 'vscode';
+import type { CancellationToken, ExtensionContext, Position, TextDocument } from 'vscode';
+import { CodeLens, window, Range } from 'vscode';
 
+import { BaseCodeLensProvider } from './BaseCodeLensProvider';
+import { configuration } from '../configuration';
 import { searchImportDepFiles } from '../utils/rg';
 
-// const dependenciesPathList = [
-//     'dependencies',
-//     'devDependencies',
-//     'peerDependencies',
-//     'optionalDependencies',
-//     'pnpm.overrides',
-// ];
+interface Dependency {
+    name: string;
+    range: Range;
+}
 
-export class DependenciesCodeLens implements CodeLensProvider {
-    private _document: TextDocument | undefined;
+export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvider {
     private _codeLensData: Map<
         CodeLens,
         {
@@ -24,33 +22,18 @@ export class DependenciesCodeLens implements CodeLensProvider {
         }
     > = new Map();
 
-    private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
-    public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
-
-    constructor() {
-        workspace.onDidChangeTextDocument((e) => {
-            if (e.document === this._document) {
-                this._onDidChangeCodeLenses.fire();
-            }
-        });
-        workspace.onDidCloseTextDocument((document) => {
-            if (document === this._document) {
-                this._reset();
-            }
-        });
+    constructor(context: ExtensionContext) {
+        super(context, () => configuration.enablePackageJsonDependenciesCodeLens);
     }
 
-    private _reset(document?: TextDocument) {
-        this._document = document;
+    protected _reset(document?: TextDocument) {
+        super._reset(document);
         this._codeLensData.clear();
     }
 
     async getDependencies(root: Node, path: string[]) {
         const { findNodeAtLocation } = await import('jsonc-parser');
-        const dependencies: Array<{
-            name: string;
-            range: Range;
-        }> = [];
+        const dependencies: Dependency[] = [];
         const dependenciesNode = findNodeAtLocation(root, path);
         if (
             !dependenciesNode ||
@@ -76,12 +59,10 @@ export class DependenciesCodeLens implements CodeLensProvider {
         return dependencies;
     }
 
-    async provideCodeLenses(
+    async getCodeLenses(
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
-        this._reset(document);
-
         const filePath = document.uri.fsPath;
         const packageJson = document.getText();
         const { parseTree } = await import('jsonc-parser');
@@ -94,7 +75,14 @@ export class DependenciesCodeLens implements CodeLensProvider {
         }
         if (!root) return [];
 
-        const dependencies = await this.getDependencies(root, ['dependencies']);
+        const dependencies: Dependency[] = (
+            await Promise.all(
+                configuration.packageJsonDependenciesCodeLens.dependenciesNodePaths.map(
+                    (nodePath) => this.getDependencies(root!, nodePath.split('.')),
+                ),
+            )
+        ).flat();
+
         return dependencies.map((dep) => {
             const codeLens = new CodeLens(dep.range);
             this._codeLensData.set(codeLens, {

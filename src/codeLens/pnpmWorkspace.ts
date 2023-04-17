@@ -1,9 +1,10 @@
 import path, { dirname } from 'node:path';
 
-import type { CancellationToken, TextDocument } from 'vscode';
+import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { window, CodeLens, Range } from 'vscode';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
+import { configuration } from '../configuration';
 
 const packagesLiteral = 'packages';
 const defaultIgnoredPatterns = ['!**/node_modules'];
@@ -18,12 +19,14 @@ function sourceToString(source: string) {
 }
 
 export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
-    async provideCodeLenses(
+    constructor(context: ExtensionContext) {
+        super(context, () => configuration.enablePnpmWorkspaceCodeLens);
+    }
+
+    async getCodeLenses(
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
-        await super.provideCodeLenses(document, _token);
-
         // lazy import to improve startup speed
         const { globby } = await import('globby');
         const { Parser } = await import('yaml');
