@@ -8,34 +8,7 @@ import vscode from 'vscode';
 
 import { pathExists } from './fs';
 import { store } from './store';
-
-const excludePatterns = [
-    '**/vendor/**',
-    '**/node_modules/**',
-    '**/bower_components/**',
-    '**/*.code-search/**',
-    // output
-    '**/dist/**',
-    '**/build/**',
-    '**/_output/**',
-    '**/*.min.*',
-    '**/*.map',
-    // config files
-    '**/.*/**',
-].map((p) => `!${p}`);
-const searchImportExts = [
-    'js',
-    'jsx',
-    'cjs',
-    'mjs',
-    'ts',
-    'tsx',
-    'cts',
-    'mts',
-    'html',
-    'vue',
-    'svelte',
-];
+import { configuration } from '../configuration';
 
 function exeName() {
     const isWin = process.platform.startsWith('win');
@@ -96,8 +69,12 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
                 'never',
                 '-f',
                 patternFile,
-                ...searchImportExts.flatMap((ext) => ['-g', `**/*.${ext}`]),
-                ...excludePatterns.flatMap((p) => ['-g', p]),
+                ...configuration.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions.flatMap(
+                    (ext) => ['-g', `**/*.${ext}`],
+                ),
+                ...configuration.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns.flatMap(
+                    (p) => ['-g', p],
+                ),
                 // searched folder is cwd
                 cwd,
             ],

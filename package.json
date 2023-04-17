@@ -55,6 +55,72 @@
                 "fileMatch": "package.json",
                 "url": "./schemas/pnpmSchema.json"
             }
+        ],
+        "configuration": [
+            {
+                "title": "Package Manager Enhancer",
+                "properties": {
+                    "package-manager-enhancer.enablePnpmWorkspaceCodeLens": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "package-manager-enhancer.enablePackageJsonFilesCodeLens": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": {
+                        "markdownDescription": "display dependencies code more than key `dependencies`, for example: `devDependencies`, `pnpm.overrides`",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "dependencies"
+                        ]
+                    },
+                    "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "js",
+                            "jsx",
+                            "cjs",
+                            "mjs",
+                            "ts",
+                            "tsx",
+                            "cts",
+                            "mts",
+                            "html",
+                            "vue",
+                            "svelte"
+                        ]
+                    },
+                    "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "**/vendor/**",
+                            "**/node_modules/**",
+                            "**/bower_components/**",
+                            "**/*.code-search/**",
+                            "**/dist/**",
+                            "**/build/**",
+                            "**/_output/**",
+                            "**/*.min.*",
+                            "**/*.map",
+                            "**/.*/**"
+                        ]
+                    }
+                }
+            }
         ]
     },
     "eslintConfig": {
