@@ -6,7 +6,8 @@ import { CodeLens, window, Range } from 'vscode';
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 import { configuration } from '../configuration';
-import { searchImportDepFiles } from '../utils/rg';
+import type { SearchImportsMatch } from '../utils/searchImports';
+import { searchImportDepFiles } from '../utils/searchImports';
 
 interface Dependency {
     name: string;
@@ -17,8 +18,11 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
     private _codeLensData: Map<
         CodeLens,
         {
+            type: 'imports' | 'type imports';
             depName: string;
             position: Position;
+            searchAllImportsPromise: Promise<SearchImportsMatch[]>;
+            searchImportsPromise: Promise<SearchImportsMatch[]>;
         }
     > = new Map();
 
@@ -83,13 +87,36 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             )
         ).flat();
 
-        return dependencies.map((dep) => {
-            const codeLens = new CodeLens(dep.range);
-            this._codeLensData.set(codeLens, {
+        return dependencies.flatMap((dep) => {
+            const importsCodeLens = new CodeLens(dep.range);
+            const searchAllImportsPromise = searchImportDepFiles(
+                dep.name,
+                dirname(this._document!.uri.fsPath),
+            );
+            this._codeLensData.set(importsCodeLens, {
+                type: 'imports',
                 depName: dep.name,
                 position: dep.range.start,
+                searchAllImportsPromise,
+                searchImportsPromise: (async function () {
+                    const matches = await searchAllImportsPromise;
+                    return matches.filter((match) => !match.isTypeImport);
+                })(),
             });
-            return codeLens;
+
+            const typeImportsCodeLens = new CodeLens(dep.range);
+            this._codeLensData.set(typeImportsCodeLens, {
+                type: 'type imports',
+                depName: dep.name,
+                position: dep.range.start,
+                searchAllImportsPromise,
+                searchImportsPromise: (async function () {
+                    const matches = await searchAllImportsPromise;
+                    return matches.filter((match) => match.isTypeImport);
+                })(),
+            });
+
+            return [importsCodeLens, typeImportsCodeLens];
         });
     }
 
@@ -100,16 +127,30 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
         const data = this._codeLensData.get(codeLens);
         if (!data) return;
 
-        const usedFiles = await searchImportDepFiles(
-            data.depName,
-            dirname(this._document!.uri.fsPath),
-        );
+        const matches = await data.searchImportsPromise;
+        const count = matches.length;
+        const title = `${String(count)} ${data.type}`;
+
+        let command: string;
+        let tooltip: string;
+        let args: any[];
+        if (count === 0) {
+            tooltip = 'click to remove this dependency';
+            command = 'package-manager-enhancer.deleteLine';
+            args = [data.position.line];
+        } else {
+            command = 'package-manager-enhancer.showReferencesInPanel';
+            tooltip = `click to open the ${data.type} in references panel`;
+            args = [this._document!.uri, data.position, matches];
+        }
+
         return {
             ...codeLens,
             command: {
-                title: String(usedFiles.length),
-                command: 'package-manager-enhancer.showReferencesInPanel',
-                arguments: [this._document!.uri, data.position, usedFiles],
+                title,
+                command,
+                arguments: args,
+                tooltip,
             },
         };
     }

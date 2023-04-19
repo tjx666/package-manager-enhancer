@@ -1,28 +1,41 @@
-import * as vscode from 'vscode';
+import { Uri, Position, Range, Location, commands, workspace } from 'vscode';
+
+import { goToLocations as goToLocation } from '../utils/editor';
+import type { SearchImportsMatch } from '../utils/searchImports';
+
+function targetToLocation(target: string | SearchImportsMatch) {
+    if (typeof target === 'string') {
+        return new Location(Uri.file(target), new Range(0, 0, 0, 0));
+    }
+
+    const start = new Position(target.line, target.column);
+    const end = new Position(target.line, target.column + target.importStatement.length);
+    return new Location(Uri.file(target.absPath), new Range(start, end));
+}
 
 export async function showReferencesInPanel(
-    uri: vscode.Uri,
-    position: vscode.Position,
-    fileNames: string[],
+    uri: Uri,
+    position: Position,
+    targets: string[] | SearchImportsMatch[],
 ) {
-    if (fileNames.length === 1) {
-        await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileNames[0]));
+    if (targets.length === 1) {
+        const target = targets[0];
+        const location = targetToLocation(target);
+        const filePath = typeof target === 'string' ? target : target.absPath;
+        await goToLocation(Uri.file(filePath), position, location);
         return;
     }
 
-    const config = vscode.workspace.getConfiguration('references');
+    const config = workspace.getConfiguration('references');
     const existingSetting = config.get('preferredLocation');
     // !: will open peek view by default
     await config.update('preferredLocation', 'view');
     try {
-        await vscode.commands.executeCommand(
+        await commands.executeCommand(
             'editor.action.showReferences',
             uri,
             position,
-            fileNames.map(
-                (fileName) =>
-                    new vscode.Location(vscode.Uri.file(fileName), new vscode.Range(0, 0, 0, 0)),
-            ),
+            targets.map(targetToLocation),
         );
     } finally {
         await config.update('preferredLocation', existingSetting);

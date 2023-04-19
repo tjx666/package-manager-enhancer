@@ -16,10 +16,13 @@ export function activate(context: vscode.ExtensionContext) {
     subscriptions.push(
         vscode.commands.registerCommand(
             'package-manager-enhancer.showReferencesInPanel',
-            async (...args: any[]) =>
+            (...args: any[]) =>
                 import('./commands/showReferencesInPanel').then((mod) =>
                     (mod.showReferencesInPanel as any)(...args),
                 ),
+        ),
+        vscode.commands.registerCommand('package-manager-enhancer.deleteLine', (...args: any[]) =>
+            import('./commands/deleteLine').then((mod) => (mod.deleteLine as any)(...args)),
         ),
     );
 

@@ -15,19 +15,31 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
     constructor(context: ExtensionContext, private getEnable: () => boolean) {
-        workspace.onDidChangeTextDocument((e) => {
-            if (e.document === this._document) {
+        workspace.onDidChangeTextDocument(
+            (e) => {
+                if (e.document === this._document) {
+                    this._onDidChangeCodeLenses.fire();
+                }
+            },
+            null,
+            context.subscriptions,
+        );
+        workspace.onDidCloseTextDocument(
+            (document) => {
+                if (document === this._document) {
+                    this._reset();
+                }
+            },
+            null,
+            context.subscriptions,
+        );
+        workspace.onDidChangeConfiguration(
+            (_e) => {
                 this._onDidChangeCodeLenses.fire();
-            }
-        }, context.subscriptions);
-        workspace.onDidCloseTextDocument((document) => {
-            if (document === this._document) {
-                this._reset();
-            }
-        }, context.subscriptions);
-        workspace.onDidChangeConfiguration((_e) => {
-            this._onDidChangeCodeLenses.fire();
-        }, context.subscriptions);
+            },
+            null,
+            context.subscriptions,
+        );
     }
 
     protected _reset(document?: TextDocument) {
@@ -44,8 +56,6 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
         this._reset(document);
-
-        console.log('provideCodeLenses');
 
         if (!this.getEnable()) {
             return [];
