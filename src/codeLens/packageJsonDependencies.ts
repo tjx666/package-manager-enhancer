@@ -139,8 +139,8 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             command = 'package-manager-enhancer.deleteLine';
             args = [data.position.line];
         } else {
-            command = 'package-manager-enhancer.showReferencesInPanel';
             tooltip = `click to open the ${data.type} in references panel`;
+            command = 'package-manager-enhancer.showReferencesInPanel';
             args = [this._document!.uri, data.position, matches];
         }
 

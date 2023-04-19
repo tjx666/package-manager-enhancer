@@ -36,6 +36,7 @@ export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
                 title,
                 command: 'package-manager-enhancer.showReferencesInPanel',
                 arguments: [this._document!.uri, data.position, referencedFiles],
+                tooltip: 'click to open the files in references panel',
             },
         };
     }

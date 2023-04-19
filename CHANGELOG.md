@@ -1,5 +1,16 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.3.0 - 2023-04-20
+
+### Added
+
+- new configuration: `package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles`
+- dependencies codelens support distinct imports and type imports
+
+### Fixed
+
+- configuration `package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns` doesn't work
+
 ## 0.2.0 - 2023-04-18
 
 ### Added
