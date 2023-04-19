@@ -73,7 +73,7 @@
                         "default": true
                     },
                     "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": {
-                        "markdownDescription": "display dependencies code more than key `dependencies`, for example: `devDependencies`, `pnpm.overrides`",
+                        "markdownDescription": "display dependencies codeLens more than the default key `dependencies`, for example: `devDependencies`, `pnpm.overrides`",
                         "type": "array",
                         "items": {
                             "type": "string"

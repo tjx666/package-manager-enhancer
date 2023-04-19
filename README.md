@@ -29,10 +29,14 @@
 ## TODO
 
 - [x] `package.json` files property codeLens
+  - [ ] support configure whether should include packaged files other than patterns
 - [x] `package.json` deps codeLens
+  - [ ] support distinct import and import type
+  - [ ] fix @types codeLens
 - [x] configurations
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
+- [ ] pnpm check deps stale
 
 ## My extensions
 
