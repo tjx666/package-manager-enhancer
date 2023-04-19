@@ -138,6 +138,10 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
             getReferenceFilesPromise: (async () => {
                 await Promise.all(promises);
 
+                if (!configuration.packageJsonFilesCodeLens.includeDefaultPackedFiles) {
+                    return [...totalFiles];
+                }
+
                 // default included files
                 const addFileWhenExists = async (absPath: string) => {
                     if (await pathExists(absPath)) {

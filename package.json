@@ -68,6 +68,11 @@
                         "type": "boolean",
                         "default": true
                     },
+                    "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": {
+                        "type": "boolean",
+                        "markdownDescription": "whether includes package.json, LICENSE, README, and main entry file which will be packed default",
+                        "default": false
+                    },
                     "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": {
                         "type": "boolean",
                         "default": true
