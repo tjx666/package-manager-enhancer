@@ -43,10 +43,12 @@ function getImportStatementRegexp(dep: string) {
     // require ( 'lodash'   )
     const requireRegexp = `require\\s*\\(\\s*${modulePath}\\s*\\)\\s*;?`;
     // import { add } from 'lodash';
-    const importRegexp = `import\\s+.+\\s+from\\s${modulePath}\\s*;?`;
+    const importRegexp = `import\\s+.+\\s+from\\s+${modulePath}\\s*;?`;
+    // import 'core-js/stable'
+    const unassignedImportRegexp = `import\\s+${modulePath};?`;
     // await import ('lodash')
-    const dynamicImportRegexp = `import\\s*\\(${modulePath}\\)\\s*;?`;
-    return [requireRegexp, importRegexp, dynamicImportRegexp].join('|');
+    const dynamicImportRegexp = `import\\s+(type\s+)?\\s*\\(${modulePath}\\)\\s*;?`;
+    return [requireRegexp, importRegexp, unassignedImportRegexp, dynamicImportRegexp].join('|');
 }
 
 export interface SearchImportsMatch {

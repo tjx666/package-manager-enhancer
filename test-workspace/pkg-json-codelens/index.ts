@@ -1,5 +1,7 @@
 import { globby } from 'globby';
 import lodash from 'lodash';
+import 'lodash/add';
+import type { x} from 'bbb';
 
 console.log(lodash);
 
