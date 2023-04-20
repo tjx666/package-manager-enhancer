@@ -14,7 +14,7 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
     private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
-    constructor(context: ExtensionContext, private getEnable: () => boolean) {
+    constructor(context: ExtensionContext, private getEnable: (document: TextDocument) => boolean) {
         workspace.onDidChangeTextDocument(
             (e) => {
                 if (e.document === this._document) {
@@ -57,7 +57,7 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
     ): Promise<CodeLens[] | undefined> {
         this._reset(document);
 
-        if (!this.getEnable()) {
+        if (!this.getEnable(document)) {
             return [];
         }
 

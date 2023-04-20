@@ -1,12 +1,16 @@
 import type { OutputChannel } from 'vscode';
 import vscode from 'vscode';
 
+import { configuration } from './configuration';
+
 class Logger {
     channel: OutputChannel | undefined;
 
     constructor(private name: string, private language: string) {}
 
     output(message: string, active: boolean, level: string): void {
+        if (!configuration.enableLogInfo) return;
+
         if (this.channel === undefined) {
             const prefix = 'Package Manager Enhancer';
             this.channel = vscode.window.createOutputChannel(

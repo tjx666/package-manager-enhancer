@@ -91,6 +91,10 @@ extra related settings:
     "**/*.min.*",
     "**/*.map",
     "**/.*/**"
+  ],
+  "package-manager-enhancer.packageJsonDependenciesCodeLens.ignorePatterns": [
+    // "/path/to/folder/you/want/ignore/package.json",
+    // "**/xxx/package.json"
   ]
 }
 ```

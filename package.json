@@ -75,6 +75,10 @@
             {
                 "title": "Package Manager Enhancer",
                 "properties": {
+                    "package-manager-enhancer.enableLogInfo": {
+                        "type": "boolean",
+                        "default": false
+                    },
                     "package-manager-enhancer.enablePnpmWorkspaceCodeLens": {
                         "type": "boolean",
                         "default": true
@@ -140,6 +144,14 @@
                             "**/*.map",
                             "**/.*/**"
                         ]
+                    },
+                    "package-manager-enhancer.packageJsonDependenciesCodeLens.ignorePatterns": {
+                        "markdownDescription": "use [micromatch](https://github.com/micromatch/micromatch) to match",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": []
                     }
                 }
             }
@@ -183,10 +195,12 @@
         "execa": "^7.1.1",
         "globby": "^13.1.4",
         "jsonc-parser": "^3.2.0",
+        "micromatch": "^4.0.5",
         "yaml": "^2.2.1"
     },
     "devDependencies": {
         "@types/glob": "^8.1.0",
+        "@types/micromatch": "^4.0.2",
         "@types/mocha": "^10.0.1",
         "@types/node": "^18.15.12",
         "@types/vscode": "^1.77.0",

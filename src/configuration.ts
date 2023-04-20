@@ -1,6 +1,7 @@
 import vscode, { ConfigurationTarget } from 'vscode';
 
 interface Configuration {
+    enableLogInfo: boolean;
     enablePnpmWorkspaceCodeLens: boolean;
     enablePackageJsonFilesCodeLens: boolean;
     packageJsonFilesCodeLens: {
@@ -11,6 +12,7 @@ interface Configuration {
         dependenciesNodePaths: string[];
         searchDependenciesFileExtensions: string[];
         searchDependenciesExcludePatterns: string[];
+        ignorePatterns: string[];
     };
 
     togglePackageJsonDependenciesCodeLens(): Thenable<void>;
@@ -32,15 +34,14 @@ updateConfiguration();
 export function updateConfiguration() {
     const extensionConfig = vscode.workspace.getConfiguration('package-manager-enhancer');
 
+    configuration.enableLogInfo = extensionConfig.get('enableLogInfo')!;
     configuration.enablePnpmWorkspaceCodeLens = extensionConfig.get('enablePnpmWorkspaceCodeLens')!;
-
     configuration.enablePackageJsonFilesCodeLens = extensionConfig.get(
         'enablePackageJsonFilesCodeLens',
     )!;
     configuration.packageJsonFilesCodeLens = extensionConfig.get(
         'packageJsonFilesCodeLens',
     ) as Configuration['packageJsonFilesCodeLens'];
-
     configuration.enablePackageJsonDependenciesCodeLens = extensionConfig.get(
         'enablePackageJsonDependenciesCodeLens',
     )!;

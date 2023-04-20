@@ -1,8 +1,9 @@
 import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
+import micromatch from 'micromatch';
 import type { CancellationToken, ExtensionContext, Position, TextDocument } from 'vscode';
-import { CodeLens, window, Range } from 'vscode';
+import { workspace, CodeLens, window, Range } from 'vscode';
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 import { configuration } from '../configuration';
@@ -26,7 +27,23 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
     > = new Map();
 
     constructor(context: ExtensionContext) {
-        super(context, () => configuration.enablePackageJsonDependenciesCodeLens);
+        super(context, (document: TextDocument) => {
+            const isIgnored = () => {
+                if (configuration.packageJsonDependenciesCodeLens.ignorePatterns.length === 0)
+                    return false;
+                return (
+                    micromatch(
+                        [document.uri.fsPath],
+                        configuration.packageJsonDependenciesCodeLens.ignorePatterns,
+                        {
+                            cwd: workspace.getWorkspaceFolder(document.uri)?.uri.fsPath,
+                        },
+                    ).length === 0
+                );
+            };
+
+            return configuration.enablePackageJsonDependenciesCodeLens && !isIgnored();
+        });
     }
 
     protected _reset(document?: TextDocument) {
