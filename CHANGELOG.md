@@ -1,5 +1,18 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.5.0 - 2023-04-21
+
+### Added
+
+- dependencies codeLens support multi line import statement
+- new setting: `package-manager-enhancer.enableLogInfo`
+- new setting: `package-manager-enhancer.packageJsonDependenciesCodeLens.ignorePatterns`
+
+### Fixed
+
+- dependencies codelens missing unassigned imports
+- dependencies codelens can't deal with module path contains `.`
+
 ## 0.4.0 - 2023-04-20
 
 ### Added
