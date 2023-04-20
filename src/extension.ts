@@ -21,8 +21,12 @@ export function activate(context: vscode.ExtensionContext) {
                     (mod.showReferencesInPanel as any)(...args),
                 ),
         ),
-        vscode.commands.registerCommand('package-manager-enhancer.deleteLine', (...args: any[]) =>
-            import('./commands/deleteLine').then((mod) => (mod.deleteLine as any)(...args)),
+        vscode.commands.registerCommand(
+            'package-manager-enhancer.removeUnusedDependency',
+            (...args: any[]) =>
+                import('./commands/removeUnusedDependency').then((mod) =>
+                    (mod.removeUnusedDependency as any)(...args),
+                ),
         ),
     );
 
