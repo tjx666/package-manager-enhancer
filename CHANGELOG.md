@@ -1,5 +1,16 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.4.0 - 2023-04-20
+
+### Added
+
+- add editor/title/context menu tot toggle package json deps codeLens
+
+### Changed
+
+- simplify codelens display
+- kill previous search process if search same dep again
+
 ## 0.3.0 - 2023-04-20
 
 ### Added

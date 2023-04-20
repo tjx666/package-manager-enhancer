@@ -118,7 +118,8 @@
                             "mts",
                             "html",
                             "vue",
-                            "svelte"
+                            "svelte",
+                            "astro"
                         ]
                     },
                     "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns": {
@@ -132,6 +133,7 @@
                             "**/bower_components/**",
                             "**/*.code-search/**",
                             "**/dist/**",
+                            "**/out/**",
                             "**/build/**",
                             "**/_output/**",
                             "**/*.min.*",

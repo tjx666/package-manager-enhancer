@@ -14,6 +14,14 @@
 
 ![pnpm-workspace.yaml codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif?raw=true)
 
+toggle setting:
+
+```jsonc
+{
+  "package-manager-enhancer.enablePnpmWorkspaceCodeLens": false
+}
+```
+
 ### package.json pnpm configuration schema
 
 ![package.json pnpm configuration schema](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-schema.png?raw=true)
@@ -22,9 +30,70 @@
 
 ![package.json files property codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-files-codelens.png?raw=true)
 
+settings:
+
+```jsonc
+{
+  "package-manager-enhancer.enablePackageJsonFilesCodeLens": false,
+  // enable this will make files codeLens include package.json, README, LICENSE and main entry file
+  "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": true
+}
+```
+
 ### package.json dependencies codeLens
 
 ![package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-dependencies-codelens.png?raw=true)
+
+toggle setting:
+
+```jsonc
+{
+  "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": false
+}
+```
+
+you can use editor tab context menu to toggle it:
+
+![toggle package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/toggle-package-json-dependencies-codelens.png?raw=true)
+
+extra related settings:
+
+```jsonc
+{
+  "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": [
+    "dependencies"
+    // "devDependencies",
+    // "pnpm.overrides"
+  ],
+  "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions": [
+    "js",
+    "jsx",
+    "cjs",
+    "mjs",
+    "ts",
+    "tsx",
+    "cts",
+    "mts",
+    "html",
+    "vue",
+    "svelte",
+    "astro"
+  ],
+  "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns": [
+    "**/vendor/**",
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/*.code-search/**",
+    "**/dist/**",
+    "**/out/**",
+    "**/build/**",
+    "**/_output/**",
+    "**/*.min.*",
+    "**/*.map",
+    "**/.*/**"
+  ]
+}
+```
 
 ## TODO
 
