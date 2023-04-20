@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import escape from 'escape-string-regexp';
+import type { ExecaChildProcess } from 'execa';
 import { execa } from 'execa';
 import vscode from 'vscode';
 
@@ -87,6 +88,7 @@ function parseSearchResultLine(
 }
 
 const atTypesLiteral = '@types';
+const searchPrecessMap = new Map<string, ExecaChildProcess<string>>();
 export async function searchImportDepFiles(dep: string, cwd: string) {
     const storageDir = store.storageDir!;
     if (!(await pathExists(storageDir))) {
@@ -101,8 +103,14 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
     const importStatementRegexp = getImportStatementRegexp(dep);
     // use file to read pattern because regexp string is very complex and may break command
     await fs.writeFile(patternFile, importStatementRegexp, 'utf8');
+
+    // kill previous search process
+    const searchProcessKey = JSON.stringify({ dep, cwd });
+    if (searchPrecessMap.has(searchProcessKey)) {
+        searchPrecessMap.get(searchProcessKey)!.kill();
+    }
     try {
-        const { stdout } = await execa(
+        const searchProcess = execa(
             await getRgPath(),
             [
                 // '--no-messages',
@@ -130,7 +138,8 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
             ],
             { cwd },
         );
-
+        searchPrecessMap.set(searchProcessKey, searchProcess);
+        const { stdout } = await searchProcess;
         return stdout
             .trim()
             .split('\n')
@@ -144,6 +153,7 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
         }
         return [];
     } finally {
+        searchPrecessMap.delete(searchProcessKey);
         await fs.unlink(patternFile);
     }
 }
