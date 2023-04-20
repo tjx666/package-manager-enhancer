@@ -1,4 +1,4 @@
-import vscode from 'vscode';
+import vscode, { ConfigurationTarget } from 'vscode';
 
 interface Configuration {
     enablePnpmWorkspaceCodeLens: boolean;
@@ -12,9 +12,21 @@ interface Configuration {
         searchDependenciesFileExtensions: string[];
         searchDependenciesExcludePatterns: string[];
     };
+
+    togglePackageJsonDependenciesCodeLens(): Thenable<void>;
 }
 
-export const configuration: Configuration = {} as Configuration;
+export const configuration: Configuration = {
+    togglePackageJsonDependenciesCodeLens() {
+        return vscode.workspace
+            .getConfiguration()
+            .update(
+                'package-manager-enhancer.enablePackageJsonDependenciesCodeLens',
+                !configuration.enablePackageJsonDependenciesCodeLens,
+                ConfigurationTarget.Global,
+            );
+    },
+} as Configuration;
 updateConfiguration();
 
 export function updateConfiguration() {

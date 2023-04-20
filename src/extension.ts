@@ -13,20 +13,33 @@ export function activate(context: vscode.ExtensionContext) {
         pattern: '**/package.json',
     };
 
-    subscriptions.push(
-        vscode.commands.registerCommand(
-            'package-manager-enhancer.showReferencesInPanel',
-            (...args: any[]) =>
-                import('./commands/showReferencesInPanel').then((mod) =>
-                    (mod.showReferencesInPanel as any)(...args),
-                ),
+    const registerCommand = (
+        commandName: string,
+        callback: (...args: any[]) => any,
+        thisArg?: any,
+    ) => {
+        const cmd = vscode.commands.registerCommand(
+            `package-manager-enhancer.${commandName}`,
+            callback,
+            thisArg,
+        );
+        context.subscriptions.push(cmd);
+        return cmd;
+    };
+
+    registerCommand('showReferencesInPanel', (...args: any[]) =>
+        import('./commands/showReferencesInPanel').then((mod) =>
+            (mod.showReferencesInPanel as any)(...args),
         ),
-        vscode.commands.registerCommand(
-            'package-manager-enhancer.removeUnusedDependency',
-            (...args: any[]) =>
-                import('./commands/removeUnusedDependency').then((mod) =>
-                    (mod.removeUnusedDependency as any)(...args),
-                ),
+    );
+    registerCommand('removeUnusedDependency', (...args: any[]) =>
+        import('./commands/removeUnusedDependency').then((mod) =>
+            (mod.removeUnusedDependency as any)(...args),
+        ),
+    );
+    registerCommand('togglePackageJsonDependenciesCodeLens', () =>
+        import('./commands/togglePackageJsonDependenciesCodeLens').then((mod) =>
+            mod.togglePackageJsonDependenciesCodeLens(),
         ),
     );
 
