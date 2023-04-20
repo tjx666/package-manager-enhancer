@@ -2,6 +2,16 @@ import { globby } from 'globby';
 import lodash from 'lodash';
 import 'lodash/add';
 import type { x} from 'bbb';
+import { EventEmitter, workspace } from 'vscode';
+import type {
+    CancellationToken,
+    CodeLensProvider,
+    Event,
+    CodeLens,
+    TextDocument,
+    ExtensionContext,
+} from 'vscode';
+
 
 console.log(lodash);
 

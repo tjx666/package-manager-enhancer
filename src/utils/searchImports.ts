@@ -10,6 +10,7 @@ import vscode from 'vscode';
 import { pathExists } from './fs';
 import { store } from './store';
 import { configuration } from '../configuration';
+import { logger } from '../logger';
 
 const isWin = process.platform.startsWith('win');
 const rgExe = isWin ? 'rg.exe' : 'rg';
@@ -38,16 +39,17 @@ async function getRgPath() {
 function getImportStatementRegexp(dep: string) {
     const escapedDepName = escape(dep);
     // for example: import(/* webpackChunkName: "heic2any" */ 'heic2any');
-    const magicComment = `(/\\*\\s*webpackChunkName:\\s*['"][a-zA-Z\\d\\-_]+['"]\\s*\\*/)`;
-    const modulePath = `${magicComment}?\\s*['"]${escapedDepName}(/[a-zA-Z\\d\\-_]+)*(\\?\\S*)?['"]`;
+    const magicComment = `(/\\*\\s*webpackChunkName:\\s*['"][a-zA-Z\\d\\-_.]+['"]\\s*\\*/)`;
+    const modulePath = `${magicComment}?\\s*['"]${escapedDepName}(/[a-zA-Z\\d\\-_.]+)*(\\?\\S*)?['"]`;
     // require ( 'lodash'   )
     const requireRegexp = `require\\s*\\(\\s*${modulePath}\\s*\\)\\s*;?`;
     // import { add } from 'lodash';
-    const importRegexp = `import\\s+.+\\s+from\\s+${modulePath}\\s*;?`;
+    const importRegexp = `import\\s+(type\\s+)?[$_a-zA-Z,\{\\\\}\\s]+\\s+from\\s+${modulePath}\\s*;?`;
     // import 'core-js/stable'
     const unassignedImportRegexp = `import\\s+${modulePath};?`;
     // await import ('lodash')
-    const dynamicImportRegexp = `import\\s+(type\s+)?\\s*\\(${modulePath}\\)\\s*;?`;
+    // const dynamicImportRegexp = `import\\s+(type\\s+)?\\s*\\(${modulePath}\\)\\s*;?`;
+    const dynamicImportRegexp = `import\\s*\\(${modulePath}\\)\\s*;?`;
     return [requireRegexp, importRegexp, unassignedImportRegexp, dynamicImportRegexp].join('|');
 }
 
@@ -74,7 +76,9 @@ function parseSearchResultLine(
         const line = Number.parseInt(groups.line, 10) - 1;
         const column = Number.parseInt(groups.column, 10) - 1;
         const importRegexp = new RegExp(`^${importRegexpStr}`);
-        const importStatement = lineStr.slice(column).match(importRegexp)![0];
+        const lineSource = lineStr.slice(column);
+        const importStatementMatch = lineSource.match(importRegexp);
+        const importStatement = importStatementMatch ? importStatementMatch[0] : lineSource;
         return {
             searchedDep,
             absPath: groups.relativePath,
@@ -110,17 +114,29 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
     const searchProcessKey = JSON.stringify({ dep, cwd });
     if (searchPrecessMap.has(searchProcessKey)) {
         searchPrecessMap.get(searchProcessKey)!.kill();
+        searchPrecessMap.delete(searchProcessKey);
     }
+
     try {
+        const start = Date.now();
         const searchProcess = execa(
             await getRgPath(),
             [
-                // '--no-messages',
+                '--no-messages',
                 '--vimgrep',
                 '--with-filename',
                 '--column',
                 '--line-number',
                 '--no-config',
+                '--multiline',
+                '--case-sensitive',
+                // Don't print lines longer than this limit in bytes. Longer lines are omitted,
+                // and only the number of matches in that line is printed.
+                '--max-columns',
+                '500',
+                '--encoding',
+                // eslint-disable-next-line unicorn/text-encoding-identifier-case
+                'UTF-8',
                 // disable colors
                 '--color',
                 'never',
@@ -141,17 +157,24 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
             { cwd },
         );
         searchPrecessMap.set(searchProcessKey, searchProcess);
-        const { stdout } = await searchProcess;
+        const { stdout, escapedCommand } = await searchProcess;
+
+        logger.info(`pattern: ${importStatementRegexp.replaceAll('/', '\\/')}`);
+        logger.info(`command: ${escapedCommand}`);
+        const costs = ((Date.now() - start) / 1000).toFixed(3);
+        logger.info(`search ${searchProcessKey} costs: ${costs}s`);
+
         return stdout
             .trim()
             .split('\n')
             .map((line) => parseSearchResultLine(line, importStatementRegexp, dep))
             .filter(Boolean) as SearchImportsMatch[];
     } catch (error: any) {
-        // when no matches, rg exit code is 1
-        if (error.stderr) {
-            console.error(error.escapedCommand);
-            console.error(importStatementRegexp);
+        logger.error(error);
+        logger.error(`pattern: ${importStatementRegexp.replaceAll('/', '\\/')}`);
+        logger.error(`command: ${error.escapedCommand}`);
+        if (error.killed) {
+            logger.error(`killed search process ${searchProcessKey}`);
         }
         return [];
     } finally {

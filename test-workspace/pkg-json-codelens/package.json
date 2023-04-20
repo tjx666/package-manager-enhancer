@@ -10,6 +10,6 @@
     "dependencies": {
         "lodash": "^4.17.21",
         "bbb": "233"  ,   
-        "ccc": ""   
+        "vscode": "1.1.37"
     }
 }
