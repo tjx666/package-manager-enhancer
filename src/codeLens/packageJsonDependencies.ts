@@ -15,16 +15,15 @@ interface Dependency {
     range: Range;
 }
 
+interface CodeLensData {
+    type: 'imports' | 'type imports';
+    depName: string;
+    position: Position;
+    searchImportsPromise: Promise<SearchImportsMatch[]>;
+}
+
 export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvider {
-    private _codeLensData: Map<
-        CodeLens,
-        {
-            type: 'imports' | 'type imports';
-            depName: string;
-            position: Position;
-            searchImportsPromise: Promise<SearchImportsMatch[]>;
-        }
-    > = new Map();
+    private _codeLensDataMap: Map<CodeLens, CodeLensData> = new Map();
 
     constructor(context: ExtensionContext) {
         super(context, (document: TextDocument) => {
@@ -48,7 +47,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
 
     protected _reset(document?: TextDocument) {
         super._reset(document);
-        this._codeLensData.clear();
+        this._codeLensDataMap.clear();
     }
 
     async getDependencies(root: Node, path: string[]) {
@@ -109,7 +108,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
                 dep.name,
                 dirname(this._document!.uri.fsPath),
             );
-            this._codeLensData.set(importsCodeLens, {
+            this._codeLensDataMap.set(importsCodeLens, {
                 type: 'imports',
                 depName: dep.name,
                 position: dep.range.start,
@@ -124,7 +123,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
         codeLens: CodeLens,
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {
-        const data = this._codeLensData.get(codeLens);
+        const data = this._codeLensDataMap.get(codeLens);
         if (!data) return;
 
         const matches = await data.searchImportsPromise;

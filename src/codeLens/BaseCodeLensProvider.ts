@@ -1,3 +1,4 @@
+import throttle from 'lodash-es/throttle';
 import { EventEmitter, workspace } from 'vscode';
 import type {
     CancellationToken,
@@ -8,6 +9,8 @@ import type {
     ExtensionContext,
 } from 'vscode';
 
+const throttleWait = 500;
+
 export abstract class BaseCodeLensProvider implements CodeLensProvider {
     protected _document: TextDocument | undefined;
 
@@ -16,11 +19,11 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
 
     constructor(context: ExtensionContext, private getEnable: (document: TextDocument) => boolean) {
         workspace.onDidChangeTextDocument(
-            (e) => {
+            throttle((e) => {
                 if (e.document === this._document) {
                     this._onDidChangeCodeLenses.fire();
                 }
-            },
+            }, throttleWait),
             null,
             context.subscriptions,
         );
@@ -34,9 +37,9 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
             context.subscriptions,
         );
         workspace.onDidChangeConfiguration(
-            (_e) => {
+            throttle((_e) => {
                 this._onDidChangeCodeLenses.fire();
-            },
+            }, throttleWait),
             null,
             context.subscriptions,
         );

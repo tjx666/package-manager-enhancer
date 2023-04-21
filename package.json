@@ -195,11 +195,13 @@
         "execa": "^7.1.1",
         "globby": "^13.1.4",
         "jsonc-parser": "^3.2.0",
+        "lodash-es": "^4.17.21",
         "micromatch": "^4.0.5",
         "yaml": "^2.2.1"
     },
     "devDependencies": {
         "@types/glob": "^8.1.0",
+        "@types/lodash-es": "^4.17.7",
         "@types/micromatch": "^4.0.2",
         "@types/mocha": "^10.0.1",
         "@types/node": "^18.15.12",

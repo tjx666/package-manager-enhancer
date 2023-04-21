@@ -2,28 +2,27 @@ import type { CancellationToken, CodeLens, Position, TextDocument } from 'vscode
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 
-interface CodeLensDataItem {
+interface CodeLensData {
     type: 'all' | 'include' | 'exclude';
     position: Position;
     getReferenceFilesPromise: Promise<string[]>;
 }
-type CodeLensData = Map<CodeLens, CodeLensDataItem>;
 
 export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
-    protected _codeLensData: CodeLensData = new Map();
+    protected _codeLensDataMap: Map<CodeLens, CodeLensData> = new Map();
     protected _negativePatterns: string[] = [];
 
     protected _reset(document?: TextDocument) {
         super._reset(document);
         this._negativePatterns = [];
-        this._codeLensData.clear();
+        this._codeLensDataMap.clear();
     }
 
     async resolveCodeLens(
         codeLens: CodeLens,
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {
-        const data = this._codeLensData.get(codeLens);
+        const data = this._codeLensDataMap.get(codeLens);
         if (!data) return;
 
         const referencedFiles = await data.getReferenceFilesPromise;

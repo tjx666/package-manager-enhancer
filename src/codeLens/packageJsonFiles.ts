@@ -121,7 +121,7 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
             if (!item.isNegated) {
                 promises.push(promise);
             }
-            this._codeLensData.set(codeLens, {
+            this._codeLensDataMap.set(codeLens, {
                 type: item.isNegated ? 'exclude' : 'include',
                 position: item.range.start,
                 getReferenceFilesPromise: promise,
@@ -132,7 +132,7 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
         const end = document.positionAt(filesPropertyNode.offset + filesLiteral.length);
         const codelens = new CodeLens(new Range(start, end));
         codeLensList.push(codelens);
-        this._codeLensData.set(codelens, {
+        this._codeLensDataMap.set(codelens, {
             type: 'all',
             position: start,
             getReferenceFilesPromise: (async () => {

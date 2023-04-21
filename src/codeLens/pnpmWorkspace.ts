@@ -111,7 +111,7 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
             if (!item.isNegated) {
                 promises.push(getPackagesPromise);
             }
-            this._codeLensData.set(codeLens, {
+            this._codeLensDataMap.set(codeLens, {
                 type: item.isNegated ? 'exclude' : 'include',
                 position: item.range.start,
                 getReferenceFilesPromise: getPackagesPromise,
@@ -122,7 +122,7 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
         const end = document.positionAt(packagesNode.key!.offset + packagesLiteral.length);
         const codeLens = new CodeLens(new Range(start, end));
         codeLensList.push(codeLens);
-        this._codeLensData.set(codeLens, {
+        this._codeLensDataMap.set(codeLens, {
             type: 'all',
             position: start,
             getReferenceFilesPromise: (async () => {
