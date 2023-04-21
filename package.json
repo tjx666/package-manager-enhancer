@@ -58,19 +58,32 @@
         ],
         "commands": [
             {
-                "command": "package-manager-enhancer.togglePackageJsonDependenciesCodeLens",
-                "title": "Toggle Dependencies CodeLens",
+                "command": "package-manager-enhancer.showPackageJsonDependenciesCodeLens",
+                "title": "Show Dependencies CodeLens",
                 "icon": {
                     "light": "./assets/icons/dependencies-imports-toggle-light.png",
                     "dark": "./assets/icons/dependencies-imports-toggle-dark.png"
+                }
+            },
+            {
+                "command": "package-manager-enhancer.hidePackageJsonDependenciesCodeLens",
+                "title": "Hide Dependencies CodeLens",
+                "icon": {
+                    "light": "./assets/icons/dependencies-imports-toggle-active.png",
+                    "dark": "./assets/icons/dependencies-imports-toggle-active.png"
                 }
             }
         ],
         "menus": {
             "editor/title": [
                 {
-                    "command": "package-manager-enhancer.togglePackageJsonDependenciesCodeLens",
-                    "when": "resourceFilename == package.json",
+                    "command": "package-manager-enhancer.showPackageJsonDependenciesCodeLens",
+                    "when": "resourceFilename == package.json && package-manager-enhancer.enablePackageJsonDependenciesCodeLens == false",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "package-manager-enhancer.hidePackageJsonDependenciesCodeLens",
+                    "when": "resourceFilename == package.json && package-manager-enhancer.enablePackageJsonDependenciesCodeLens === true",
                     "group": "navigation@1"
                 }
             ]

@@ -1,6 +1,6 @@
 import vscode from 'vscode';
 
-import { configuration, updateConfiguration } from './configuration';
+import { updateConfiguration } from './configuration';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -37,47 +37,47 @@ export function activate(context: vscode.ExtensionContext) {
             (mod.removeUnusedDependency as any)(...args),
         ),
     );
-    registerCommand('togglePackageJsonDependenciesCodeLens', () =>
+    registerCommand('showPackageJsonDependenciesCodeLens', () =>
         import('./commands/togglePackageJsonDependenciesCodeLens').then((mod) =>
             mod.togglePackageJsonDependenciesCodeLens(),
         ),
     );
 
-    if (configuration.enablePnpmWorkspaceCodeLens) {
-        import('./codeLens/pnpmWorkspace').then((mod) => {
-            subscriptions.push(
-                vscode.languages.registerCodeLensProvider(
-                    {
-                        language: 'yaml',
-                        pattern: '**/pnpm-workspace.yaml',
-                    },
-                    new mod.PnpmWorkspaceCodeLensProvider(context),
-                ),
-            );
-        });
-    }
+    registerCommand('hidePackageJsonDependenciesCodeLens', () =>
+        import('./commands/togglePackageJsonDependenciesCodeLens').then((mod) =>
+            mod.togglePackageJsonDependenciesCodeLens(),
+        ),
+    );
 
-    if (configuration.enablePackageJsonFilesCodeLens) {
-        import('./codeLens/packageJsonFiles').then((mod) => {
-            subscriptions.push(
-                vscode.languages.registerCodeLensProvider(
-                    pkgJsonSelector,
-                    new mod.PackageJsonFilesCodeLensProvider(context),
-                ),
-            );
-        });
-    }
+    import('./codeLens/pnpmWorkspace').then((mod) => {
+        subscriptions.push(
+            vscode.languages.registerCodeLensProvider(
+                {
+                    language: 'yaml',
+                    pattern: '**/pnpm-workspace.yaml',
+                },
+                new mod.PnpmWorkspaceCodeLensProvider(context),
+            ),
+        );
+    });
 
-    if (configuration.enablePackageJsonDependenciesCodeLens) {
-        import('./codeLens/packageJsonDependencies').then((mod) => {
-            subscriptions.push(
-                vscode.languages.registerCodeLensProvider(
-                    pkgJsonSelector,
-                    new mod.PackageJsonDependenciesCodeLensProvider(context),
-                ),
-            );
-        });
-    }
+    import('./codeLens/packageJsonFiles').then((mod) => {
+        subscriptions.push(
+            vscode.languages.registerCodeLensProvider(
+                pkgJsonSelector,
+                new mod.PackageJsonFilesCodeLensProvider(context),
+            ),
+        );
+    });
+
+    import('./codeLens/packageJsonDependencies').then((mod) => {
+        subscriptions.push(
+            vscode.languages.registerCodeLensProvider(
+                pkgJsonSelector,
+                new mod.PackageJsonDependenciesCodeLensProvider(context),
+            ),
+        );
+    });
 }
 
 // This method is called when your extension is deactivated

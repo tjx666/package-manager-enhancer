@@ -15,7 +15,7 @@ interface Configuration {
         ignorePatterns: string[];
     };
 
-    togglePackageJsonDependenciesCodeLens(): Thenable<void>;
+    togglePackageJsonDependenciesCodeLens(): Promise<void>;
 }
 
 export const configuration: Configuration = {
@@ -45,6 +45,11 @@ export function updateConfiguration() {
     configuration.enablePackageJsonDependenciesCodeLens = extensionConfig.get(
         'enablePackageJsonDependenciesCodeLens',
     )!;
+    vscode.commands.executeCommand(
+        'setContext',
+        'package-manager-enhancer.enablePackageJsonDependenciesCodeLens',
+        configuration.enablePackageJsonDependenciesCodeLens,
+    );
     configuration.packageJsonDependenciesCodeLens = extensionConfig.get(
         'packageJsonDependenciesCodeLens',
     ) as Configuration['packageJsonDependenciesCodeLens'];
