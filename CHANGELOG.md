@@ -1,5 +1,19 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.6.0 - 2023-04-22
+
+### Added
+
+- add toggle dependencies codeLens icon
+
+### Changed
+
+- perf: throttle fire provide codeLens
+
+### Fixed
+
+- can't enable codeLens if is disable when startup
+
 ## 0.5.0 - 2023-04-21
 
 ### Added
