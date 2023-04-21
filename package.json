@@ -34,7 +34,7 @@
         "Other"
     ],
     "main": "./out/extension.js",
-    "icon": "assets/logo.png",
+    "icon": "assets/icons/logo.png",
     "engines": {
         "vscode": "^1.77.0"
     },
@@ -59,15 +59,19 @@
         "commands": [
             {
                 "command": "package-manager-enhancer.togglePackageJsonDependenciesCodeLens",
-                "title": "Toggle Dependencies CodeLens"
+                "title": "Toggle Dependencies CodeLens",
+                "icon": {
+                    "light": "./assets/icons/dependencies-imports-toggle-light.png",
+                    "dark": "./assets/icons/dependencies-imports-toggle-dark.png"
+                }
             }
         ],
         "menus": {
-            "editor/title/context": [
+            "editor/title": [
                 {
                     "command": "package-manager-enhancer.togglePackageJsonDependenciesCodeLens",
                     "when": "resourceFilename == package.json",
-                    "group": "z_commands"
+                    "group": "navigation@1"
                 }
             ]
         },

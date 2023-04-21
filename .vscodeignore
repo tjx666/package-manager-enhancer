@@ -2,7 +2,7 @@
 src
 scripts
 assets
-!assets/logo.png
+!assets/icons
 
 # output
 out
