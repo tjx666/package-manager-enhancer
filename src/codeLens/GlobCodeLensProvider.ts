@@ -1,6 +1,7 @@
 import type { CancellationToken, CodeLens, Position, TextDocument } from 'vscode';
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
+import { commands } from '../utils/constants';
 
 interface CodeLensData {
     type: 'all' | 'include' | 'exclude';
@@ -45,7 +46,7 @@ export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
 
         codeLens.command = {
             title,
-            command: 'package-manager-enhancer.showReferencesInPanel',
+            command: commands.showReferencesInPanel,
             arguments: [this._document!.uri, data.position, referencedFiles],
             tooltip: 'click to open the files in references panel',
         };

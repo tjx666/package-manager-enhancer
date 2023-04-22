@@ -1,5 +1,1 @@
-import { configuration } from '../configuration';
-
-export function togglePackageJsonDependenciesCodeLens() {
-    return configuration.togglePackageJsonDependenciesCodeLens();
-}
+export { togglePackageJsonDependenciesCodeLens } from '../configuration';

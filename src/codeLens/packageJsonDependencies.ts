@@ -6,6 +6,7 @@ import { workspace, CodeLens, window, Range } from 'vscode';
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 import { configuration } from '../configuration';
+import { commands } from '../utils/constants';
 import type { SearchImportsMatch } from '../utils/searchImports';
 
 interface Dependency {
@@ -172,13 +173,13 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
         if (count === 0) {
             title = 'unused';
             tooltip = 'click to remove this dependency';
-            command = 'package-manager-enhancer.removeUnusedDependency';
+            command = commands.removeUnusedDependency;
             args = [data.position.line];
         } else {
             const isOnlyTypeImports = count === typeImportsCount;
             title = `${count} ${isOnlyTypeImports ? 'type imports' : 'imports'}`;
             tooltip = `click to open the ${data.type} in references panel`;
-            command = 'package-manager-enhancer.showReferencesInPanel';
+            command = commands.showReferencesInPanel;
             args = [this._document!.uri, data.position, matches];
         }
 

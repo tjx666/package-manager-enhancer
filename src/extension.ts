@@ -2,6 +2,8 @@ import vscode from 'vscode';
 
 import { updateConfiguration } from './configuration';
 import { logger } from './logger';
+import type { Command } from './utils/constants';
+import { commands } from './utils/constants';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -10,36 +12,32 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration(updateConfiguration, null, subscriptions);
 
     const registerCommand = (
-        commandName: string,
+        command: Command,
         callback: (...args: any[]) => any,
         thisArg?: any,
     ) => {
-        const cmd = vscode.commands.registerCommand(
-            `package-manager-enhancer.${commandName}`,
-            callback,
-            thisArg,
-        );
+        const cmd = vscode.commands.registerCommand(command, callback, thisArg);
         context.subscriptions.push(cmd);
         return cmd;
     };
 
-    registerCommand('showReferencesInPanel', (...args: any[]) =>
+    registerCommand(commands.showReferencesInPanel, (...args: any[]) =>
         import('./commands/showReferencesInPanel').then((mod) =>
             (mod.showReferencesInPanel as any)(...args),
         ),
     );
-    registerCommand('removeUnusedDependency', (...args: any[]) =>
+    registerCommand(commands.removeUnusedDependency, (...args: any[]) =>
         import('./commands/removeUnusedDependency').then((mod) =>
             (mod.removeUnusedDependency as any)(...args),
         ),
     );
-    registerCommand('showPackageJsonDependenciesCodeLens', () =>
+    registerCommand(commands.showPackageJsonDependenciesCodeLens, () =>
         import('./commands/togglePackageJsonDependenciesCodeLens').then((mod) =>
             mod.togglePackageJsonDependenciesCodeLens(),
         ),
     );
 
-    registerCommand('hidePackageJsonDependenciesCodeLens', () =>
+    registerCommand(commands.hidePackageJsonDependenciesCodeLens, () =>
         import('./commands/togglePackageJsonDependenciesCodeLens').then((mod) =>
             mod.togglePackageJsonDependenciesCodeLens(),
         ),
