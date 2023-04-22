@@ -1,5 +1,16 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.7.0 - 2023-04-22
+
+### Added
+
+- feat: support custom glob codeLens title format
+- feat: support showing search imports state
+
+### Changed
+
+- perf: avoid many useless fire provideCodeLenses
+
 ## 0.6.0 - 2023-04-22
 
 ### Added

@@ -12,13 +12,14 @@
 
 ### pnpm-workspace.yaml codeLens
 
-![pnpm-workspace.yaml codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.gif?raw=true)
+![pnpm-workspace.yaml codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.png?raw=true)
 
-toggle setting:
+settings:
 
 ```jsonc
 {
-  "package-manager-enhancer.enablePnpmWorkspaceCodeLens": false
+  "package-manager-enhancer.enablePnpmWorkspaceCodeLens": false,
+  "package-manager-enhancer.pnpmWorkspaceCodeLens.titleFormat": "${count} pkgs"
 }
 ```
 
@@ -36,21 +37,14 @@ settings:
 {
   "package-manager-enhancer.enablePackageJsonFilesCodeLens": false,
   // enable this will make files codeLens include package.json, README, LICENSE and main entry file
-  "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": true
+  "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": true,
+  "package-manager-enhancer.packageJsonFilesCodeLens.titleFormat": "${count} files"
 }
 ```
 
 ### package.json dependencies codeLens
 
 ![package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-dependencies-codelens.png?raw=true)
-
-toggle setting:
-
-```jsonc
-{
-  "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": false
-}
-```
 
 you can use editor tab context menu to toggle it:
 
@@ -60,10 +54,11 @@ extra related settings:
 
 ```jsonc
 {
+  "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": false,
   "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": [
-    "dependencies"
-    // "devDependencies",
-    // "pnpm.overrides"
+    "dependencies",
+    "devDependencies",
+    "pnpm.overrides"
   ],
   "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions": [
     "js",
@@ -93,8 +88,8 @@ extra related settings:
     "**/.*/**"
   ],
   "package-manager-enhancer.packageJsonDependenciesCodeLens.ignorePatterns": [
-    // "/path/to/folder/you/want/ignore/package.json",
-    // "**/xxx/package.json"
+    "/path/to/folder/you/want/ignore/package.json",
+    "**/xxx/package.json"
   ]
 }
 ```

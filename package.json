@@ -101,16 +101,18 @@
                         "default": true
                     },
                     "package-manager-enhancer.pnpmWorkspaceCodeLens.titleFormat": {
+                        "markdownDescription": "supported placeholders: `${signedCount}` and `${count}`",
                         "type": "string",
-                        "default": "$(signedCount) matches"
+                        "default": "${signedCount} matches"
                     },
                     "package-manager-enhancer.enablePackageJsonFilesCodeLens": {
                         "type": "boolean",
                         "default": true
                     },
                     "package-manager-enhancer.packageJsonFilesCodeLens.titleFormat": {
+                        "markdownDescription": "supported placeholders: `${signedCount}` and `${count}`",
                         "type": "string",
-                        "default": "$(signedCount) matches"
+                        "default": "${signedCount} matches"
                     },
                     "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": {
                         "type": "boolean",
@@ -222,6 +224,7 @@
         "jsonc-parser": "^3.2.0",
         "lodash-es": "^4.17.21",
         "micromatch": "^4.0.5",
+        "p-queue": "^7.3.4",
         "yaml": "^2.2.1"
     },
     "devDependencies": {
