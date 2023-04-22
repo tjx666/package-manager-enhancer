@@ -1,5 +1,5 @@
 import throttle from 'lodash-es/throttle';
-import { EventEmitter, workspace } from 'vscode';
+import { EventEmitter, workspace, window } from 'vscode';
 import type {
     CancellationToken,
     CodeLensProvider,
@@ -9,21 +9,28 @@ import type {
     ExtensionContext,
 } from 'vscode';
 
-const throttleWait = 500;
-
 export abstract class BaseCodeLensProvider implements CodeLensProvider {
     protected _document: TextDocument | undefined;
 
     private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
-    constructor(context: ExtensionContext, private getEnable: (document: TextDocument) => boolean) {
+    constructor(
+        context: ExtensionContext,
+        private getEnable: (document: TextDocument) => boolean | Promise<boolean>,
+    ) {
+        window.onDidChangeActiveTextEditor((e) => {
+            if (e?.document === this._document) {
+                this._reset();
+                this._onDidChangeCodeLenses.fire();
+            }
+        });
         workspace.onDidChangeTextDocument(
-            throttle((e) => {
+            (e) => {
                 if (e.document === this._document) {
                     this._onDidChangeCodeLenses.fire();
                 }
-            }, throttleWait),
+            },
             null,
             context.subscriptions,
         );
@@ -37,33 +44,36 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
             context.subscriptions,
         );
         workspace.onDidChangeConfiguration(
-            throttle((_e) => {
-                this._onDidChangeCodeLenses.fire();
-            }, throttleWait),
+            (_e) => this._onDidChangeCodeLenses.fire(),
             null,
             context.subscriptions,
         );
     }
 
-    protected _reset(document?: TextDocument) {
-        this._document = document;
-    }
+    protected abstract _reset(document?: TextDocument): void;
 
     public abstract getCodeLenses(
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined>;
 
+    private _throttleHandleProvideCodeLens = throttle(
+        async (document: TextDocument, token: CancellationToken) => {
+            this._document = document;
+
+            if (!(await this.getEnable(document))) {
+                return [];
+            }
+
+            return this.getCodeLenses(document, token);
+        },
+        200,
+    );
+
     public async provideCodeLenses(
         document: TextDocument,
-        _token: CancellationToken,
+        token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
-        this._reset(document);
-
-        if (!this.getEnable(document)) {
-            return [];
-        }
-
-        return this.getCodeLenses(document, _token);
+        return this._throttleHandleProvideCodeLens(document, token);
     }
 }

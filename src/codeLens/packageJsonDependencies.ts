@@ -1,14 +1,12 @@
 import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
-import micromatch from 'micromatch';
 import type { CancellationToken, ExtensionContext, Position, TextDocument } from 'vscode';
 import { workspace, CodeLens, window, Range } from 'vscode';
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 import { configuration } from '../configuration';
 import type { SearchImportsMatch } from '../utils/searchImports';
-import { searchImportDepFiles } from '../utils/searchImports';
 
 interface Dependency {
     name: string;
@@ -24,12 +22,15 @@ interface CodeLensData {
 
 export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvider {
     private _codeLensDataMap: Map<CodeLens, CodeLensData> = new Map();
+    private _searchCache: Map<string, Promise<SearchImportsMatch[]>> = new Map();
 
     constructor(context: ExtensionContext) {
-        super(context, (document: TextDocument) => {
-            const isIgnored = () => {
+        super(context, async (document: TextDocument) => {
+            const isIgnored = async () => {
                 if (configuration.packageJsonDependenciesCodeLens.ignorePatterns.length === 0)
                     return false;
+
+                const { default: micromatch } = await import('micromatch');
                 return (
                     micromatch(
                         [document.uri.fsPath],
@@ -41,13 +42,13 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
                 );
             };
 
-            return configuration.enablePackageJsonDependenciesCodeLens && !isIgnored();
+            return configuration.enablePackageJsonDependenciesCodeLens && !(await isIgnored());
         });
     }
 
-    protected _reset(document?: TextDocument) {
-        super._reset(document);
+    protected _reset() {
         this._codeLensDataMap.clear();
+        this._searchCache.clear();
     }
 
     async getDependencies(root: Node, path: string[]) {
@@ -63,9 +64,9 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             return dependencies;
 
         for (const depEntryNode of dependenciesNode.children) {
-            if (!depEntryNode.children) return [];
-            const depNameNode = depEntryNode.children[0];
-            if (depNameNode.type !== 'string') return [];
+            if (depEntryNode.children?.length !== 2) continue;
+            const [depNameNode, depVersionNode] = depEntryNode.children;
+            if (depNameNode.type !== 'string' || depVersionNode.type !== 'string') continue;
 
             const start = this._document!.positionAt(depNameNode.offset);
             const end = this._document!.positionAt(depNameNode.offset + depNameNode.length - 2);
@@ -102,12 +103,22 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             )
         ).flat();
 
+        const { searchImportDepFiles } = await import('../utils/searchImports');
         return dependencies.map((dep) => {
             const importsCodeLens = new CodeLens(dep.range);
-            const searchImportsPromise = searchImportDepFiles(
-                dep.name,
-                dirname(this._document!.uri.fsPath),
-            );
+            let searchImportsPromise: Promise<SearchImportsMatch[]>;
+            if (this._searchCache.has(dep.name)) {
+                searchImportsPromise = this._searchCache.get(dep.name)!;
+            } else {
+                searchImportsPromise = searchImportDepFiles(
+                    dep.name,
+                    dirname(this._document!.uri.fsPath),
+                ).catch((error) => {
+                    this._searchCache.delete(dep.name);
+                    throw error;
+                });
+                this._searchCache.set(dep.name, searchImportsPromise);
+            }
             this._codeLensDataMap.set(importsCodeLens, {
                 type: 'imports',
                 depName: dep.name,
@@ -119,7 +130,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
         });
     }
 
-    async resolveCodeLens?(
+    async resolveCodeLens(
         codeLens: CodeLens,
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {

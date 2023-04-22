@@ -15,10 +15,6 @@ import { logger } from '../logger';
 const isWin = process.platform.startsWith('win');
 const rgExe = isWin ? 'rg.exe' : 'rg';
 
-async function exePathIsDefined(rgExePath: string) {
-    return (await pathExists(rgExePath)) ? rgExePath : false;
-}
-
 async function getRgPath() {
     const candidateDirs = [
         'node_modules/vscode-ripgrep/bin/',
@@ -27,8 +23,9 @@ async function getRgPath() {
         'node_modules.asar.unpacked/@vscode/ripgrep/bin/',
     ];
     for (const dir of candidateDirs) {
-        const rgPath = await exePathIsDefined(resolve(vscode.env.appRoot, dir, rgExe));
-        if (rgPath) return rgPath;
+        if (await pathExists(resolve(vscode.env.appRoot, dir, rgExe))) {
+            return rgExe;
+        }
     }
 
     const message = "can't find ripgrep path";
@@ -38,7 +35,7 @@ async function getRgPath() {
 
 function getImportStatementRegexp(dep: string) {
     const escapedDepName = escape(dep);
-    // for example: import(/* webpackChunkName: "heic2any" */ 'heic2any');
+    // import(/* webpackChunkName: "heic2any" */ 'heic2any');
     const magicComment = `(/\\*\\s*webpackChunkName:\\s*['"][a-zA-Z\\d\\-_.]+['"]\\s*\\*/)`;
     const modulePath = `${magicComment}?\\s*['"]${escapedDepName}(/[a-zA-Z\\d\\-_.]+)*(\\?\\S*)?['"]`;
     // require ( 'lodash'   )
@@ -63,7 +60,7 @@ export interface SearchImportsMatch {
     isTypeImport: boolean;
 }
 
-const lineRegexp = /^(?<relativePath>.*):(?<line>\d+):(?<column>\d+):(?<lineStr>.*)/;
+const lineRegexp = /^(?<absPath>.*):(?<line>\d+):(?<column>\d+):(?<lineStr>.*)/;
 function parseSearchResultLine(
     line: string,
     importRegexpStr: string,
@@ -72,7 +69,7 @@ function parseSearchResultLine(
     const matchArray = line.match(lineRegexp);
     if (matchArray && matchArray.groups) {
         const { groups } = matchArray;
-        const { lineStr } = groups;
+        const { absPath, lineStr } = groups;
         const line = Number.parseInt(groups.line, 10) - 1;
         const column = Number.parseInt(groups.column, 10) - 1;
         const importRegexp = new RegExp(`^${importRegexpStr}`);
@@ -81,7 +78,7 @@ function parseSearchResultLine(
         const importStatement = importStatementMatch ? importStatementMatch[0] : lineSource;
         return {
             searchedDep,
-            absPath: groups.relativePath,
+            absPath,
             line,
             column,
             lineStr,
@@ -123,6 +120,7 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
             await getRgPath(),
             [
                 '--no-messages',
+                // make every match result one line
                 '--vimgrep',
                 '--with-filename',
                 '--column',
@@ -174,7 +172,7 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
         logger.error(`pattern: ${importStatementRegexp.replaceAll('/', '\\/')}`);
         logger.error(`command: ${error.escapedCommand}`);
         if (error.killed) {
-            logger.error(`killed search process ${searchProcessKey}`);
+            logger.error(`killed search process: ${searchProcessKey}`);
         }
         return [];
     } finally {

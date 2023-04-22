@@ -27,7 +27,8 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
         document: TextDocument,
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
-        // lazy import to improve startup speed
+        super.getCodeLenses(document, _token);
+
         const { globby } = await import('globby');
         const { Parser } = await import('yaml');
 

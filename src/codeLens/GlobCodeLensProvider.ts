@@ -12,10 +12,17 @@ export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
     protected _codeLensDataMap: Map<CodeLens, CodeLensData> = new Map();
     protected _negativePatterns: string[] = [];
 
-    protected _reset(document?: TextDocument) {
-        super._reset(document);
+    protected _reset() {
         this._negativePatterns = [];
         this._codeLensDataMap.clear();
+    }
+
+    async getCodeLenses(
+        _document: TextDocument,
+        _token: CancellationToken,
+    ): Promise<CodeLens[] | undefined> {
+        this._reset();
+        return [];
     }
 
     async resolveCodeLens(

@@ -1,6 +1,6 @@
 import { Uri, Position, Range, Location, commands, workspace } from 'vscode';
 
-import { goToLocations as goToLocation } from '../utils/editor';
+import { goToLocation } from '../utils/editor';
 import type { SearchImportsMatch } from '../utils/searchImports';
 
 function targetToLocation(target: string | SearchImportsMatch) {
