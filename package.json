@@ -100,9 +100,17 @@
                         "type": "boolean",
                         "default": true
                     },
+                    "package-manager-enhancer.pnpmWorkspaceCodeLens.titleFormat": {
+                        "type": "string",
+                        "default": "$(signedCount) matches"
+                    },
                     "package-manager-enhancer.enablePackageJsonFilesCodeLens": {
                         "type": "boolean",
                         "default": true
+                    },
+                    "package-manager-enhancer.packageJsonFilesCodeLens.titleFormat": {
+                        "type": "string",
+                        "default": "$(signedCount) matches"
                     },
                     "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": {
                         "type": "boolean",

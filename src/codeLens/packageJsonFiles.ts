@@ -193,4 +193,8 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
 
         return codeLensList;
     }
+
+    getTitleFormat(): string {
+        return configuration.packageJsonFilesCodeLens.titleFormat;
+    }
 }

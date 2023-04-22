@@ -133,4 +133,8 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
         });
         return codeLensList;
     }
+
+    getTitleFormat(): string {
+        return configuration.pnpmWorkspaceCodeLens.titleFormat;
+    }
 }

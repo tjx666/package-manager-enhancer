@@ -45,30 +45,30 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
-    // import('./codeLens/pnpmWorkspace').then((mod) => {
-    //     subscriptions.push(
-    //         vscode.languages.registerCodeLensProvider(
-    //             {
-    //                 language: 'yaml',
-    //                 pattern: '**/pnpm-workspace.yaml',
-    //             },
-    //             new mod.PnpmWorkspaceCodeLensProvider(context),
-    //         ),
-    //     );
-    // });
+    import('./codeLens/pnpmWorkspace').then((mod) => {
+        subscriptions.push(
+            vscode.languages.registerCodeLensProvider(
+                {
+                    language: 'yaml',
+                    pattern: '**/pnpm-workspace.yaml',
+                },
+                new mod.PnpmWorkspaceCodeLensProvider(context),
+            ),
+        );
+    });
 
     const pkgJsonSelector = {
         language: 'json',
         pattern: '**/package.json',
     };
-    // import('./codeLens/packageJsonFiles').then((mod) => {
-    //     subscriptions.push(
-    //         vscode.languages.registerCodeLensProvider(
-    //             pkgJsonSelector,
-    //             new mod.PackageJsonFilesCodeLensProvider(context),
-    //         ),
-    //     );
-    // });
+    import('./codeLens/packageJsonFiles').then((mod) => {
+        subscriptions.push(
+            vscode.languages.registerCodeLensProvider(
+                pkgJsonSelector,
+                new mod.PackageJsonFilesCodeLensProvider(context),
+            ),
+        );
+    });
 
     import('./codeLens/packageJsonDependencies').then((mod) => {
         subscriptions.push(
@@ -80,7 +80,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {
     logger.dispose();
 }

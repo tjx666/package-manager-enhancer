@@ -25,6 +25,8 @@ export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
         return [];
     }
 
+    abstract getTitleFormat(): string;
+
     async resolveCodeLens(
         codeLens: CodeLens,
         _token: CancellationToken,
@@ -33,17 +35,18 @@ export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
         if (!data) return;
 
         const referencedFiles = await data.getReferenceFilesPromise;
-        const packagesCount = referencedFiles.length;
-        const title = (data.type === 'exclude' ? '- ' : '') + packagesCount;
+        const count = referencedFiles.length;
+        const signedCount = (data.type === 'exclude' ? -1 : 1) * count;
+        const title = this.getTitleFormat()
+            .replaceAll('$(signedCount)', String(signedCount))
+            .replaceAll('$(count)', String(count));
 
-        return {
-            ...codeLens,
-            command: {
-                title,
-                command: 'package-manager-enhancer.showReferencesInPanel',
-                arguments: [this._document!.uri, data.position, referencedFiles],
-                tooltip: 'click to open the files in references panel',
-            },
+        codeLens.command = {
+            title,
+            command: 'package-manager-enhancer.showReferencesInPanel',
+            arguments: [this._document!.uri, data.position, referencedFiles],
+            tooltip: 'click to open the files in references panel',
         };
+        return codeLens;
     }
 }
