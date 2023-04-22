@@ -12,7 +12,7 @@ import type {
 export abstract class BaseCodeLensProvider implements CodeLensProvider {
     protected _document: TextDocument | undefined;
 
-    private _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
+    protected _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
     constructor(
@@ -44,7 +44,10 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
             context.subscriptions,
         );
         workspace.onDidChangeConfiguration(
-            (_e) => this._onDidChangeCodeLenses.fire(),
+            (_e) => {
+                this._reset();
+                this._onDidChangeCodeLenses.fire();
+            },
             null,
             context.subscriptions,
         );
@@ -67,7 +70,7 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
 
             return this.getCodeLenses(document, token);
         },
-        200,
+        100,
     );
 
     public async provideCodeLenses(

@@ -20,9 +20,14 @@ interface CodeLensData {
     searchImportsPromise: Promise<SearchImportsMatch[]>;
 }
 
+interface SearchCacheData {
+    status: 'searching' | 'done';
+    searchImportsPromise: Promise<SearchImportsMatch[]>;
+}
+
 export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvider {
     private _codeLensDataMap: Map<CodeLens, CodeLensData> = new Map();
-    private _searchCache: Map<string, Promise<SearchImportsMatch[]>> = new Map();
+    private _searchCache: Map<string, SearchCacheData> = new Map();
 
     constructor(context: ExtensionContext) {
         super(context, async (document: TextDocument) => {
@@ -108,16 +113,27 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             const importsCodeLens = new CodeLens(dep.range);
             let searchImportsPromise: Promise<SearchImportsMatch[]>;
             if (this._searchCache.has(dep.name)) {
-                searchImportsPromise = this._searchCache.get(dep.name)!;
+                searchImportsPromise = this._searchCache.get(dep.name)!.searchImportsPromise;
             } else {
+                const cacheData: SearchCacheData = {
+                    status: 'searching',
+                    searchImportsPromise: undefined as unknown as Promise<SearchImportsMatch[]>,
+                };
                 searchImportsPromise = searchImportDepFiles(
                     dep.name,
                     dirname(this._document!.uri.fsPath),
-                ).catch((error) => {
-                    this._searchCache.delete(dep.name);
-                    throw error;
-                });
-                this._searchCache.set(dep.name, searchImportsPromise);
+                )
+                    .then((matches) => {
+                        cacheData.status = 'done';
+                        this._onDidChangeCodeLenses.fire();
+                        return matches;
+                    })
+                    .catch((error) => {
+                        this._searchCache.delete(dep.name);
+                        throw error;
+                    });
+                cacheData.searchImportsPromise = searchImportsPromise;
+                this._searchCache.set(dep.name, cacheData);
             }
             this._codeLensDataMap.set(importsCodeLens, {
                 type: 'imports',
@@ -135,7 +151,16 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
         _token: CancellationToken,
     ): Promise<CodeLens | undefined> {
         const data = this._codeLensDataMap.get(codeLens);
-        if (!data) return;
+        if (!data) return codeLens;
+
+        if (this._searchCache.get(data.depName)!.status === 'searching') {
+            codeLens.command = {
+                title: 'searching imports...',
+                command: '',
+                tooltip: 'When you see this, means search imports costs long time',
+            };
+            return codeLens;
+        }
 
         const matches = await data.searchImportsPromise;
         const typeImportsCount = matches.filter((match) => match.isTypeImport).length;
@@ -157,14 +182,12 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             args = [this._document!.uri, data.position, matches];
         }
 
-        return {
-            ...codeLens,
-            command: {
-                title,
-                command,
-                arguments: args,
-                tooltip,
-            },
+        codeLens.command = {
+            title,
+            command,
+            arguments: args,
+            tooltip,
         };
+        return codeLens;
     }
 }
