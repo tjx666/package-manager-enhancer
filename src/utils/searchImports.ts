@@ -1,10 +1,12 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
+import { cpus } from 'node:os';
 import { resolve } from 'node:path';
 
 import escape from 'escape-string-regexp';
 import type { ExecaChildProcess } from 'execa';
 import { execa } from 'execa';
+import PQueue from 'p-queue';
 import vscode from 'vscode';
 
 import { pathExists } from './fs';
@@ -90,9 +92,16 @@ function parseSearchResultLine(
     return undefined;
 }
 
+const cpuCount = cpus().length;
+// leave 1/3 cpus to vscode renderer
+const rgConcurrentThreadsCount = Math.max(2, Math.ceil(cpuCount * (2 / 3)));
+const queue = new PQueue({
+    concurrency: rgConcurrentThreadsCount,
+});
+
 const atTypesLiteral = '@types';
 const searchPrecessMap = new Map<string, ExecaChildProcess<string>>();
-export async function searchImportDepFiles(dep: string, cwd: string) {
+async function _searchImportDepFiles(dep: string, cwd: string) {
     const storageDir = store.storageDir!;
     if (!(await pathExists(storageDir))) {
         await fs.mkdir(storageDir);
@@ -128,6 +137,8 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
                 '--no-config',
                 '--multiline',
                 '--case-sensitive',
+                '--threads',
+                `${rgConcurrentThreadsCount}`,
                 // Don't print lines longer than this limit in bytes. Longer lines are omitted,
                 // and only the number of matches in that line is printed.
                 '--max-columns',
@@ -179,4 +190,8 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
         searchPrecessMap.delete(searchProcessKey);
         await fs.unlink(patternFile);
     }
+}
+
+export async function searchImportDepFiles(dep: string, cwd: string) {
+    return queue.add(() => _searchImportDepFiles(dep, cwd)) as Promise<SearchImportsMatch[]>;
 }

@@ -38,8 +38,10 @@ export abstract class GlobCodeLensProvider extends BaseCodeLensProvider {
         const count = referencedFiles.length;
         const signedCount = (data.type === 'exclude' ? -1 : 1) * count;
         const title = this.getTitleFormat()
-            .replaceAll('$(signedCount)', String(signedCount))
-            .replaceAll('$(count)', String(count));
+            // eslint-disable-next-line no-template-curly-in-string
+            .replaceAll('${signedCount}', String(signedCount))
+            // eslint-disable-next-line no-template-curly-in-string
+            .replaceAll('${count}', String(count));
 
         codeLens.command = {
             title,
