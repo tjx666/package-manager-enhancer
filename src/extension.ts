@@ -1,5 +1,8 @@
 import vscode from 'vscode';
 
+import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonDependencies';
+import { PackageJsonFilesCodeLensProvider } from './codeLens/packageJsonFiles';
+import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
@@ -43,39 +46,27 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
-    import('./codeLens/pnpmWorkspace').then((mod) => {
-        subscriptions.push(
-            vscode.languages.registerCodeLensProvider(
-                {
-                    language: 'yaml',
-                    pattern: '**/pnpm-workspace.yaml',
-                },
-                new mod.PnpmWorkspaceCodeLensProvider(context),
-            ),
-        );
-    });
-
     const pkgJsonSelector = {
         language: 'json',
         pattern: '**/package.json',
     };
-    import('./codeLens/packageJsonFiles').then((mod) => {
-        subscriptions.push(
-            vscode.languages.registerCodeLensProvider(
-                pkgJsonSelector,
-                new mod.PackageJsonFilesCodeLensProvider(context),
-            ),
-        );
-    });
-
-    import('./codeLens/packageJsonDependencies').then((mod) => {
-        subscriptions.push(
-            vscode.languages.registerCodeLensProvider(
-                pkgJsonSelector,
-                new mod.PackageJsonDependenciesCodeLensProvider(context),
-            ),
-        );
-    });
+    subscriptions.push(
+        vscode.languages.registerCodeLensProvider(
+            {
+                language: 'yaml',
+                pattern: '**/pnpm-workspace.yaml',
+            },
+            new PnpmWorkspaceCodeLensProvider(context),
+        ),
+        vscode.languages.registerCodeLensProvider(
+            pkgJsonSelector,
+            new PackageJsonFilesCodeLensProvider(context),
+        ),
+        vscode.languages.registerCodeLensProvider(
+            pkgJsonSelector,
+            new PackageJsonDependenciesCodeLensProvider(context),
+        ),
+    );
 }
 
 export function deactivate() {

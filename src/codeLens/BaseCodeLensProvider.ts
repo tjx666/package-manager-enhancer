@@ -1,4 +1,4 @@
-import throttle from 'lodash-es/throttle';
+import { debounce, throttle } from 'lodash-es';
 import { EventEmitter, workspace, window } from 'vscode';
 import type {
     CancellationToken,
@@ -26,11 +26,18 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
             }
         });
         workspace.onDidChangeTextDocument(
-            (e) => {
-                if (e.document === this._document) {
-                    this._onDidChangeCodeLenses.fire();
-                }
-            },
+            debounce(
+                (e) => {
+                    if (e.document === this._document) {
+                        this._onDidChangeCodeLenses.fire();
+                    }
+                },
+                500,
+                {
+                    leading: true,
+                    trailing: true,
+                },
+            ),
             null,
             context.subscriptions,
         );
@@ -44,10 +51,17 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
             context.subscriptions,
         );
         workspace.onDidChangeConfiguration(
-            (_e) => {
-                this._reset();
-                this._onDidChangeCodeLenses.fire();
-            },
+            debounce(
+                (_e) => {
+                    this._reset();
+                    this._onDidChangeCodeLenses.fire();
+                },
+                1000,
+                {
+                    leading: true,
+                    trailing: true,
+                },
+            ),
             null,
             context.subscriptions,
         );
@@ -70,7 +84,11 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
 
             return this.getCodeLenses(document, token);
         },
-        100,
+        50,
+        {
+            leading: true,
+            trailing: true,
+        },
     );
 
     public async provideCodeLenses(
