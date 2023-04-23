@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.7.1 - 2023-04-23
+
+### Change
+
+- optimize debounce and throttle
+
 ## 0.7.0 - 2023-04-22
 
 ### Added

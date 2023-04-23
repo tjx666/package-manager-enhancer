@@ -46,11 +46,11 @@ settings:
 
 ![package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-dependencies-codelens.png?raw=true)
 
-you can use editor tab context menu to toggle it:
+You can click editor title icon toggle it:
 
 ![toggle package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/toggle-package-json-dependencies-codelens.png?raw=true)
 
-extra related settings:
+settings:
 
 ```jsonc
 {
