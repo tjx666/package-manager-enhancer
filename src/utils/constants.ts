@@ -4,6 +4,7 @@ const commandsArray = [
     'showReferencesInPanel',
     'showPackageJsonDependenciesCodeLens',
     'hidePackageJsonDependenciesCodeLens',
+    'runNpmScriptBackground',
 ] as const;
 
 type CommandsArrayUnion = (typeof commandsArray)[number];
