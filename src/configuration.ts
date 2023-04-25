@@ -28,29 +28,30 @@ export async function updateConfiguration() {
 
     configuration.enableLogInfo = extensionConfig.get('enableLogInfo')!;
 
-    configuration.enablePnpmWorkspaceCodeLens = extensionConfig.get('enablePnpmWorkspaceCodeLens')!;
-    configuration.pnpmWorkspaceCodeLens = extensionConfig.get(
-        'pnpmWorkspaceCodeLens',
-    ) as Configuration['pnpmWorkspaceCodeLens'];
+    configuration.enablePnpmWorkspaceCodeLens = extensionConfig.get<boolean>(
+        'enablePnpmWorkspaceCodeLens',
+    )!;
+    configuration.pnpmWorkspaceCodeLens =
+        extensionConfig.get<Configuration['pnpmWorkspaceCodeLens']>('pnpmWorkspaceCodeLens')!;
 
-    configuration.enablePackageJsonFilesCodeLens = extensionConfig.get(
+    configuration.enablePackageJsonFilesCodeLens = extensionConfig.get<boolean>(
         'enablePackageJsonFilesCodeLens',
     )!;
-    configuration.packageJsonFilesCodeLens = extensionConfig.get(
-        'packageJsonFilesCodeLens',
-    ) as Configuration['packageJsonFilesCodeLens'];
+    configuration.packageJsonFilesCodeLens = extensionConfig.get<
+        Configuration['packageJsonFilesCodeLens']
+    >('packageJsonFilesCodeLens')!;
 
-    configuration.enablePackageJsonDependenciesCodeLens = extensionConfig.get(
+    configuration.enablePackageJsonDependenciesCodeLens = extensionConfig.get<boolean>(
         'enablePackageJsonDependenciesCodeLens',
     )!;
+    configuration.packageJsonDependenciesCodeLens = extensionConfig.get<
+        Configuration['packageJsonDependenciesCodeLens']
+    >('packageJsonDependenciesCodeLens')!;
     await vscode.commands.executeCommand(
         'setContext',
         `${extensionName}.enablePackageJsonDependenciesCodeLens`,
         configuration.enablePackageJsonDependenciesCodeLens,
     );
-    configuration.packageJsonDependenciesCodeLens = extensionConfig.get(
-        'packageJsonDependenciesCodeLens',
-    ) as Configuration['packageJsonDependenciesCodeLens'];
 }
 updateConfiguration();
 
@@ -58,7 +59,9 @@ type CfgToCfgKeys<T extends object, ParentPath extends string> = {
     [P in keyof T]: T[P] extends object
         ? T[P] extends string[]
             ? `${ParentPath}${P & string}`
-            : CfgToCfgKeys<T[P], `${ParentPath}${P & string}`>
+            : CfgToCfgKeys<T[P], `${ParentPath}${P & string}`> & {
+                  _key: `${ParentPath}${P & string}`;
+              }
         : `${ParentPath}${P & string}`;
 };
 type ConfigurationKeys = CfgToCfgKeys<Configuration, typeof extensionName>;
@@ -67,7 +70,9 @@ function setupKeys(cfg: Record<string, any>, cfgKeys: Record<string, any>, paren
         const newParentPath = `${parentKeyPath}${parentKeyPath === '' ? '' : '.'}${key}`;
 
         if (value !== null && typeof value === 'object') {
-            const subObject = {};
+            const subObject = {
+                _key: newParentPath,
+            };
             cfgKeys[newParentPath] = subObject;
             setupKeys(value, subObject, newParentPath);
         } else {

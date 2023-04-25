@@ -6,13 +6,21 @@ import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
-import { commands } from './utils/constants';
+import { extensionName, commands } from './utils/constants';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {
     const { storageUri, subscriptions } = context;
     store.storageDir = storageUri!.fsPath;
-    vscode.workspace.onDidChangeConfiguration(updateConfiguration, null, subscriptions);
+    vscode.workspace.onDidChangeConfiguration(
+        async (event) => {
+            if (event.affectsConfiguration(extensionName)) {
+                await updateConfiguration();
+            }
+        },
+        null,
+        subscriptions,
+    );
 
     const registerCommand = (
         command: Command,

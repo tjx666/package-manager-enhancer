@@ -5,7 +5,7 @@ import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { window, Range, CodeLens } from 'vscode';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
-import { configuration } from '../configuration';
+import { configuration, configurationKeys } from '../configuration';
 import { pathExists } from '../utils/fs';
 
 const filesLiteral = 'files';
@@ -36,7 +36,13 @@ const defaultIgnoredPatterns = [
 
 export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
     constructor(context: ExtensionContext) {
-        super(context, () => configuration.enablePackageJsonFilesCodeLens);
+        super(
+            context,
+            () => configuration.enablePackageJsonFilesCodeLens,
+            (e) =>
+                e.affectsConfiguration(configurationKeys.enablePackageJsonFilesCodeLens) ||
+                e.affectsConfiguration(configurationKeys.packageJsonFilesCodeLens._key),
+        );
     }
 
     async getCodeLenses(

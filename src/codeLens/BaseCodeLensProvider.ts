@@ -7,6 +7,7 @@ import type {
     CodeLens,
     TextDocument,
     ExtensionContext,
+    ConfigurationChangeEvent,
 } from 'vscode';
 
 export abstract class BaseCodeLensProvider implements CodeLensProvider {
@@ -18,6 +19,7 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
     constructor(
         context: ExtensionContext,
         private getEnable: (document: TextDocument) => boolean | Promise<boolean>,
+        private checkConfigChange: (event: ConfigurationChangeEvent) => boolean,
     ) {
         window.onDidChangeActiveTextEditor((e) => {
             if (e?.document === this._document) {
@@ -52,9 +54,11 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
         );
         workspace.onDidChangeConfiguration(
             debounce(
-                (_e) => {
-                    this._reset();
-                    this._onDidChangeCodeLenses.fire();
+                (e) => {
+                    if (this.checkConfigChange(e)) {
+                        this._reset();
+                        this._onDidChangeCodeLenses.fire();
+                    }
                 },
                 1000,
                 {

@@ -5,7 +5,7 @@ import type { CancellationToken, ExtensionContext, Position, TextDocument } from
 import { workspace, CodeLens, window, Range } from 'vscode';
 
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
-import { configuration } from '../configuration';
+import { configuration, configurationKeys } from '../configuration';
 import { commands } from '../utils/constants';
 import type { SearchImportsMatch } from '../utils/searchImports';
 
@@ -31,25 +31,31 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
     private _searchCache: Map<string, SearchCacheData> = new Map();
 
     constructor(context: ExtensionContext) {
-        super(context, async (document: TextDocument) => {
-            const isIgnored = async () => {
-                if (configuration.packageJsonDependenciesCodeLens.ignorePatterns.length === 0)
-                    return false;
+        super(
+            context,
+            async (document: TextDocument) => {
+                const isIgnored = async () => {
+                    if (configuration.packageJsonDependenciesCodeLens.ignorePatterns.length === 0)
+                        return false;
 
-                const { default: micromatch } = await import('micromatch');
-                return (
-                    micromatch(
-                        [document.uri.fsPath],
-                        configuration.packageJsonDependenciesCodeLens.ignorePatterns,
-                        {
-                            cwd: workspace.getWorkspaceFolder(document.uri)?.uri.fsPath,
-                        },
-                    ).length === 0
-                );
-            };
+                    const { default: micromatch } = await import('micromatch');
+                    return (
+                        micromatch(
+                            [document.uri.fsPath],
+                            configuration.packageJsonDependenciesCodeLens.ignorePatterns,
+                            {
+                                cwd: workspace.getWorkspaceFolder(document.uri)?.uri.fsPath,
+                            },
+                        ).length === 0
+                    );
+                };
 
-            return configuration.enablePackageJsonDependenciesCodeLens && !(await isIgnored());
-        });
+                return configuration.enablePackageJsonDependenciesCodeLens && !(await isIgnored());
+            },
+            (e) =>
+                e.affectsConfiguration(configurationKeys.enablePackageJsonDependenciesCodeLens) ||
+                e.affectsConfiguration(configurationKeys.packageJsonDependenciesCodeLens._key),
+        );
     }
 
     protected _reset() {

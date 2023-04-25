@@ -4,7 +4,7 @@ import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { window, CodeLens, Range } from 'vscode';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
-import { configuration } from '../configuration';
+import { configuration, configurationKeys } from '../configuration';
 
 const packagesLiteral = 'packages';
 const defaultIgnoredPatterns = ['!**/node_modules'];
@@ -20,7 +20,13 @@ function sourceToString(source: string) {
 
 export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
     constructor(context: ExtensionContext) {
-        super(context, () => configuration.enablePnpmWorkspaceCodeLens);
+        super(
+            context,
+            () => configuration.enablePnpmWorkspaceCodeLens,
+            (e) =>
+                e.affectsConfiguration(configurationKeys.enablePnpmWorkspaceCodeLens) ||
+                e.affectsConfiguration(configurationKeys.pnpmWorkspaceCodeLens._key),
+        );
     }
 
     async getCodeLenses(
