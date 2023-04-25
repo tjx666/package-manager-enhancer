@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.8.1 - 2023-04-26
+
+### Changed
+
+- refactor: ignore parse ast error
+
 ## 0.8.0 - 2023-04-26
 
 ### Added
