@@ -1,7 +1,7 @@
 import path, { dirname } from 'node:path';
 
 import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
-import { window, CodeLens, Range } from 'vscode';
+import { CodeLens, Range } from 'vscode';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 import { configuration, configurationKeys } from '../configuration';
@@ -49,9 +49,7 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
                     break;
                 }
             }
-        } catch (error) {
-            console.error(error);
-            window.showErrorMessage('parse pnpm-workspace.yaml failed!');
+        } catch {
             return;
         }
         if (!yamlDoc) return;

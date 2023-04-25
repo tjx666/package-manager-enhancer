@@ -2,7 +2,7 @@ import { dirname, resolve } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
 import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
-import { window, Range, CodeLens } from 'vscode';
+import { Range, CodeLens } from 'vscode';
 
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 import { configuration, configurationKeys } from '../configuration';
@@ -60,9 +60,7 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
         try {
             // jsonc has builtin cache
             root = parseTree(packageJson);
-        } catch (error) {
-            console.error(error);
-            window.showErrorMessage(`parse ${filePath} failed!`);
+        } catch {
             return;
         }
 

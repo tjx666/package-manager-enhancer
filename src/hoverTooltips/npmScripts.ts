@@ -2,7 +2,7 @@ import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
 import type { CancellationToken, HoverProvider, Position, TextDocument } from 'vscode';
-import { Range, MarkdownString, Hover, window } from 'vscode';
+import { Range, MarkdownString, Hover } from 'vscode';
 
 import { commands } from '../utils/constants';
 
@@ -19,9 +19,8 @@ export class NpmScriptsHoverProvider implements HoverProvider {
         let root: Node | undefined;
         try {
             root = parseTree(packageJson);
-        } catch (error) {
-            console.error(error);
-            window.showErrorMessage(`parse ${filePath} failed!`);
+        } catch {
+            return;
         }
         if (!root) return;
 
@@ -48,11 +47,11 @@ export class NpmScriptsHoverProvider implements HoverProvider {
         const markdownStr = new MarkdownString(link);
         markdownStr.isTrusted = true;
         markdownStr.supportHtml = true;
+
         const range = new Range(
             document.positionAt(scriptNameNode.offset),
             document.positionAt(scriptNameNode.offset + scriptName.length),
         );
-        const hover = new Hover(markdownStr, range);
-        return hover;
+        return new Hover(markdownStr, range);
     }
 }
