@@ -218,6 +218,7 @@
         "prepare": "simple-git-hooks"
     },
     "dependencies": {
+        "detect-package-manager": "^2.0.1",
         "escape-string-regexp": "^5.0.0",
         "execa": "^7.1.1",
         "globby": "^13.1.4",

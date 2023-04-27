@@ -1,4 +1,7 @@
-import { ShellExecution, Task, TaskScope, tasks } from 'vscode';
+import { basename, dirname, resolve } from 'node:path';
+
+import { detect } from 'detect-package-manager';
+import { ShellExecution, Task, Uri, tasks, workspace } from 'vscode';
 
 interface Args {
     scriptName: string;
@@ -6,17 +9,36 @@ interface Args {
     cwd: string;
 }
 
+async function detectPm(folder: Uri) {
+    const packageManagerName = workspace
+        .getConfiguration('npm', folder)
+        .get<string>('packageManager', 'npm');
+    if (packageManagerName !== 'auto') return packageManagerName;
+    return detect({ cwd: folder.fsPath });
+}
+
 export async function runNpmScriptBackground(args: Args) {
-    const shellExecution = new ShellExecution(args.script, {
-        cwd: args.cwd,
-    });
+    const workspaceFolder = workspace.getWorkspaceFolder(
+        Uri.file(resolve(args.cwd, 'package.json')),
+    );
+    if (!workspaceFolder) return;
+
+    const pm = await detectPm(workspaceFolder.uri);
+    const shellExecution = new ShellExecution(pm, ['run', args.scriptName], { cwd: args.cwd });
+
+    const taskNameFolder =
+        args.cwd === workspaceFolder.uri.fsPath
+            ? ''
+            : ` - ${basename(dirname(args.cwd))}/${basename(args.cwd)}`;
     const backgroundTask = new Task(
-        { type: 'shell' },
-        TaskScope.Workspace,
+        { type: 'npm', script: args.scriptName },
+        workspaceFolder,
+        // dev-app/design
+        `${args.scriptName}${taskNameFolder}`,
         'npm',
-        args.scriptName,
         shellExecution,
     );
     backgroundTask.isBackground = true;
+    backgroundTask.detail = args.script;
     return tasks.executeTask(backgroundTask);
 }

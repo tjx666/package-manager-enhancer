@@ -1,3 +1,4 @@
+import type { DocumentSelector } from 'vscode';
 import vscode from 'vscode';
 
 import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonDependencies';
@@ -61,14 +62,16 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
-    const pkgJsonSelector = {
+    const pkgJsonSelector: DocumentSelector = {
         language: 'json',
+        scheme: 'file',
         pattern: '**/package.json',
     };
     subscriptions.push(
         vscode.languages.registerCodeLensProvider(
             {
                 language: 'yaml',
+                scheme: 'file',
                 pattern: '**/pnpm-workspace.yaml',
             },
             new PnpmWorkspaceCodeLensProvider(context),

@@ -42,12 +42,10 @@ export class NpmScriptsHoverProvider implements HoverProvider {
                 cwd: dirname(filePath),
             }),
         );
-        const commandUrl = `command:${commands.runNpmScriptBackground}?${args}`;
-        const link = `<a title="${script}" href="${commandUrl}">Run Background</a>`;
+        const commandUrl = `command:${commands.runNpmScriptBackground}?${args} "Run the script as a background task"`;
+        const link = `[Run Background](${commandUrl})`;
         const markdownStr = new MarkdownString(link);
         markdownStr.isTrusted = true;
-        markdownStr.supportHtml = true;
-
         const range = new Range(
             document.positionAt(scriptNameNode.offset),
             document.positionAt(scriptNameNode.offset + scriptName.length),
