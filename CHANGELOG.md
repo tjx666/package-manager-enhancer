@@ -1,5 +1,15 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.8.2 - 2023-04-27
+
+### Fixed
+
+- name and packageManager of run script background
+
+### Changed
+
+- update yaml
+
 ## 0.8.1 - 2023-04-26
 
 ### Changed

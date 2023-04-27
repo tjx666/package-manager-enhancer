@@ -109,6 +109,8 @@ settings:
 - [ ] `.npmrc` autocomplete
 - [ ] `pnpm-lock.yaml` dependency reference and go to definition
 - [ ] pnpm check deps stale
+- [ ] nvmrc version check
+- [ ] package.json packageManager, engine check
 
 ## My extensions
 
