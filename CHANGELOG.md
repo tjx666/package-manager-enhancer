@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.8.3 - 2023-04-28
+
+### Changed
+
+- perf: optimize rg search cpu costs
+
 ## 0.8.2 - 2023-04-27
 
 ### Fixed
