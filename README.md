@@ -111,6 +111,8 @@ settings:
 - [ ] pnpm check deps stale
 - [ ] nvmrc version check
 - [ ] package.json packageManager, engine check
+- [ ] npm scripts run in terminal
+- [ ] package references in pnpm workspace
 
 ## My extensions
 
