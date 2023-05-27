@@ -65,7 +65,10 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
             pattern: string;
         }> = [];
         for (const globNode of packagesNode.value.items) {
-            if (globNode.value.type !== 'single-quoted-scalar') continue;
+            const validNode =
+                globNode.value?.type === 'single-quoted-scalar' ||
+                globNode.value?.type === 'scalar';
+            if (!validNode) continue;
 
             const glob = sourceToString(globNode.value.source);
             if (glob.startsWith('!')) {
