@@ -98,21 +98,19 @@ settings:
 
 ![Npm Script Run Background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
 
+## Known Issues
+
+- <https://github.com/sindresorhus/globby/issues/147>
+
 ## TODO
 
-- [x] `package.json` files property codeLens
-  - [x] support configure whether should include packaged files other than patterns
-- [x] `package.json` deps codeLens
-  - [x] support distinct import and import type
-  - [x] fix @types codeLens
-- [x] configurations
-- [ ] `.npmrc` autocomplete
-- [ ] `pnpm-lock.yaml` dependency reference and go to definition
-- [ ] pnpm check deps stale
-- [ ] nvmrc version check
-- [ ] package.json packageManager, engine check
-- [ ] npm scripts run in terminal
+- [ ] nvmrc version lens
+- [ ] package.json packageManager, engine version lens
+- [ ] npm scripts hover tooltip
+  - [ ] Run in Terminal
+  - [ ] Copy Shell Script
 - [ ] package references in pnpm workspace
+- [ ] `.npmrc` autocomplete
 
 ## My extensions
 
