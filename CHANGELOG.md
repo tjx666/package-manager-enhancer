@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.8.4 - 2023-05-27
+
+### Fixed
+
+- pnpm workspace codelens doesn't work when packages glob isn't quoted
+
 ## 0.8.3 - 2023-04-28
 
 ### Changed
