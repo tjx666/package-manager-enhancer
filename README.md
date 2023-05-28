@@ -98,10 +98,6 @@ settings:
 
 ![Npm Script Run Background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
 
-## Known Issues
-
-- <https://github.com/sindresorhus/globby/issues/147>
-
 ## TODO
 
 - [ ] nvmrc version lens
