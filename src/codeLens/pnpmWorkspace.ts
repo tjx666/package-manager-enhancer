@@ -107,7 +107,12 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
                     const packageJSONGlob = `${pattern}${slash}package.json`;
                     patterns = [packageJSONGlob, ...defaultIgnoredPatterns];
                 }
-                matchedPackages = await globby(patterns, { cwd });
+                matchedPackages = await globby(patterns, {
+                    cwd,
+                    onlyFiles: true,
+                    gitignore: true,
+                    followSymbolicLinks: false,
+                });
                 return matchedPackages.map((pkg) => {
                     const absPath = path.resolve(cwd, pkg);
                     if (!item.isNegated) {

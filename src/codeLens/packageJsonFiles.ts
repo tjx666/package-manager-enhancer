@@ -111,9 +111,12 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
                 const relativeFiles = await globby([...patterns, ...defaultIgnoredPatterns], {
                     cwd,
                     dot: true,
+                    onlyFiles: true,
+                    followSymbolicLinks: false,
+                    // any top level .gitignore and .npmignore will be ignore, but nest will be used
                     // https://github.com/npm/npm-packlist#interaction-between-packagejson-and-npmignore-rules
                     gitignore: false,
-                    ignoreFiles: ['*/**/.npmignore'],
+                    ignoreFiles: ['*/**/.npmignore, */**/.gitignore'],
                 });
                 return relativeFiles.map((file) => {
                     const absFile = resolve(cwd, file);
