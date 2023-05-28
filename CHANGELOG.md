@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.8.5 - 2023-05-28
+
+### Changed
+
+- perf: glob search disable followSymbolicLinks
+
 ## 0.8.4 - 2023-05-27
 
 ### Fixed
