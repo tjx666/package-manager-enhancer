@@ -13,6 +13,7 @@ import type {
 export abstract class BaseCodeLensProvider implements CodeLensProvider {
     protected _document: TextDocument | undefined;
 
+    // eslint-disable-next-line unicorn/prefer-event-target
     protected _onDidChangeCodeLenses: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
@@ -21,12 +22,16 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
         private getEnable: (document: TextDocument) => boolean | Promise<boolean>,
         private checkConfigChange: (event: ConfigurationChangeEvent) => boolean,
     ) {
-        window.onDidChangeActiveTextEditor((e) => {
-            if (e?.document === this._document) {
-                this._reset();
-                this._onDidChangeCodeLenses.fire();
-            }
-        });
+        window.onDidChangeActiveTextEditor(
+            (e) => {
+                if (e?.document === this._document) {
+                    this._reset();
+                    this._onDidChangeCodeLenses.fire();
+                }
+            },
+            null,
+            context.subscriptions,
+        );
         workspace.onDidChangeTextDocument(
             debounce(
                 (e) => {
@@ -78,7 +83,7 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined>;
 
-    private _throttleHandleProvideCodeLens = throttle(
+    private _throttledHandleProvideCodeLens = throttle(
         async (document: TextDocument, token: CancellationToken) => {
             this._document = document;
 
@@ -99,6 +104,6 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
         document: TextDocument,
         token: CancellationToken,
     ): Promise<CodeLens[]> {
-        return (await this._throttleHandleProvideCodeLens(document, token)) ?? [];
+        return (await this._throttledHandleProvideCodeLens(document, token)) ?? [];
     }
 }
