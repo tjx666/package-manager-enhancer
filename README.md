@@ -105,7 +105,6 @@ settings:
 - [ ] npm scripts hover tooltip
   - [ ] Run in Terminal
   - [ ] Copy Shell Script
-- [ ] package references in pnpm workspace
 - [ ] `.npmrc` autocomplete
 
 ## My extensions

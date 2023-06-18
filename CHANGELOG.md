@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## 0.8.9 - 2023-06-18
+
+### Fixed
+
+- can't recognize import \*
+
 ## 0.8.7 - 2023-06-18
 
 ### Fixed
