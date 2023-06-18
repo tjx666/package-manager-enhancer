@@ -25,6 +25,7 @@ async function getRgPath() {
         'node_modules.asar.unpacked/@vscode/ripgrep/bin/',
     ];
     for (const dir of candidateDirs) {
+        // eslint-disable-next-line no-await-in-loop
         if (await pathExists(resolve(vscode.env.appRoot, dir, rgExe))) {
             return rgExe;
         }
@@ -43,7 +44,7 @@ function getImportStatementRegexp(dep: string) {
     // require ( 'lodash'   )
     const requireRegexp = `require\\s*\\(\\s*${modulePath}\\s*\\)\\s*;?`;
     // import { add } from 'lodash';
-    const importRegexp = `import\\s+(type\\s+)?[$_a-zA-Z\\d,\{\\\\}\\s]+\\s+from\\s+${modulePath}\\s*;?`;
+    const importRegexp = `import\\s+(type\\s+)?[$_a-zA-Z\\*\\d,\{\\\\}\\s]+\\s+from\\s+${modulePath}\\s*;?`;
     // import 'core-js/stable'
     const unassignedImportRegexp = `import\\s+${modulePath};?`;
     // await import ('lodash')

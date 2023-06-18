@@ -13,6 +13,7 @@
     "dependencies": {
         "lodash": "^4.17.21",
         "bbb": "233"  ,   
-        "vscode": "1.1.37"
+        "vscode": "1.1.37",
+        "execa": "^7.1.1"
     }
 }

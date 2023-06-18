@@ -11,6 +11,8 @@ import type {
     TextDocument,
     ExtensionContext,
 } from 'vscode';
+import * as 
+e from 'execa'
 
 
 console.log(lodash);
