@@ -36,7 +36,7 @@
     "main": "./out/extension.js",
     "icon": "assets/icons/logo.png",
     "engines": {
-        "vscode": "^1.79.1"
+        "vscode": "^1.80.0"
     },
     "badges": [
         {
