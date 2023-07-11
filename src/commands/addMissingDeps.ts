@@ -1,17 +1,19 @@
-import fs from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 import * as jsonc from 'jsonc-parser';
 import type { TextEditor } from 'vscode';
+import { Range } from 'vscode';
 
 import { searchUsedDeps } from '../utils/searchUsedDeps';
 
 export async function addMissingDeps(editor: TextEditor) {
-    const pkgJsonPath = editor.document.fileName;
+    const { document } = editor;
+
+    const pkgJsonPath = document.fileName;
     const cwd = dirname(pkgJsonPath);
     const missingDeps = await searchUsedDeps(cwd);
 
-    const pkgJson = editor.document.getText();
+    const pkgJson = document.getText();
     const root = jsonc.parseTree(pkgJson)!;
     const dependenciesNodePath = ['dependencies'];
     const dependenciesNode = jsonc.findNodeAtLocation(root, dependenciesNodePath);
@@ -39,7 +41,14 @@ export async function addMissingDeps(editor: TextEditor) {
             tabSize: editor.options.tabSize as number,
         },
     });
-    const newPkgJson = jsonc.applyEdits(pkgJson, edits);
 
-    await fs.writeFile(pkgJsonPath, newPkgJson, 'utf8');
+    return editor.edit((editBuilder) => {
+        for (const edit of edits) {
+            const range = new Range(
+                document.positionAt(edit.offset),
+                document.positionAt(edit.offset + edit.length),
+            );
+            editBuilder.replace(range, edit.content);
+        }
+    });
 }
