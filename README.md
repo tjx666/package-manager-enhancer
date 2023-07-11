@@ -98,6 +98,16 @@ settings:
 
 ![Npm Script Run Background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
 
+### Go to Symbol in Editor
+
+check issue: [Go to Symbol in Editor doesn't auto fill symbol which current cursor locate in editor](https://github.com/microsoft/vscode/issues/167223)
+
+### Add Missing Dependencies
+
+useful when you refactor code from one package to another new package.
+
+![Add Missing Dependencies](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/add-missing-deps.gif?raw=true)
+
 ## TODO
 
 - [ ] nvmrc version lens
