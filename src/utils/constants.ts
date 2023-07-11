@@ -5,6 +5,7 @@ const commandsArray = [
     'showPackageJsonDependenciesCodeLens',
     'hidePackageJsonDependenciesCodeLens',
     'runNpmScriptBackground',
+    'addMissingDeps',
 ] as const;
 
 type CommandsArrayUnion = (typeof commandsArray)[number];

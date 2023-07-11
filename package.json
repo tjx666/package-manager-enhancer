@@ -72,9 +72,19 @@
                     "light": "./assets/icons/dependencies-imports-toggle-active.png",
                     "dark": "./assets/icons/dependencies-imports-toggle-active.png"
                 }
+            },
+            {
+                "command": "package-manager-enhancer.addMissingDeps",
+                "title": "Add Missing Dependencies"
             }
         ],
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "package-manager-enhancer.addMissingDeps",
+                    "when": "resourceFilename === package.json"
+                }
+            ],
             "editor/title": [
                 {
                     "command": "package-manager-enhancer.showPackageJsonDependenciesCodeLens",
@@ -186,6 +196,9 @@
     },
     "eslintConfig": {
         "extends": "@yutengjing/eslint-config-typescript",
+        "rules": {
+            "unicorn/no-useless-undefined": "off"
+        },
         "ignorePatterns": [
             "test-workspace"
         ]
@@ -226,6 +239,7 @@
         "lodash-es": "^4.17.21",
         "micromatch": "^4.0.5",
         "p-queue": "^7.3.4",
+        "validate-npm-package-name": "^5.0.0",
         "yaml": "^2.3.1"
     },
     "devDependencies": {
@@ -234,6 +248,7 @@
         "@types/micromatch": "^4.0.2",
         "@types/mocha": "^10.0.1",
         "@types/node": "^18.16.19",
+        "@types/validate-npm-package-name": "^4.0.0",
         "@types/vscode": "^1.80.0",
         "@vscode/test-electron": "^2.3.3",
         "@vscode/vsce": "^2.19.0",

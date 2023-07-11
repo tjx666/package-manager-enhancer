@@ -113,7 +113,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             )
         ).flat();
 
-        const { searchImportDepFiles } = await import('../utils/searchImports');
+        const { searchImports } = await import('../utils/searchImports');
         return dependencies.map((dep) => {
             const importsCodeLens = new CodeLens(dep.range);
             let searchImportsPromise: Promise<SearchImportsMatch[]>;
@@ -124,10 +124,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
                     status: 'searching',
                     searchImportsPromise: undefined as unknown as Promise<SearchImportsMatch[]>,
                 };
-                searchImportsPromise = searchImportDepFiles(
-                    dep.name,
-                    dirname(this._document!.uri.fsPath),
-                )
+                searchImportsPromise = searchImports(dep.name, dirname(this._document!.uri.fsPath))
                     .then((matches) => {
                         cacheData.status = 'done';
                         this._onDidChangeCodeLenses.fire();

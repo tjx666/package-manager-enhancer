@@ -1,4 +1,4 @@
-import type { DocumentSelector } from 'vscode';
+import type { DocumentSelector, TextEditor } from 'vscode';
 import vscode from 'vscode';
 
 import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonDependencies';
@@ -34,6 +34,16 @@ export function activate(context: vscode.ExtensionContext) {
         return cmd;
     };
 
+    const registerTextEditorCommand = (
+        command: Command,
+        callback: (editor: TextEditor) => any,
+        thisArg?: any,
+    ) => {
+        const cmd = vscode.commands.registerTextEditorCommand(command, callback, thisArg);
+        context.subscriptions.push(cmd);
+        return cmd;
+    };
+
     registerCommand(commands.showReferencesInPanel, (...args: any[]) =>
         import('./commands/showReferencesInPanel').then((mod) =>
             (mod.showReferencesInPanel as any)(...args),
@@ -60,6 +70,10 @@ export function activate(context: vscode.ExtensionContext) {
         import('./commands/runNpmScriptBackground').then((mod) =>
             (mod.runNpmScriptBackground as any)(...args),
         ),
+    );
+
+    registerTextEditorCommand(commands.addMissingDeps, (editor) =>
+        import('./commands/addMissingDeps').then((mod) => mod.addMissingDeps(editor)),
     );
 
     const pkgJsonSelector: DocumentSelector = {

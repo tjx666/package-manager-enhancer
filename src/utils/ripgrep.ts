@@ -153,3 +153,18 @@ export async function searchByRg(regexpStr: string, cwd: string, options?: Parti
     }
     return _searchByRg(regexpStr, cwd, options);
 }
+
+const lineRegexp = /^(?<absPath>.*):(?<line>\d+):(?<column>\d+):(?<lineStr>.*)/;
+export function parseRgOutputLine(outputLine: string) {
+    const matchArray = outputLine.match(lineRegexp)!;
+    const groups = matchArray.groups!;
+    const { absPath, lineStr } = groups;
+    const line = Number.parseInt(groups.line, 10) - 1;
+    const column = Number.parseInt(groups.column, 10) - 1;
+    return {
+        absPath,
+        line,
+        column,
+        lineStr,
+    };
+}

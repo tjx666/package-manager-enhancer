@@ -1,6 +1,6 @@
 import escape from 'escape-string-regexp';
 
-import { searchByRg } from './ripgrep';
+import { parseRgOutputLine, searchByRg } from './ripgrep';
 
 function getImportStatementRegexp(dep: string) {
     const escapedDepName = escape(dep);
@@ -29,38 +29,30 @@ export interface SearchImportsMatch {
     isTypeImport: boolean;
 }
 
-const lineRegexp = /^(?<absPath>.*):(?<line>\d+):(?<column>\d+):(?<lineStr>.*)/;
-function parseSearchResultLine(
-    line: string,
+function parseLine(
+    outputLine: string,
     importRegexpStr: string,
     searchedDep: string,
 ): SearchImportsMatch | undefined {
-    const matchArray = line.match(lineRegexp);
-    if (matchArray && matchArray.groups) {
-        const { groups } = matchArray;
-        const { absPath, lineStr } = groups;
-        const line = Number.parseInt(groups.line, 10) - 1;
-        const column = Number.parseInt(groups.column, 10) - 1;
-        const importRegexp = new RegExp(`^${importRegexpStr}`);
-        const lineSource = lineStr.slice(column);
-        const importStatementMatch = lineSource.match(importRegexp);
-        const importStatement = importStatementMatch ? importStatementMatch[0] : lineSource;
-        return {
-            searchedDep,
-            absPath,
-            line,
-            column,
-            lineStr,
-            importStatement,
-            isTypeImport: /^import\s+type\s+/.test(importStatement),
-        };
-    }
-
-    return undefined;
+    const { absPath, line, column, lineStr } = parseRgOutputLine(outputLine);
+    // FIXME: cache
+    const importRegexp = new RegExp(`^${importRegexpStr}`);
+    const lineSource = lineStr.slice(column);
+    const importStatementMatch = lineSource.match(importRegexp);
+    const importStatement = importStatementMatch ? importStatementMatch[0] : lineSource;
+    return {
+        searchedDep,
+        absPath,
+        line,
+        column,
+        lineStr,
+        importStatement,
+        isTypeImport: /^import\s+type\s+/.test(importStatement),
+    };
 }
 
 const atTypesLiteral = '@types';
-export async function searchImportDepFiles(dep: string, cwd: string) {
+export async function searchImports(dep: string, cwd: string) {
     // @types/xxx should find xxx
     if (dep.startsWith(atTypesLiteral)) {
         dep = dep.slice(atTypesLiteral.length + 1);
@@ -68,6 +60,6 @@ export async function searchImportDepFiles(dep: string, cwd: string) {
     const importStatementRegexp = getImportStatementRegexp(dep);
     const lines = await searchByRg(importStatementRegexp, cwd, { heavy: true });
     return lines
-        .map((line) => parseSearchResultLine(line, importStatementRegexp, dep))
+        .map((line) => parseLine(line, importStatementRegexp, dep))
         .filter(Boolean) as SearchImportsMatch[];
 }
