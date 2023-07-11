@@ -1,16 +1,17 @@
 import escape from 'escape-string-regexp';
+import { memoize } from 'lodash-es';
 
 import { parseRgOutputLine, searchByRg } from './ripgrep';
 
-function getImportStatementRegexp(dep: string) {
+function _getImportStatementRegexp(dep: string) {
     const escapedDepName = escape(dep);
     // import(/* webpackChunkName: "heic2any" */ 'heic2any');
-    const magicComment = `(/\\*\\s*webpackChunkName:\\s*['"][a-zA-Z\\d\\-_.]+['"]\\s*\\*/)`;
-    const modulePath = `${magicComment}?\\s*['"]${escapedDepName}(/[a-zA-Z\\d\\-_.]+)*(\\?\\S*)?['"]`;
+    const magicComment = `(?:/\\*\\s*webpackChunkName:\\s*['"][a-zA-Z\\d\\-_.]+['"]\\s*\\*/)`;
+    const modulePath = `${magicComment}?\\s*['"]${escapedDepName}(?:/[a-zA-Z\\d\\-_.]+)*(?:\\?\\S*)?['"]`;
     // require ( 'lodash'   )
     const requireRegexp = `require\\s*\\(\\s*${modulePath}\\s*\\)\\s*;?`;
     // import { add } from 'lodash';
-    const importRegexp = `import\\s+(type\\s+)?[$_a-zA-Z\\*\\d,\{\\\\}\\s]+\\s+from\\s+${modulePath}\\s*;?`;
+    const importRegexp = `import\\s+(?:type\\s+)?[$_a-zA-Z\\*\\d,\{\\\\}\\s]+\\s+from\\s+${modulePath}\\s*;?`;
     // import 'core-js/stable'
     const unassignedImportRegexp = `import\\s+${modulePath};?`;
     // await import ('lodash')
@@ -18,6 +19,7 @@ function getImportStatementRegexp(dep: string) {
     const dynamicImportRegexp = `import\\s*\\(${modulePath}\\)\\s*;?`;
     return [requireRegexp, importRegexp, unassignedImportRegexp, dynamicImportRegexp].join('|');
 }
+const getImportStatementRegexp = memoize(_getImportStatementRegexp);
 
 export interface SearchImportsMatch {
     searchedDep: string;
@@ -29,7 +31,7 @@ export interface SearchImportsMatch {
     isTypeImport: boolean;
 }
 
-function parseLine(
+function parseImportFromLine(
     outputLine: string,
     importRegexpStr: string,
     searchedDep: string,
@@ -60,6 +62,6 @@ export async function searchImports(dep: string, cwd: string) {
     const importStatementRegexp = getImportStatementRegexp(dep);
     const lines = await searchByRg(importStatementRegexp, cwd, { heavy: true });
     return lines
-        .map((line) => parseLine(line, importStatementRegexp, dep))
+        .map((line) => parseImportFromLine(line, importStatementRegexp, dep))
         .filter(Boolean) as SearchImportsMatch[];
 }
