@@ -254,7 +254,7 @@
         "@vscode/vsce": "^2.19.0",
         "@yutengjing/eslint-config-typescript": "^0.4.2",
         "@yutengjing/prettier-config": "^0.0.1",
-        "@yutengjing/release": "^0.0.10",
+        "@yutengjing/release": "^0.1.0",
         "esbuild": "^0.18.11",
         "esbuild-visualizer": "^0.4.1",
         "eslint": "^8.44.0",
