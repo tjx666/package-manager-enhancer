@@ -4,6 +4,7 @@ import * as jsonc from 'jsonc-parser';
 import type { TextEditor } from 'vscode';
 import { Range } from 'vscode';
 
+import { getPackageInfo } from '../utils/package';
 import { searchUsedDeps } from '../utils/searchUsedDeps';
 
 export async function addMissingDeps(editor: TextEditor) {
@@ -34,6 +35,19 @@ export async function addMissingDeps(editor: TextEditor) {
     for (const key of Object.keys(dependencies).sort()) {
         newDependencies[key] = dependencies[key];
     }
+
+    const getVersionPromises = Object.keys(newDependencies).map(async (packageName) => {
+        const properties = ['version'] as const;
+        const version = await getPackageInfo<string, typeof properties>(
+            packageName,
+            properties,
+            cwd,
+        );
+        if (version) {
+            newDependencies[packageName] = version;
+        }
+    });
+    await Promise.all(getVersionPromises);
 
     // keep origin json format
     const edits = jsonc.modify(pkgJson, dependenciesNodePath, newDependencies, {
