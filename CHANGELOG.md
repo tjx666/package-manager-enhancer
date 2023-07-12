@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.10.0 (2023-07-13)
+
+### 🚀 Features
+
+- Support add version when add missing deps ([1faf183](https://github.com/tjx666/package-manager-enhancer/commit/1faf183))
+
+### ❤️ Contributors
+
+- YuTengjing ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.9.2...v0.10.0 '2023-07-13')
+
 ## v0.9.2 (2023-07-12)
 
 [compare changes](https://github.com/tjx666/package-manager-enhancer/compare/v0.9.1...v0.9.2 '2023-07-12')
