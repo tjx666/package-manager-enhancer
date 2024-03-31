@@ -21,6 +21,7 @@ interface Configuration {
         ignorePatterns: string[];
     };
     enablePackageJsonVersionCodeLens: boolean;
+    enableNodeVersionCodeLens: boolean;
 }
 
 export const configuration: Configuration = {} as Configuration;
@@ -56,6 +57,9 @@ export async function updateConfiguration() {
 
     configuration.enablePackageJsonVersionCodeLens = extensionConfig.get<boolean>(
         'enablePackageJsonVersionCodeLens',
+    )!;
+    configuration.enableNodeVersionCodeLens = extensionConfig.get<boolean>(
+        'enableNodeVersionCodeLens',
     )!;
 }
 updateConfiguration();

@@ -24,14 +24,10 @@ interface CodeLensData {
 const cache = new ExpiryMap(1000 * 60 * 2);
 const fetchVersions = pMemoize(
     async (pmName: string, pmVersion: string) => {
+        const registryUrl = 'https://registry.npmmirror.com/';
         const [latestPkg, satisfiedPkg] = await Promise.all([
-            fetchPackageJson(pmName, {
-                registryUrl: 'https://registry.npmmirror.com/',
-            }),
-            fetchPackageJson(pmName, {
-                version: `^${pmVersion}`,
-                registryUrl: 'https://registry.npmmirror.com/',
-            }),
+            fetchPackageJson(pmName, { registryUrl }),
+            fetchPackageJson(pmName, { version: `^${pmVersion}`, registryUrl }),
         ]);
         return {
             latest: latestPkg.version,

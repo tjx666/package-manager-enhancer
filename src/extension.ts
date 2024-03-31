@@ -1,6 +1,7 @@
 import type { DocumentSelector, TextEditor } from 'vscode';
 import vscode from 'vscode';
 
+import { NodeVersionCodeLensProvider } from './codeLens/nodeVersion';
 import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonDependencies';
 import { PackageJsonFilesCodeLensProvider } from './codeLens/packageJsonFiles';
 import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersion';
@@ -108,6 +109,14 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCodeLensProvider(
             pkgJsonSelector,
             new PackageJsonVersionCodeLensProvider(context),
+        ),
+        vscode.languages.registerCodeLensProvider(
+            {
+                // language: 'plaintext',
+                scheme: 'file',
+                pattern: '**/{.nvmrc,.node-version}',
+            },
+            new NodeVersionCodeLensProvider(context),
         ),
         vscode.languages.registerHoverProvider(pkgJsonSelector, new NpmScriptsHoverProvider()),
     );

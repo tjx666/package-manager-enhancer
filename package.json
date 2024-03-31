@@ -46,8 +46,10 @@
         }
     ],
     "activationEvents": [
-        "onLanguage:json",
-        "onLanguage:yaml"
+        "workspaceContains:package.json",
+        "workspaceContains:pnpm-workspace.yaml",
+        "workspaceContains:.nvmrc",
+        "workspaceContains:.node-version"
     ],
     "contributes": {
         "jsonValidation": [
@@ -193,6 +195,10 @@
                     "package-manager-enhancer.enablePackageJsonVersionCodeLens": {
                         "type": "boolean",
                         "default": true
+                    },
+                    "package-manager-enhancer.enableNodeVersionCodeLens": {
+                        "type": "boolean",
+                        "default": true
                     }
                 }
             }
@@ -263,6 +269,7 @@
         "@yutengjing/eslint-config-typescript": "^0.7.0",
         "@yutengjing/prettier-config": "^1.2.0",
         "@yutengjing/release": "^0.2.0",
+        "all-node-versions": "^13.0.0",
         "esbuild": "^0.20.2",
         "esbuild-visualizer": "^0.6.0",
         "eslint": "^8.57.0",
