@@ -112,6 +112,10 @@ useful when you refactor code from one package to another new package.
 
 ![PackageManager version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-version-codelens.gif?raw=true)
 
+### Node version codelens
+
+![Node version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/node-version-codelens.gif?raw=true)
+
 ## TODO
 
 - [ ] nvmrc version lens
