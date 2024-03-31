@@ -2,12 +2,12 @@ import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
 import type { CancellationToken, ExtensionContext, Position, TextDocument } from 'vscode';
-import { workspace, CodeLens, Range } from 'vscode';
+import { CodeLens, Range, workspace } from 'vscode';
 
-import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 import { configuration, configurationKeys } from '../configuration';
 import { commands } from '../utils/constants';
 import type { SearchImportsMatch } from '../utils/searchImports';
+import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 
 interface Dependency {
     name: string;

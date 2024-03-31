@@ -1,4 +1,4 @@
-import type { Uri, Position, Location } from 'vscode';
+import type { Location, Position, Uri } from 'vscode';
 import vscode from 'vscode';
 
 export function goToLocation(uri: Uri, position: Position, location: Location) {

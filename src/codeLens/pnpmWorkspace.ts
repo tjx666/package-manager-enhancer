@@ -3,8 +3,8 @@ import path, { dirname } from 'node:path';
 import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { CodeLens, Range } from 'vscode';
 
-import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 import { configuration, configurationKeys } from '../configuration';
+import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
 const packagesLiteral = 'packages';
 const defaultIgnoredPatterns = ['!**/node_modules'];

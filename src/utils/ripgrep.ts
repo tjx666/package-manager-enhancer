@@ -8,13 +8,13 @@ import { execa } from 'execa';
 import PQueue from 'p-queue';
 import vscode from 'vscode';
 
-import { pathExists } from './fs';
-import { store } from './store';
 import { configuration } from '../configuration';
 import { logger } from '../logger';
+import { pathExists } from './fs';
+import { store } from './store';
 
 /**
- * get vscode bundled ripgrep executable file path
+ * Get vscode bundled ripgrep executable file path
  */
 export async function getRgPath() {
     const isWin = process.platform.startsWith('win');
@@ -39,7 +39,7 @@ export async function getRgPath() {
 }
 
 /**
- * use file to read pattern because regexp string is very complex and may break command
+ * Use file to read pattern because regexp string is very complex and may break command
  */
 async function createRegexpFile(regexp: string) {
     const storageDir = store.storageDir!;

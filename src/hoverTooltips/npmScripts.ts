@@ -2,7 +2,7 @@ import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
 import type { CancellationToken, HoverProvider, Position, TextDocument } from 'vscode';
-import { Range, MarkdownString, Hover } from 'vscode';
+import { Hover, MarkdownString, Range } from 'vscode';
 
 import { commands } from '../utils/constants';
 

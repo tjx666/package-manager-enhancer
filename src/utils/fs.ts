@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import { basename, dirname } from 'node:path';
 
 /**
- * check given path whether exits, case sensitive
+ * Check given path whether exits, case sensitive
  */
 export function pathExists(path: string) {
     return fs

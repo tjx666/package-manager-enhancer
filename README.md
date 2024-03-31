@@ -19,7 +19,7 @@ settings:
 ```jsonc
 {
   "package-manager-enhancer.enablePnpmWorkspaceCodeLens": false,
-  "package-manager-enhancer.pnpmWorkspaceCodeLens.titleFormat": "${count} pkgs"
+  "package-manager-enhancer.pnpmWorkspaceCodeLens.titleFormat": "${count} pkgs",
 }
 ```
 
@@ -38,7 +38,7 @@ settings:
   "package-manager-enhancer.enablePackageJsonFilesCodeLens": false,
   // enable this will make files codeLens include package.json, README, LICENSE and main entry file
   "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": true,
-  "package-manager-enhancer.packageJsonFilesCodeLens.titleFormat": "${count} files"
+  "package-manager-enhancer.packageJsonFilesCodeLens.titleFormat": "${count} files",
 }
 ```
 
@@ -58,7 +58,7 @@ settings:
   "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": [
     "dependencies",
     "devDependencies",
-    "pnpm.overrides"
+    "pnpm.overrides",
   ],
   "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions": [
     "js",
@@ -72,7 +72,7 @@ settings:
     "html",
     "vue",
     "svelte",
-    "astro"
+    "astro",
   ],
   "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns": [
     "**/vendor/**",
@@ -85,12 +85,12 @@ settings:
     "**/_output/**",
     "**/*.min.*",
     "**/*.map",
-    "**/.*/**"
+    "**/.*/**",
   ],
   "package-manager-enhancer.packageJsonDependenciesCodeLens.ignorePatterns": [
     "/path/to/folder/you/want/ignore/package.json",
-    "**/xxx/package.json"
-  ]
+    "**/xxx/package.json",
+  ],
 }
 ```
 

@@ -2,11 +2,11 @@ import { dirname, resolve } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
 import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
-import { Range, CodeLens } from 'vscode';
+import { CodeLens, Range } from 'vscode';
 
-import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 import { configuration, configurationKeys } from '../configuration';
 import { pathExists } from '../utils/fs';
+import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
 const filesLiteral = 'files';
 
@@ -150,7 +150,9 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
                     return [...totalFiles];
                 }
 
-                // default included files
+                /**
+                 * Default included files
+                 */
                 const addFileWhenExists = async (absPath: string) => {
                     if (await pathExists(absPath)) {
                         totalFiles.add(absPath);
@@ -175,9 +177,11 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
                             lowercaseAbsPathWithoutExtension,
                         ];
                         for (const p of candidates) {
+                            // eslint-disable-next-line no-await-in-loop
                             if (await addFileWhenExists(p)) break;
                         }
                     } else {
+                        // eslint-disable-next-line no-await-in-loop
                         await addFileWhenExists(absPath);
                     }
                 }

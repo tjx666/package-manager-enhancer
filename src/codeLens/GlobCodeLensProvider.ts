@@ -1,7 +1,7 @@
 import type { CancellationToken, CodeLens, Position, TextDocument } from 'vscode';
 
-import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 import { commands } from '../utils/constants';
+import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 
 interface CodeLensData {
     type: 'all' | 'include' | 'exclude';

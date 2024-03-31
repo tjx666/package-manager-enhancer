@@ -8,7 +8,7 @@ import { updateConfiguration } from './configuration';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
-import { extensionName, commands } from './utils/constants';
+import { commands, extensionName } from './utils/constants';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {

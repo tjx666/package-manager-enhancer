@@ -1,4 +1,4 @@
-import { Uri, Position, Range, Location, commands, workspace } from 'vscode';
+import { commands, Location, Position, Range, Uri, workspace } from 'vscode';
 
 import { goToLocation } from '../utils/editor';
 import type { SearchImportsMatch } from '../utils/searchImports';

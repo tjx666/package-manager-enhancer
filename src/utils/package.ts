@@ -2,7 +2,8 @@ import { execa } from 'execa';
 import type { JsonValue } from 'type-fest';
 
 /**
- * ref: [vscode builtin npm extension npmView implementation](https://github.com/microsoft/vscode/blob/main/extensions/npm/src/features/packageJSONContribution.ts#L285)
+ * Ref: [vscode builtin npm extension npmView
+ * implementation](https://github.com/microsoft/vscode/blob/main/extensions/npm/src/features/packageJSONContribution.ts#L285)
  */
 export async function getPackageInfo<
     V extends JsonValue,

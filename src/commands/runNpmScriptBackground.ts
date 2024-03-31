@@ -1,7 +1,7 @@
 import { basename, dirname, resolve } from 'node:path';
 
 import { detect } from 'detect-package-manager';
-import { ShellExecution, Task, Uri, tasks, workspace } from 'vscode';
+import { ShellExecution, Task, tasks, Uri, workspace } from 'vscode';
 
 interface Args {
     scriptName: string;

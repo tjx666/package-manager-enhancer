@@ -6,7 +6,10 @@ import { configuration } from './configuration';
 class Logger {
     channel: OutputChannel | undefined;
 
-    constructor(private name = '', private language = 'log') {}
+    constructor(
+        private name = '',
+        private language = 'log',
+    ) {}
 
     private _initChannel() {
         const prefix = 'Package Manager Enhancer';

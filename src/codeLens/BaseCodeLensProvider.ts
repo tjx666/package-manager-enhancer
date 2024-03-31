@@ -1,14 +1,14 @@
 import { debounce, throttle } from 'lodash-es';
-import { EventEmitter, workspace, window } from 'vscode';
 import type {
     CancellationToken,
-    CodeLensProvider,
-    Event,
     CodeLens,
-    TextDocument,
-    ExtensionContext,
+    CodeLensProvider,
     ConfigurationChangeEvent,
+    Event,
+    ExtensionContext,
+    TextDocument,
 } from 'vscode';
+import { EventEmitter, window, workspace } from 'vscode';
 
 export abstract class BaseCodeLensProvider implements CodeLensProvider {
     protected _document: TextDocument | undefined;
