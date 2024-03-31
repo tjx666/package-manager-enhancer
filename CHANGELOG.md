@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.12.0 (2024-03-31)
+
+### 🚀 Features
+
+- Support node version codelens ([9b53c24](https://github.com/tjx666/package-manager-enhancer/commit/9b53c24))
+
+### ❤️ Contributors
+
+- YuTengjing ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.11.0...v0.12.0 '2024-03-31')
+
 ## v0.11.0 (2024-03-31)
 
 ### 🚀 Features
