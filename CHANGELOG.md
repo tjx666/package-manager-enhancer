@@ -1,5 +1,18 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.11.0 (2024-03-31)
+
+### 🚀 Features
+
+- Upgrade deps ([8bcd37e](https://github.com/tjx666/package-manager-enhancer/commit/8bcd37e))
+- Support packageManager field codelens ([1852cd2](https://github.com/tjx666/package-manager-enhancer/commit/1852cd2))
+
+### ❤️ Contributors
+
+- YuTengjing ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.10.1...v0.11.0 '2024-03-31')
+
 ## v0.10.1 (2023-07-13)
 
 No significant changes
