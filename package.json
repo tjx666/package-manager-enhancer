@@ -189,6 +189,10 @@
                             "type": "string"
                         },
                         "default": []
+                    },
+                    "package-manager-enhancer.enablePackageJsonVersionCodeLens": {
+                        "type": "boolean",
+                        "default": true
                     }
                 }
             }
@@ -235,11 +239,14 @@
         "detect-package-manager": "^3.0.1",
         "escape-string-regexp": "^5.0.0",
         "execa": "^8.0.1",
+        "expiry-map": "^2.0.0",
         "globby": "^14.0.1",
         "jsonc-parser": "^3.2.1",
         "lodash-es": "^4.17.21",
         "micromatch": "^4.0.5",
+        "p-memoize": "^7.1.1",
         "p-queue": "^8.0.1",
+        "package-json": "^10.0.0",
         "validate-npm-package-name": "^5.0.0",
         "yaml": "^2.4.1"
     },

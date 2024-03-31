@@ -106,4 +106,9 @@ export abstract class BaseCodeLensProvider implements CodeLensProvider {
     ): Promise<CodeLens[]> {
         return (await this._throttledHandleProvideCodeLens(document, token)) ?? [];
     }
+
+    public abstract resolveCodeLens(
+        codeLens: CodeLens,
+        _token: CancellationToken,
+    ): Promise<CodeLens | undefined>;
 }

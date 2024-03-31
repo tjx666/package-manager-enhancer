@@ -20,6 +20,7 @@ interface Configuration {
         searchDependenciesExcludePatterns: string[];
         ignorePatterns: string[];
     };
+    enablePackageJsonVersionCodeLens: boolean;
 }
 
 export const configuration: Configuration = {} as Configuration;
@@ -52,6 +53,10 @@ export async function updateConfiguration() {
         `${extensionName}.enablePackageJsonDependenciesCodeLens`,
         configuration.enablePackageJsonDependenciesCodeLens,
     );
+
+    configuration.enablePackageJsonVersionCodeLens = extensionConfig.get<boolean>(
+        'enablePackageJsonVersionCodeLens',
+    )!;
 }
 updateConfiguration();
 

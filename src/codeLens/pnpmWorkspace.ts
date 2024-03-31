@@ -4,6 +4,7 @@ import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { CodeLens, Range } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
+import { jsoncStringNodeToRange } from '../utils/editor';
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
 const packagesLiteral = 'packages';
@@ -75,11 +76,9 @@ export class PnpmWorkspaceCodeLensProvider extends GlobCodeLensProvider {
                 this._negativePatterns.push(glob);
             }
 
-            const start = document.positionAt(globNode.value!.offset);
-            const end = document.positionAt(globNode.value!.offset + glob.length);
             patternList.push({
                 isNegated: glob.startsWith('!'),
-                range: new Range(start, end),
+                range: jsoncStringNodeToRange(document, globNode),
                 pattern: glob,
             });
         }

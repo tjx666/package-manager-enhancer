@@ -2,6 +2,7 @@
     "name": "pkg-json-codelens",
     "type": "module",
     "version": "0.0.1",
+    "packageManager": "npm@10.5.0",
     "scripts": {
         "test": "echo test"
     },
@@ -12,7 +13,7 @@
     ],
     "dependencies": {
         "lodash": "^4.17.21",
-        "bbb": "233"  ,   
+        "bbb": "233",
         "vscode": "1.1.37",
         "execa": "^7.1.1"
     }

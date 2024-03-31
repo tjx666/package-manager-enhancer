@@ -1,11 +1,12 @@
 import { dirname } from 'node:path';
 
 import type { Node } from 'jsonc-parser';
-import type { CancellationToken, ExtensionContext, Position, TextDocument } from 'vscode';
-import { CodeLens, Range, workspace } from 'vscode';
+import type { CancellationToken, ExtensionContext, Position, Range, TextDocument } from 'vscode';
+import { CodeLens, workspace } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
 import { commands } from '../utils/constants';
+import { jsoncStringNodeToRange } from '../utils/editor';
 import type { SearchImportsMatch } from '../utils/searchImports';
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 
@@ -80,11 +81,9 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
             const [depNameNode, depVersionNode] = depEntryNode.children;
             if (depNameNode.type !== 'string' || depVersionNode.type !== 'string') continue;
 
-            const start = this._document!.positionAt(depNameNode.offset);
-            const end = this._document!.positionAt(depNameNode.offset + depNameNode.length - 2);
             dependencies.push({
                 name: depNameNode.value,
-                range: new Range(start, end),
+                range: jsoncStringNodeToRange(this._document!, depEntryNode),
             });
         }
 

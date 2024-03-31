@@ -5,6 +5,7 @@ import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { CodeLens, Range } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
+import { jsoncStringNodeToRange } from '../utils/editor';
 import { pathExists } from '../utils/fs';
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
@@ -82,9 +83,7 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
             if (patternNode.type !== 'string') return;
 
             const pattern = patternNode.value as string;
-            const start = document.positionAt(patternNode.offset);
-            const end = document.positionAt(patternNode.offset + patternNode.length - 2);
-            const range = new Range(start, end);
+            const range = jsoncStringNodeToRange(document, patternNode);
             const isNegated = pattern.startsWith('!');
             if (isNegated) {
                 this._negativePatterns.push(pattern);

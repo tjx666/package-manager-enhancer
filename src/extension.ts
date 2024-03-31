@@ -3,6 +3,7 @@ import vscode from 'vscode';
 
 import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonDependencies';
 import { PackageJsonFilesCodeLensProvider } from './codeLens/packageJsonFiles';
+import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersion';
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -76,6 +77,12 @@ export function activate(context: vscode.ExtensionContext) {
         import('./commands/addMissingDeps').then((mod) => mod.addMissingDeps(editor)),
     );
 
+    registerTextEditorCommand(commands.upgradeVersion, (...args: any[]) =>
+        import('./commands/upgradeVersion').then((mod) =>
+            mod.upgradeVersion(args[0], args[2], args[3]),
+        ),
+    );
+
     const pkgJsonSelector: DocumentSelector = {
         language: 'json',
         scheme: 'file',
@@ -97,6 +104,10 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCodeLensProvider(
             pkgJsonSelector,
             new PackageJsonDependenciesCodeLensProvider(context),
+        ),
+        vscode.languages.registerCodeLensProvider(
+            pkgJsonSelector,
+            new PackageJsonVersionCodeLensProvider(context),
         ),
         vscode.languages.registerHoverProvider(pkgJsonSelector, new NpmScriptsHoverProvider()),
     );
