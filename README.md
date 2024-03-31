@@ -108,10 +108,13 @@ useful when you refactor code from one package to another new package.
 
 ![Add Missing Dependencies](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/add-missing-deps.gif?raw=true)
 
+### PackageManager version codelens
+
+![PackageManager version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-version-codelens.gif?raw=true)
+
 ## TODO
 
 - [ ] nvmrc version lens
-- [ ] package.json packageManager, engine version lens
 - [ ] npm scripts hover tooltip
   - [ ] Run in Terminal
   - [ ] Copy Shell Script
