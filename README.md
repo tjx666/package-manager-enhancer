@@ -110,7 +110,7 @@ useful when you refactor code from one package to another new package.
 
 ### PackageManager version codelens
 
-![PackageManager version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-version-codelens.gif?raw=true)
+![PackageManager version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-codelens.gif?raw=true)
 
 ### Node version codelens
 
