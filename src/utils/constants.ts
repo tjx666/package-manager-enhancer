@@ -5,6 +5,7 @@ const commandsArray = [
     'showPackageJsonDependenciesCodeLens',
     'hidePackageJsonDependenciesCodeLens',
     'runNpmScriptBackground',
+    'runNpmScriptInTerminal',
     'addMissingDeps',
     'upgradeVersion',
 ] as const;

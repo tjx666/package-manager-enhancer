@@ -1,20 +1,13 @@
 import { basename, dirname, resolve } from 'node:path';
 
-import { detect } from 'detect-package-manager';
 import { ShellExecution, Task, tasks, Uri, workspace } from 'vscode';
+
+import { detectPm } from '../utils/pm';
 
 interface Args {
     scriptName: string;
     script: string;
     cwd: string;
-}
-
-async function detectPm(folder: Uri) {
-    const packageManagerName = workspace
-        .getConfiguration('npm', folder)
-        .get<string>('packageManager', 'npm');
-    if (packageManagerName !== 'auto') return packageManagerName;
-    return detect({ cwd: folder.fsPath });
 }
 
 export async function runNpmScriptBackground(args: Args) {

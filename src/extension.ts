@@ -74,6 +74,12 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
+    registerCommand(commands.runNpmScriptInTerminal, (...args: any[]) =>
+        import('./commands/runNpmScriptInTerminal').then((mod) =>
+            (mod.runNpmScriptInTerminal as any)(...args),
+        ),
+    );
+
     registerTextEditorCommand(commands.addMissingDeps, (editor) =>
         import('./commands/addMissingDeps').then((mod) => mod.addMissingDeps(editor)),
     );

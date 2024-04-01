@@ -42,14 +42,18 @@ export class NpmScriptsHoverProvider implements HoverProvider {
                 cwd: dirname(filePath),
             }),
         );
-        const commandUrl = `command:${commands.runNpmScriptBackground}?${args} "Run the script as a background task"`;
-        const link = `[Run Background](${commandUrl})`;
+        const runBackgroundUrl = `command:${commands.runNpmScriptBackground}?${args} "Run the script as a background task"`;
+        const link = `[Run Background](${runBackgroundUrl})`;
         const markdownStr = new MarkdownString(link);
         markdownStr.isTrusted = true;
         const range = new Range(
             document.positionAt(scriptNameNode.offset),
             document.positionAt(scriptNameNode.offset + scriptName.length),
         );
+
+        markdownStr.appendText(' | ');
+        const runInTerminalUrl = `command:${commands.runNpmScriptInTerminal}?${args} "Run the script in terminal"`;
+        markdownStr.appendMarkdown(`[Run in Terminal](${runInTerminalUrl})`);
         return new Hover(markdownStr, range);
     }
 }
