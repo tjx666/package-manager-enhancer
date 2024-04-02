@@ -7,6 +7,7 @@ import { PackageJsonFilesCodeLensProvider } from './codeLens/packageJsonFiles';
 import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersion';
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
+import { DependenciesDefinitionProvider } from './definitions/dependencies';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
@@ -125,6 +126,10 @@ export function activate(context: vscode.ExtensionContext) {
             new NodeVersionCodeLensProvider(context),
         ),
         vscode.languages.registerHoverProvider(pkgJsonSelector, new NpmScriptsHoverProvider()),
+        vscode.languages.registerDefinitionProvider(
+            pkgJsonSelector,
+            new DependenciesDefinitionProvider(),
+        ),
     );
 }
 

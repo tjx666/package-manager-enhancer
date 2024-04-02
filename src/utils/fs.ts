@@ -16,3 +16,19 @@ export function pathExists(path: string) {
         })
         .catch(() => false);
 }
+
+export async function isFile(path: string): Promise<boolean> {
+    try {
+        return (await fs.stat(path)).isFile();
+    } catch {
+        return false;
+    }
+}
+
+export async function isDirectory(path: string): Promise<boolean> {
+    try {
+        return (await fs.stat(path)).isDirectory();
+    } catch {
+        return false;
+    }
+}
