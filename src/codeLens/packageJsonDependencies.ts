@@ -6,7 +6,7 @@ import { CodeLens, workspace } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
 import { commands } from '../utils/constants';
-import { jsoncStringNodeToRange } from '../utils/editor';
+import { jsoncStringNodeToRange, parseJsonc } from '../utils/jsonc';
 import type { SearchImportsMatch } from '../utils/searchImports';
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 
@@ -95,13 +95,7 @@ export class PackageJsonDependenciesCodeLensProvider extends BaseCodeLensProvide
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
         const packageJson = document.getText();
-        const { parseTree } = await import('jsonc-parser');
-        let root: Node | undefined;
-        try {
-            root = parseTree(packageJson);
-        } catch {
-            return;
-        }
+        const root = await parseJsonc(packageJson);
         if (!root) return;
 
         const dependencies: Dependency[] = (

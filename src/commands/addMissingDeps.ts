@@ -1,13 +1,14 @@
 import { dirname } from 'node:path';
 
-import * as jsonc from 'jsonc-parser';
 import type { TextEditor } from 'vscode';
 import { Range } from 'vscode';
 
+import { parseJsonc } from '../utils/jsonc';
 import { getPackageInfoFromNpmView } from '../utils/pkg';
 import { searchUsedDeps } from '../utils/searchUsedDeps';
 
 export async function addMissingDeps(editor: TextEditor) {
+    const { findNodeAtLocation, getNodeValue, modify } = await import('jsonc-parser');
     const { document } = editor;
 
     const pkgJsonPath = document.fileName;
@@ -15,10 +16,12 @@ export async function addMissingDeps(editor: TextEditor) {
     const missingDeps = await searchUsedDeps(cwd);
 
     const pkgJson = document.getText();
-    const root = jsonc.parseTree(pkgJson)!;
+    const root = await parseJsonc(pkgJson)!;
+    if (!root) return;
+
     const dependenciesNodePath = ['dependencies'];
-    const dependenciesNode = jsonc.findNodeAtLocation(root, dependenciesNodePath);
-    const dependencies = dependenciesNode ? jsonc.getNodeValue(dependenciesNode) : {};
+    const dependenciesNode = findNodeAtLocation(root, dependenciesNodePath);
+    const dependencies = dependenciesNode ? getNodeValue(dependenciesNode) : {};
     const missingDepsObj = missingDeps.reduce(
         (obj, packageName) => {
             if (packageName in dependencies) return obj;
@@ -50,7 +53,7 @@ export async function addMissingDeps(editor: TextEditor) {
     await Promise.all(getVersionPromises);
 
     // keep origin json format
-    const edits = jsonc.modify(pkgJson, dependenciesNodePath, newDependencies, {
+    const edits = modify(pkgJson, dependenciesNodePath, newDependencies, {
         formattingOptions: {
             tabSize: editor.options.tabSize as number,
         },

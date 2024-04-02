@@ -42,6 +42,7 @@ const fetchPackageJson = promiseDebounce(_fetchPackageJson, (pkgNameAndRangeVers
 });
 const remotePkgMetadataCache = new LRUCache<string, PackageJson>({
     max: 100,
+    // 10 mins
     ttl: 1000 * 60 * 10,
 });
 async function getRemotePackageJsonData(pkgName: string, pkgVersion?: string) {

@@ -1,5 +1,4 @@
 import ExpiryMap from 'expiry-map';
-import type { Node } from 'jsonc-parser';
 import pMemoize from 'p-memoize';
 import fetchPackageJson from 'package-json';
 import type { CancellationToken, ExtensionContext, Range, TextDocument } from 'vscode';
@@ -7,7 +6,7 @@ import { CodeLens } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
 import { commands } from '../utils/constants';
-import { jsoncStringNodeToRange } from '../utils/editor';
+import { jsoncStringNodeToRange, parseJsonc } from '../utils/jsonc';
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
 
 interface CodeLensData {
@@ -57,13 +56,8 @@ export class PackageJsonVersionCodeLensProvider extends BaseCodeLensProvider {
         _token: CancellationToken,
     ): Promise<CodeLens[] | undefined> {
         const packageJson = document.getText();
-        const { parseTree, findNodeAtLocation } = await import('jsonc-parser');
-        let root: Node | undefined;
-        try {
-            root = parseTree(packageJson);
-        } catch {
-            return;
-        }
+        const { findNodeAtLocation } = await import('jsonc-parser');
+        const root = await parseJsonc(packageJson);
         if (!root) return;
 
         const codeLensList: CodeLens[] = [];

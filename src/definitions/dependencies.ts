@@ -10,7 +10,8 @@ import {
     Uri,
 } from 'vscode';
 
-import { getFileRange, jsoncStringNodeToRange } from '../utils/editor';
+import { getFileRange } from '../utils/editor';
+import { jsoncStringNodeToRange } from '../utils/jsonc';
 import { findPackagePath, getPkgNameAndVersionFromDocPosition } from '../utils/pkg';
 
 export class DependenciesDefinitionProvider implements DefinitionProvider {
@@ -22,8 +23,7 @@ export class DependenciesDefinitionProvider implements DefinitionProvider {
         const pkgInfo = await getPkgNameAndVersionFromDocPosition(document, position);
         if (!pkgInfo) return;
 
-        const pkgJsonPath = await fs.realpath(document.uri.fsPath);
-        const pkgPath = await findPackagePath(pkgInfo.name, pkgJsonPath);
+        const pkgPath = await findPackagePath(pkgInfo.name, document.uri.fsPath);
         if (!pkgPath) return;
 
         const [targetUri, targetRange] = await Promise.all([

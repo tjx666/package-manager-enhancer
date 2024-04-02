@@ -1,12 +1,11 @@
 import { dirname, resolve } from 'node:path';
 
-import type { Node } from 'jsonc-parser';
 import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { CodeLens, Range } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
-import { jsoncStringNodeToRange } from '../utils/editor';
 import { pathExists } from '../utils/fs';
+import { jsoncStringNodeToRange, parseJsonc } from '../utils/jsonc';
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
 const filesLiteral = 'files';
@@ -53,19 +52,12 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
         super.getCodeLenses(document, _token);
 
         const { globby } = await import('globby');
-        const { parseTree, findNodeAtLocation } = await import('jsonc-parser');
+        const { findNodeAtLocation } = await import('jsonc-parser');
 
-        const filePath = document.uri.fsPath;
         const packageJson = document.getText();
-        let root: Node | undefined;
-        try {
-            // jsonc has builtin cache
-            root = parseTree(packageJson);
-        } catch {
-            return;
-        }
-
+        const root = await parseJsonc(packageJson);
         if (!root) return;
+
         const filesPropertyNode = findNodeAtLocation(root, ['files']);
         if (
             !filesPropertyNode ||
@@ -98,7 +90,7 @@ export class PackageJsonFilesCodeLensProvider extends GlobCodeLensProvider {
         const totalFiles: Set<string> = new Set();
         const codeLensList: CodeLens[] = [];
         const promises: Array<Promise<string[]>> = [];
-        const cwd = dirname(filePath);
+        const cwd = dirname(document.uri.fsPath);
         for (const item of patternList) {
             const codeLens = new CodeLens(item.range);
             codeLensList.push(codeLens);

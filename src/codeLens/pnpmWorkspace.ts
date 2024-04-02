@@ -4,7 +4,7 @@ import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { CodeLens, Range } from 'vscode';
 
 import { configuration, configurationKeys } from '../configuration';
-import { jsoncStringNodeToRange } from '../utils/editor';
+import { jsoncStringNodeToRange } from '../utils/jsonc';
 import { GlobCodeLensProvider } from './GlobCodeLensProvider';
 
 const packagesLiteral = 'packages';

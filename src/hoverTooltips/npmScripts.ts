@@ -1,10 +1,10 @@
 import { dirname } from 'node:path';
 
-import type { Node } from 'jsonc-parser';
 import type { CancellationToken, HoverProvider, Position, TextDocument } from 'vscode';
 import { Hover, MarkdownString, Range } from 'vscode';
 
 import { commands } from '../utils/constants';
+import { parseJsonc } from '../utils/jsonc';
 
 export class NpmScriptsHoverProvider implements HoverProvider {
     async provideHover(
@@ -15,13 +15,8 @@ export class NpmScriptsHoverProvider implements HoverProvider {
         const filePath = document.uri.fsPath;
         const packageJson = document.getText();
 
-        const { parseTree, findNodeAtOffset, findNodeAtLocation } = await import('jsonc-parser');
-        let root: Node | undefined;
-        try {
-            root = parseTree(packageJson);
-        } catch {
-            return;
-        }
+        const { findNodeAtOffset, findNodeAtLocation } = await import('jsonc-parser');
+        const root = await parseJsonc(packageJson);
         if (!root) return;
 
         const scriptNameNode = findNodeAtOffset(root, document.offsetAt(position));

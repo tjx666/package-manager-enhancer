@@ -1,32 +1,32 @@
+import fs from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 import { execa } from 'execa';
-import type { Node } from 'jsonc-parser';
 import type { JsonValue } from 'type-fest';
 import validatePkgName from 'validate-npm-package-name';
 import type { Position, TextDocument } from 'vscode';
 
-import { NODE_MODULES } from './constants';
-import { isFile, pathExists } from './fs';
+import { NODE_MODULES, PACKAGE_JSON } from './constants';
+import { pathExists } from './fs';
+import { parseJsonc } from './jsonc';
 import { getRootOfPath, trimRightSlash } from './path';
 
-export async function findPackagePath(packageName: string, startPath: string, endPath?: string) {
+export async function findPackagePath(packageName: string, baseFilePath: string, endPath?: string) {
     if (endPath === undefined) {
-        endPath = await getRootOfPath(startPath);
+        endPath = await getRootOfPath(baseFilePath);
     }
 
-    startPath = trimRightSlash(startPath);
+    // maybe soft symbolic link
+    baseFilePath = await fs.realpath(baseFilePath);
+
     endPath = trimRightSlash(endPath);
-    if (await isFile(startPath)) {
-        startPath = dirname(startPath);
-    }
-    let currentDirPath = startPath;
+    let currentDirPath = dirname(baseFilePath);
     let end = false;
     let pkgDir = '';
 
     do {
         pkgDir = resolve(currentDirPath, NODE_MODULES, packageName);
-        const pkgJsonPath = resolve(pkgDir, 'package.json');
+        const pkgJsonPath = resolve(pkgDir, PACKAGE_JSON);
         // eslint-disable-next-line no-await-in-loop
         if ((await Promise.all([pathExists(pkgDir), pathExists(pkgJsonPath)])).every(Boolean)) {
             return {
@@ -45,15 +45,8 @@ export async function getPkgNameAndVersionFromDocPosition(
     document: TextDocument,
     position: Position,
 ) {
-    const jsoncParser = await import('jsonc-parser');
-
     const pkgJson = document.getText();
-    let root: Node | undefined;
-    try {
-        root = jsoncParser.parseTree(pkgJson);
-    } catch {
-        return;
-    }
+    const root = await parseJsonc(pkgJson);
     if (!root) return;
 
     const dependenciesNodePath = [
@@ -63,11 +56,12 @@ export async function getPkgNameAndVersionFromDocPosition(
         'optionalDependencies',
     ];
 
-    const nameNode = jsoncParser.findNodeAtOffset(root, document.offsetAt(position));
+    const { findNodeAtOffset, findNodeAtLocation } = await import('jsonc-parser');
+    const nameNode = findNodeAtOffset(root, document.offsetAt(position));
     if (!nameNode || !nameNode.parent) return;
 
     const dependenciesNodes = dependenciesNodePath.map((path) =>
-        jsoncParser.findNodeAtLocation(root, path.split('.')),
+        findNodeAtLocation(root, path.split('.')),
     );
 
     const versionNode = nameNode.parent.children![1];
