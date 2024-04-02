@@ -27,3 +27,19 @@ export async function getFileRange(filePath: string) {
         ),
     );
 }
+
+export function findQuote(text: string, eachNum: number, start: number, step: number) {
+    const quotes = new Set(["'", '"']);
+    let quoteIdx = -1;
+    // 查找距离 hover 最近的 /'|"/
+    while (eachNum > 0) {
+        const char = text[start];
+        if (quotes.has(char)) {
+            quoteIdx = start;
+            break;
+        }
+        start += step;
+        eachNum--;
+    }
+    return quoteIdx;
+}

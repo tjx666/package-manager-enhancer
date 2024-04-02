@@ -9,6 +9,7 @@ import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
+import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
@@ -128,6 +129,20 @@ export function activate(context: vscode.ExtensionContext) {
         ),
         vscode.languages.registerHoverProvider(pkgJsonSelector, new NpmScriptsHoverProvider()),
         vscode.languages.registerHoverProvider(pkgJsonSelector, new DependenciesHoverProvider()),
+        vscode.languages.registerHoverProvider(
+            [
+                'javascript',
+                'typescript',
+                'javascriptreact',
+                'typescriptreact',
+                'vue',
+                'astro',
+                'svelte',
+                'mdx',
+                'html',
+            ],
+            new ModulesHoverProvider(),
+        ),
         vscode.languages.registerDefinitionProvider(
             pkgJsonSelector,
             new DependenciesDefinitionProvider(),

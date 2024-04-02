@@ -49,7 +49,16 @@
         "workspaceContains:package.json",
         "workspaceContains:pnpm-workspace.yaml",
         "workspaceContains:.nvmrc",
-        "workspaceContains:.node-version"
+        "workspaceContains:.node-version",
+        "onLanguage:javascript",
+        "onLanguage:typescript",
+        "onLanguage:javascriptreact",
+        "onLanguage:typescriptreact",
+        "onLanguage:vue",
+        "onLanguage:astro",
+        "onLanguage:svelte",
+        "onLanguage:mdx",
+        "onLanguage:html"
     ],
     "contributes": {
         "jsonValidation": [

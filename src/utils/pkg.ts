@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { homedir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 
 import { execa } from 'execa';
@@ -9,11 +10,11 @@ import type { Position, TextDocument } from 'vscode';
 import { NODE_MODULES, PACKAGE_JSON } from './constants';
 import { pathExists } from './fs';
 import { parseJsonc } from './jsonc';
-import { getRootOfPath, trimRightSlash } from './path';
+import { trimRightSlash } from './path';
 
 export async function findPackagePath(packageName: string, baseFilePath: string, endPath?: string) {
     if (endPath === undefined) {
-        endPath = await getRootOfPath(baseFilePath);
+        endPath = homedir();
     }
 
     // maybe soft symbolic link
@@ -21,10 +22,9 @@ export async function findPackagePath(packageName: string, baseFilePath: string,
 
     endPath = trimRightSlash(endPath);
     let currentDirPath = dirname(baseFilePath);
-    let end = false;
     let pkgDir = '';
 
-    do {
+    while (true) {
         pkgDir = resolve(currentDirPath, NODE_MODULES, packageName);
         const pkgJsonPath = resolve(pkgDir, PACKAGE_JSON);
         // eslint-disable-next-line no-await-in-loop
@@ -34,11 +34,13 @@ export async function findPackagePath(packageName: string, baseFilePath: string,
                 pkgJsonPath,
             };
         }
-        end = currentDirPath === endPath;
-        currentDirPath = dirname(currentDirPath);
-    } while (!end);
 
-    return undefined;
+        if (currentDirPath === endPath) {
+            return;
+        }
+
+        currentDirPath = dirname(currentDirPath);
+    }
 }
 
 export async function getPkgNameAndVersionFromDocPosition(
