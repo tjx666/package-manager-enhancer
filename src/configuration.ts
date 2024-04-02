@@ -1,6 +1,6 @@
 import vscode, { ConfigurationTarget } from 'vscode';
 
-import { extensionName } from './utils/constants';
+import { EXT_NAME } from './utils/constants';
 
 interface Configuration {
     enableLogInfo: boolean;
@@ -26,7 +26,7 @@ interface Configuration {
 
 export const configuration: Configuration = {} as Configuration;
 export async function updateConfiguration() {
-    const extensionConfig = vscode.workspace.getConfiguration(extensionName);
+    const extensionConfig = vscode.workspace.getConfiguration(EXT_NAME);
 
     configuration.enableLogInfo = extensionConfig.get('enableLogInfo')!;
 
@@ -51,7 +51,7 @@ export async function updateConfiguration() {
     >('packageJsonDependenciesCodeLens')!;
     await vscode.commands.executeCommand(
         'setContext',
-        `${extensionName}.enablePackageJsonDependenciesCodeLens`,
+        `${EXT_NAME}.enablePackageJsonDependenciesCodeLens`,
         configuration.enablePackageJsonDependenciesCodeLens,
     );
 
@@ -73,7 +73,7 @@ type CfgToCfgKeys<T extends object, ParentPath extends string> = {
               }
         : `${ParentPath}${P & string}`;
 };
-type ConfigurationKeys = CfgToCfgKeys<Configuration, typeof extensionName>;
+type ConfigurationKeys = CfgToCfgKeys<Configuration, typeof EXT_NAME>;
 function setupKeys(cfg: Record<string, any>, cfgKeys: Record<string, any>, parentKeyPath = '') {
     for (const [key, value] of Object.entries(cfg)) {
         const newParentPath = `${parentKeyPath}${parentKeyPath === '' ? '' : '.'}${key}`;
@@ -85,7 +85,7 @@ function setupKeys(cfg: Record<string, any>, cfgKeys: Record<string, any>, paren
             cfgKeys[newParentPath] = subObject;
             setupKeys(value, subObject, newParentPath);
         } else {
-            cfgKeys[newParentPath] = `${extensionName}.${newParentPath}`;
+            cfgKeys[newParentPath] = `${EXT_NAME}.${newParentPath}`;
         }
     }
     return cfgKeys;

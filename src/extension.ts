@@ -8,10 +8,11 @@ import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersio
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
+import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
-import { commands, extensionName } from './utils/constants';
+import { commands, EXT_NAME } from './utils/constants';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -19,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     store.storageDir = storageUri!.fsPath;
     vscode.workspace.onDidChangeConfiguration(
         async (event) => {
-            if (event.affectsConfiguration(extensionName)) {
+            if (event.affectsConfiguration(EXT_NAME)) {
                 await updateConfiguration();
             }
         },
@@ -126,6 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
             new NodeVersionCodeLensProvider(context),
         ),
         vscode.languages.registerHoverProvider(pkgJsonSelector, new NpmScriptsHoverProvider()),
+        vscode.languages.registerHoverProvider(pkgJsonSelector, new DependenciesHoverProvider()),
         vscode.languages.registerDefinitionProvider(
             pkgJsonSelector,
             new DependenciesDefinitionProvider(),

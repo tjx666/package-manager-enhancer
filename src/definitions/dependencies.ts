@@ -1,7 +1,5 @@
 import fs from 'node:fs/promises';
 
-import type { Node } from 'jsonc-parser';
-import validatePkgName from 'validate-npm-package-name';
 import {
     type CancellationToken,
     type Definition,
@@ -13,7 +11,7 @@ import {
 } from 'vscode';
 
 import { getFileRange, jsoncStringNodeToRange } from '../utils/editor';
-import { findPackagePath } from '../utils/pkg';
+import { findPackagePath, getPkgNameAndVersionFromDocPosition } from '../utils/pkg';
 
 export class DependenciesDefinitionProvider implements DefinitionProvider {
     async provideDefinition(
@@ -21,42 +19,11 @@ export class DependenciesDefinitionProvider implements DefinitionProvider {
         position: Position,
         _token: CancellationToken,
     ): Promise<Definition | DefinitionLink[] | undefined> {
-        const jsoncParser = await import('jsonc-parser');
-
-        const pkgJson = document.getText();
-        let root: Node | undefined;
-        try {
-            root = jsoncParser.parseTree(pkgJson);
-        } catch {
-            return;
-        }
-        if (!root) return;
-
-        const dependenciesNodePath = [
-            'dependencies',
-            'devDependencies',
-            'peerDependencies',
-            'optionalDependencies',
-        ];
-
-        const node = jsoncParser.findNodeAtOffset(root, document.offsetAt(position));
-        if (!node) return;
-
-        const dependenciesNodes = dependenciesNodePath.map((path) =>
-            jsoncParser.findNodeAtLocation(root, path.split('.')),
-        );
-        const isHoverOverDependency =
-            node.type === 'string' &&
-            node.parent?.type === 'property' &&
-            node === node.parent.children?.[0] &&
-            dependenciesNodes.includes(node.parent?.parent);
-        if (!isHoverOverDependency) return;
-
-        const pkgName = node.value;
-        if (!validatePkgName(pkgName).validForOldPackages) return;
+        const pkgInfo = await getPkgNameAndVersionFromDocPosition(document, position);
+        if (!pkgInfo) return;
 
         const pkgJsonPath = await fs.realpath(document.uri.fsPath);
-        const pkgPath = await findPackagePath(pkgName, pkgJsonPath);
+        const pkgPath = await findPackagePath(pkgInfo.name, pkgJsonPath);
         if (!pkgPath) return;
 
         const [targetUri, targetRange] = await Promise.all([
@@ -64,7 +31,7 @@ export class DependenciesDefinitionProvider implements DefinitionProvider {
             getFileRange(pkgPath.pkgJsonPath),
         ]);
         const definition: DefinitionLink = {
-            originSelectionRange: jsoncStringNodeToRange(document, node),
+            originSelectionRange: jsoncStringNodeToRange(document, pkgInfo.nameNode),
             targetUri,
             targetRange,
         };
