@@ -14,15 +14,6 @@
 
 ![pnpm-workspace.yaml codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-workspace-codelens.png?raw=true)
 
-settings:
-
-```jsonc
-{
-  "package-manager-enhancer.enablePnpmWorkspaceCodeLens": false,
-  "package-manager-enhancer.pnpmWorkspaceCodeLens.titleFormat": "${count} pkgs",
-}
-```
-
 ### package.json pnpm configuration schema
 
 ![package.json pnpm configuration schema](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/pnpm-schema.png?raw=true)
@@ -30,17 +21,6 @@ settings:
 ### package.json files property codeLens
 
 ![package.json files property codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-json-files-codelens.png?raw=true)
-
-settings:
-
-```jsonc
-{
-  "package-manager-enhancer.enablePackageJsonFilesCodeLens": false,
-  // enable this will make files codeLens include package.json, README, LICENSE and main entry file
-  "package-manager-enhancer.packageJsonFilesCodeLens.includeDefaultPackedFiles": true,
-  "package-manager-enhancer.packageJsonFilesCodeLens.titleFormat": "${count} files",
-}
-```
 
 ### package.json dependencies codeLens
 
@@ -50,78 +30,38 @@ You can click editor title icon toggle it:
 
 ![toggle package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/toggle-package-json-dependencies-codelens.png?raw=true)
 
-settings:
-
-```jsonc
-{
-  "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": false,
-  "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": [
-    "dependencies",
-    "devDependencies",
-    "pnpm.overrides",
-  ],
-  "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions": [
-    "js",
-    "jsx",
-    "cjs",
-    "mjs",
-    "ts",
-    "tsx",
-    "cts",
-    "mts",
-    "html",
-    "vue",
-    "svelte",
-    "astro",
-  ],
-  "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesExcludePatterns": [
-    "**/vendor/**",
-    "**/node_modules/**",
-    "**/bower_components/**",
-    "**/*.code-search/**",
-    "**/dist/**",
-    "**/out/**",
-    "**/build/**",
-    "**/_output/**",
-    "**/*.min.*",
-    "**/*.map",
-    "**/.*/**",
-  ],
-  "package-manager-enhancer.packageJsonDependenciesCodeLens.ignorePatterns": [
-    "/path/to/folder/you/want/ignore/package.json",
-    "**/xxx/package.json",
-  ],
-}
-```
-
-### Npm Script Run Background
+### npm script run in background
 
 ![Npm Script Run Background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
 
-### Go to Symbol in Editor
+### go to symbol in editor
 
 check issue: [Go to Symbol in Editor doesn't auto fill symbol which current cursor locate in editor](https://github.com/microsoft/vscode/issues/167223)
 
-### Add Missing Dependencies
+### add missing dependencies
 
 useful when you refactor code from one package to another new package.
 
 ![Add Missing Dependencies](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/add-missing-deps.gif?raw=true)
 
-### PackageManager version codelens
+### corepack `PackageManager` codelens
 
 ![PackageManager version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-codelens.gif?raw=true)
 
-### Node version codelens
+### node version codelens
 
 ![Node version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/node-version-codelens.gif?raw=true)
 
-## TODO
+## TODOs
 
-- [ ] nvmrc version lens
-- [ ] npm scripts hover tooltip
-  - [ ] Run in Terminal
-  - [ ] Copy Shell Script
+- package hover tip
+  - [ ] cnpm sync
+  - [ ] websites: npm trending, npm view,npm graph etc
+  - [ ] changelog
+  - [ ] download count
+  - [ ] star count
+  - [ ] issue count
+- [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
 
 ## My extensions
