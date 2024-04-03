@@ -1,41 +1,11 @@
-import allNodeVersions from 'all-node-versions';
-import ExpiryMap from 'expiry-map';
-import pMemoize from 'p-memoize';
 import type { CancellationToken, ExtensionContext, TextDocument } from 'vscode';
 import { CodeLens, Range } from 'vscode';
 
+import type { NodeVersions } from '../apis';
+import { fetchNodeVersions, tryFetch } from '../apis';
 import { configuration, configurationKeys } from '../configuration';
 import { commands } from '../utils/constants';
 import { BaseCodeLensProvider } from './BaseCodeLensProvider';
-
-type NodeVersions = {
-    satisfied: string;
-    latest: string;
-} | null;
-
-// 2 mins
-const cache = new ExpiryMap(1000 * 60 * 2);
-const fetchNodeVersions = pMemoize(
-    async (version: string): Promise<NodeVersions> => {
-        const { versions, majors } = await allNodeVersions({
-            mirror: 'https://npmmirror.com/mirrors/node',
-        });
-
-        // version not found
-        if (versions.every((v) => !v.node.startsWith(version))) {
-            return null;
-        }
-
-        const majorNumber = Number(version.split('.')[0]);
-        const satisfied = majors.find((major) => major.major === majorNumber)!.latest;
-        const latest = majors.find((major) => major.lts)!.latest;
-        return {
-            satisfied,
-            latest,
-        };
-    },
-    { cache },
-);
 
 export class NodeVersionCodeLensProvider extends BaseCodeLensProvider {
     private _codelensData:
@@ -68,7 +38,7 @@ export class NodeVersionCodeLensProvider extends BaseCodeLensProvider {
         const version = match[1];
         this._codelensData = {
             version,
-            fetchNodeVersionsPromise: fetchNodeVersions(version),
+            fetchNodeVersionsPromise: tryFetch(fetchNodeVersions(version)),
         };
         return [
             new CodeLens(

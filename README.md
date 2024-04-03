@@ -56,11 +56,8 @@ useful when you refactor code from one package to another new package.
 
 - package hover tip
   - [ ] cnpm sync
-  - [ ] websites: npm trending, npm view,npm graph etc
   - [ ] changelog
-  - [ ] download count
-  - [ ] star count
-  - [ ] issue count
+  - [ ] websites: npm trending, npm view,npm graph etc
 - [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
 

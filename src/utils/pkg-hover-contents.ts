@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import hostedGitInfo from 'hosted-git-info';
 import { isObject } from 'lodash-es';
-import { env, MarkdownString, Uri } from 'vscode';
+import { MarkdownString, Uri } from 'vscode';
 
 import { spacing } from '.';
 import { PACKAGE_JSON } from './constants';
@@ -17,13 +17,6 @@ function tryGetUrl(val: string | { url?: string | undefined } | undefined) {
         return val.url;
     }
     return undefined;
-}
-
-function getPkgNameAndVersion(packageInfo: PackageInfo) {
-    return (
-        packageInfo.name +
-        ((packageInfo as any).installedVersion ? `@${(packageInfo as any).installedVersion}` : '')
-    );
 }
 
 function extractGitUrl(url: string) {
@@ -43,14 +36,41 @@ function extractGitUrl(url: string) {
 class PkgHoverContentsCreator {
     packageInfo!: PackageInfo;
 
+    get packageNameAndVersion() {
+        const { packageInfo } = this;
+        return (
+            packageInfo.name +
+            ((packageInfo as any).installedVersion
+                ? `@${(packageInfo as any).installedVersion}`
+                : '')
+        );
+    }
+
+    get githubUserAndRepo() {
+        if (this.packageInfo.isBuiltinModule) return;
+        let repositoryUrl = tryGetUrl(this.packageInfo.packageJson.repository);
+        if (repositoryUrl) {
+            repositoryUrl = extractGitUrl(repositoryUrl);
+        }
+
+        if (repositoryUrl?.startsWith('https://github')) {
+            return repositoryUrl.split('/').slice(-2).join('/');
+        }
+        return undefined;
+    }
+
     get pkgName() {
+        return this.packageInfo.name;
+    }
+
+    get pkgNameLink() {
         const packageInfo = this.packageInfo;
 
         let packageName: string, showTextDocumentCmdUri: Uri | undefined;
         if (packageInfo.isBuiltinModule) {
             packageName = packageInfo.name;
         } else {
-            packageName = getPkgNameAndVersion(packageInfo);
+            packageName = this.packageNameAndVersion;
             const pkgJsonPath =
                 packageInfo.installDir && join(packageInfo.installDir, PACKAGE_JSON);
             if (pkgJsonPath) {
@@ -71,40 +91,35 @@ class PkgHoverContentsCreator {
 
     get pkgUrl() {
         const packageInfo = this.packageInfo;
+        if (packageInfo.isBuiltinModule) return;
 
-        let homepageUrl: string | undefined,
-            repositoryUrl: string | undefined,
-            npmUrl: string | undefined;
-        if (packageInfo.isBuiltinModule) {
-            homepageUrl = `https://nodejs.org/${env.language}/`;
-            repositoryUrl = 'https://github.com/nodejs/node';
-        } else {
-            homepageUrl = tryGetUrl(packageInfo.packageJson.homepage);
-            repositoryUrl = tryGetUrl(packageInfo.packageJson.repository);
+        let homepageUrl: string | undefined, repositoryUrl: string | undefined;
 
-            if (repositoryUrl) {
-                repositoryUrl = extractGitUrl(repositoryUrl);
-            }
+        homepageUrl = tryGetUrl(packageInfo.packageJson.homepage);
+        repositoryUrl = tryGetUrl(packageInfo.packageJson.repository);
 
-            if (!repositoryUrl) {
-                let bugsUrl = tryGetUrl(packageInfo.packageJson.bugs);
-                if (bugsUrl) {
-                    const idx = bugsUrl.indexOf('/issues');
-                    if (idx !== -1) {
-                        bugsUrl = bugsUrl.slice(0, idx);
-                    }
-                    repositoryUrl = extractGitUrl(bugsUrl);
-                }
-            }
-
-            if (repositoryUrl === homepageUrl) {
-                homepageUrl = undefined;
-            }
-
-            npmUrl = `https://www.npmjs.com/package/${packageInfo.name}${
-                packageInfo.installedVersion ? `/v/${packageInfo.installedVersion}` : ''
-            }`;
+        if (repositoryUrl) {
+            repositoryUrl = extractGitUrl(repositoryUrl);
         }
+
+        if (!repositoryUrl) {
+            let bugsUrl = tryGetUrl(packageInfo.packageJson.bugs);
+            if (bugsUrl) {
+                const idx = bugsUrl.indexOf('/issues');
+                if (idx !== -1) {
+                    bugsUrl = bugsUrl.slice(0, idx);
+                }
+                repositoryUrl = extractGitUrl(bugsUrl);
+            }
+        }
+
+        if (repositoryUrl === homepageUrl) {
+            homepageUrl = undefined;
+        }
+
+        const npmUrl = `https://www.npmjs.com/package/${packageInfo.name}${
+            packageInfo.installedVersion ? `/v/${packageInfo.installedVersion}` : ''
+        }`;
 
         let result = '';
         if (npmUrl) {
@@ -122,20 +137,71 @@ class PkgHoverContentsCreator {
     get bundleSize() {
         const packageInfo = this.packageInfo;
 
-        let result = '';
-        if (!packageInfo.isBuiltinModule && packageInfo.webpackBundleSize) {
-            result = `[BundleSize](https://bundlephobia.com/package/${getPkgNameAndVersion(packageInfo)}):${spacing(1)}${formatSize(
-                packageInfo.webpackBundleSize.normal,
-            )}${spacing(1)}(gzip:${spacing(1)}${formatSize(packageInfo.webpackBundleSize.gzip)})`;
+        if (!packageInfo.isBuiltinModule && packageInfo.bundleSize) {
+            const { normal, gzip } = packageInfo.bundleSize;
+            const bundlephobiaWebsite = `https://bundlephobia.com/package/${this.packageNameAndVersion}`;
+            return `[![bundle size](https://img.shields.io/badge/bundle_size-${formatSize(normal)}_(gzip%3A_${formatSize(gzip)})-green)](${bundlephobiaWebsite})`;
         }
-        return result;
+        return undefined;
+    }
+
+    get latestVersion() {
+        const badge = `![latest version](https://img.shields.io/npm/v/${this.pkgName}?label=latest)`;
+        return `[${badge}](https://www.npmjs.com/package/${this.pkgName})`;
+    }
+
+    get downloadCountPerWeek() {
+        const badge = `![NPM Downloads](https://img.shields.io/npm/dw/${this.pkgName})`;
+        return `[${badge}](https://www.npmjs.com/package/${this.pkgName}?activeTab=versions)`;
+    }
+
+    get githubStar() {
+        const { githubUserAndRepo } = this;
+        if (!githubUserAndRepo) return;
+
+        const badge = `![GitHub Repo stars](https://img.shields.io/github/stars/${githubUserAndRepo})`;
+        return `[${badge}](https://github.com/${githubUserAndRepo})`;
+    }
+
+    get githubIssueCount() {
+        const { githubUserAndRepo } = this;
+        if (!githubUserAndRepo) return;
+
+        const badge = `![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/${githubUserAndRepo})`;
+        return `[${badge}](https://github.com/${githubUserAndRepo}/issues)`;
+    }
+
+    get typeDefinition() {
+        const badge = `![NPM Type Definitions](https://img.shields.io/npm/types/${this.pkgName})`;
+        return `[${badge}](https://arethetypeswrong.github.io/?p=${this.packageNameAndVersion})`;
+    }
+
+    get badgeInfos() {
+        return [
+            this.latestVersion,
+            this.downloadCountPerWeek,
+            this.bundleSize,
+            this.githubStar,
+            this.githubIssueCount,
+            this.typeDefinition,
+        ]
+            .filter(Boolean)
+            .join(spacing(3));
     }
 
     generate(packageInfo: PackageInfo): MarkdownString {
         this.packageInfo = packageInfo;
 
-        let markdown = `${this.pkgName}${spacing(2)}${this.pkgUrl}`;
-        markdown += `<br/>${this.bundleSize}`;
+        let markdown = `${this.pkgNameLink}${spacing(2)}`;
+        if (this.packageInfo.isBuiltinModule) {
+            const homepageUrl = `https://nodejs.org/docs/latest/api/${this.pkgName}.html`;
+            const repositoryUrl = `https://github.com/nodejs/node/blob/main/lib/${this.pkgName}.js`;
+            markdown += `[HomePage](${homepageUrl})${spacing(4)}`;
+            markdown += `[Repository](${repositoryUrl})`;
+        } else {
+            markdown += this.pkgUrl;
+            markdown += `<br/><br/>${this.badgeInfos}`;
+        }
 
         const contents = new MarkdownString(markdown);
         contents.isTrusted = true;

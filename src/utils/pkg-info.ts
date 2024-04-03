@@ -1,13 +1,10 @@
 import { resolve } from 'node:path';
 
-import axios from 'axios';
 import isBuiltinModule from 'is-builtin-module';
-import { LRUCache } from 'lru-cache';
-import _fetchPackageJson from 'package-json';
 import type { PackageJson } from 'type-fest';
 import type { CancellationToken } from 'vscode';
 
-import { promiseDebounce } from '.';
+import { fetchBundleSize, fetchRemotePackageJson, tryFetch } from '../apis';
 import { PACKAGE_JSON } from './constants';
 import { readJsonFile } from './fs';
 
@@ -19,7 +16,7 @@ interface PackageJsonData {
     bugs?: string | { url?: string };
 }
 
-interface WebpackBundleSize {
+interface BundleSize {
     gzip: number;
     normal: number;
 }
@@ -32,69 +29,10 @@ type PackageInfo =
           isBuiltinModule: false;
           installedVersion?: string;
           installDir?: string;
-          webpackBundleSize?: WebpackBundleSize;
+          bundleSize?: BundleSize;
           packageJson: PackageJson;
       }
     | { isBuiltinModule: true; name: string };
-
-const fetchPackageJson = promiseDebounce(_fetchPackageJson, (pkgNameAndRangeVersion: string) => {
-    return pkgNameAndRangeVersion;
-});
-const remotePkgMetadataCache = new LRUCache<string, PackageJson>({
-    max: 100,
-    // 10 mins
-    ttl: 1000 * 60 * 10,
-});
-async function getRemotePackageJsonData(pkgName: string, pkgVersion?: string) {
-    const pkgNameAndVersion = `${pkgName}${pkgVersion ? `@${pkgVersion}` : ''}`;
-    if (!remotePkgMetadataCache.has(pkgNameAndVersion)) {
-        const pkgJsonData = (await fetchPackageJson(pkgNameAndVersion, {
-            fullMetadata: true,
-        })) as unknown as PackageJson | undefined;
-        if (pkgJsonData) {
-            remotePkgMetadataCache.set(pkgNameAndVersion, pkgJsonData);
-            return pkgJsonData;
-        }
-        return undefined;
-    } else {
-        return remotePkgMetadataCache.get(pkgNameAndVersion)!;
-    }
-}
-
-const getBundlephobiaApiSize = promiseDebounce(
-    (pkgNameAndVersion: string) => {
-        const url = `https://bundlephobia.com/api/size?package=${pkgNameAndVersion}`;
-        return axios
-            .get<{ gzip?: number; size?: number }>(url, {
-                timeout: 5 * 1000,
-            })
-            .catch(() => undefined);
-    },
-    (pkgNameAndVersion: string) => pkgNameAndVersion,
-);
-
-const pkgWebpackBundleSizeCache = new LRUCache<string, WebpackBundleSize>({
-    max: 100,
-    ttl: 1000 * 60 * 10,
-});
-
-async function getPkgWebpackBundleSize(pkgNameAndVersion: string) {
-    let bundleSizeInfo = pkgWebpackBundleSizeCache.get(pkgNameAndVersion);
-    if (!bundleSizeInfo) {
-        const resp = await getBundlephobiaApiSize(pkgNameAndVersion);
-        if (!resp) return;
-
-        const { data } = resp;
-        if (data && typeof data.size === 'number') {
-            bundleSizeInfo = {
-                gzip: data.gzip!,
-                normal: data.size,
-            };
-            pkgWebpackBundleSizeCache.set(pkgNameAndVersion, bundleSizeInfo);
-        }
-    }
-    return bundleSizeInfo;
-}
 
 const getPackageInfoDefaultOptions = {
     remoteFetch: true,
@@ -150,7 +88,7 @@ async function getPackageInfo(
 
     if (!result && options.remoteFetch) {
         const remotePackageJsonData = await (!options.token?.isCancellationRequested &&
-            getRemotePackageJsonData(packageName, options.searchVersionRange));
+            tryFetch(fetchRemotePackageJson(packageName, options.searchVersionRange)));
         if (remotePackageJsonData) {
             result = {
                 name: packageName,
@@ -163,10 +101,10 @@ async function getPackageInfo(
 
     if (result && options.fetchBundleSize) {
         const pkgNameAndVersion = `${result.name}@${(result as any).version}`;
-        const webpackBundleSize = await (!options.token?.isCancellationRequested &&
-            getPkgWebpackBundleSize(pkgNameAndVersion));
-        if (webpackBundleSize) {
-            (result as any).webpackBundleSize = webpackBundleSize;
+        const bundleSize = await (!options.token?.isCancellationRequested &&
+            tryFetch(fetchBundleSize(pkgNameAndVersion)));
+        if (bundleSize) {
+            (result as any).bundleSize = bundleSize;
         }
     }
 
@@ -174,4 +112,4 @@ async function getPackageInfo(
 }
 
 export { getPackageInfo };
-export type { PackageInfo, PackageJsonData, WebpackBundleSize };
+export type { BundleSize, PackageInfo, PackageJsonData };
