@@ -275,7 +275,7 @@
         "@types/lodash-es": "^4.17.12",
         "@types/micromatch": "^4.0.6",
         "@types/mocha": "^10.0.6",
-        "@types/node": "^18.19.28",
+        "@types/node": "^18.19.29",
         "@types/validate-npm-package-name": "^4.0.2",
         "@types/vscode": "^1.85.0",
         "@vscode/test-electron": "^2.3.9",
@@ -296,7 +296,7 @@
         "simple-git-hooks": "^2.11.1",
         "stale-dep": "^0.7.0",
         "tsx": "^4.7.1",
-        "type-fest": "^4.14.0",
+        "type-fest": "^4.15.0",
         "typescript": "^5.4.3"
     }
 }
