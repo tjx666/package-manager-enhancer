@@ -1,7 +1,7 @@
 import type { CancellationToken, HoverProvider, Position, TextDocument } from 'vscode';
 import { Hover } from 'vscode';
 
-import { findPackagePath, getPkgNameAndVersionFromDocPosition } from '../utils/pkg';
+import { findPkgInstallDir, getPkgNameAndVersionFromDocPosition } from '../utils/pkg';
 import { getPkgHoverContentsCreator } from '../utils/pkg-hover-contents';
 import { getPackageInfo } from '../utils/pkg-info';
 
@@ -16,7 +16,7 @@ export class DependenciesHoverProvider implements HoverProvider {
 
         const { name, version } = pkgNameAndVersion;
         const info = await getPackageInfo(name, {
-            packageInstalledPath: (await findPackagePath(name, document.uri.fsPath))?.pkgDir,
+            packageInstallDir: await findPkgInstallDir(name, document.uri.fsPath),
             searchVersionRange: version,
             fetchBundleSize: true,
             remoteFetch: true,

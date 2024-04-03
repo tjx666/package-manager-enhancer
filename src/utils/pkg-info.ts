@@ -31,7 +31,7 @@ type PackageInfo =
           // latestVersion?: string
           isBuiltinModule: false;
           installedVersion?: string;
-          installedPath?: string;
+          installDir?: string;
           webpackBundleSize?: WebpackBundleSize;
           packageJson: PackageJson;
       }
@@ -104,7 +104,7 @@ const getPackageInfoDefaultOptions = {
 async function getPackageInfo(
     packageName: string,
     options: {
-        packageInstalledPath?: string;
+        packageInstallDir?: string;
         searchVersionRange?: string;
         remoteFetch?: boolean;
         fetchBundleSize?: boolean;
@@ -121,7 +121,7 @@ async function getPackageInfo(
     // const getLatestVersion = options.getLatestVersion || false
 
     if (
-        !options.packageInstalledPath &&
+        !options.packageInstallDir &&
         !options.skipBuiltinModuleCheck &&
         isBuiltinModule(packageName)
     ) {
@@ -132,9 +132,9 @@ async function getPackageInfo(
         return result;
     }
 
-    if (options.packageInstalledPath) {
+    if (options.packageInstallDir) {
         const localPkgJson = await readJsonFile<PackageJson>(
-            resolve(options.packageInstalledPath, PACKAGE_JSON),
+            resolve(options.packageInstallDir, PACKAGE_JSON),
         );
         if (localPkgJson !== undefined) {
             result = {
@@ -142,7 +142,7 @@ async function getPackageInfo(
                 version: localPkgJson.version!,
                 isBuiltinModule: false,
                 installedVersion: localPkgJson.version,
-                installedPath: options.packageInstalledPath,
+                installDir: options.packageInstallDir,
                 packageJson: localPkgJson,
             };
         }

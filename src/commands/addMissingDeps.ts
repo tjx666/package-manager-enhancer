@@ -4,7 +4,7 @@ import type { TextEditor } from 'vscode';
 import { Range } from 'vscode';
 
 import { parseJsonc } from '../utils/jsonc';
-import { getPackageInfoFromNpmView } from '../utils/pkg';
+import { getPkgInfoFromNpmView } from '../utils/pkg';
 import { searchUsedDeps } from '../utils/searchUsedDeps';
 
 export async function addMissingDeps(editor: TextEditor) {
@@ -41,7 +41,7 @@ export async function addMissingDeps(editor: TextEditor) {
 
     const getVersionPromises = Object.keys(newDependencies).map(async (packageName) => {
         const properties = ['version'] as const;
-        const version = await getPackageInfoFromNpmView<string, typeof properties>(
+        const version = await getPkgInfoFromNpmView<string, typeof properties>(
             packageName,
             properties,
             cwd,

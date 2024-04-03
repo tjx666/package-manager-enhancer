@@ -1,5 +1,4 @@
 import fs from 'node:fs/promises';
-import { homedir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 
 import { execa } from 'execa';
@@ -10,29 +9,24 @@ import type { Position, TextDocument } from 'vscode';
 import { NODE_MODULES, PACKAGE_JSON } from './constants';
 import { pathExists } from './fs';
 import { parseJsonc } from './jsonc';
-import { trimRightSlash } from './path';
+import { getRoot } from './path';
 
-export async function findPackagePath(packageName: string, baseFilePath: string, endPath?: string) {
-    if (endPath === undefined) {
-        endPath = homedir();
-    }
-
+export async function findPkgInstallDir(packageName: string, baseFilePath: string) {
     // maybe soft symbolic link
     baseFilePath = await fs.realpath(baseFilePath);
 
-    endPath = trimRightSlash(endPath);
     let currentDirPath = dirname(baseFilePath);
-    let pkgDir = '';
+    let pkgInstallDir = '';
+    const endPath = getRoot(baseFilePath);
 
     while (true) {
-        pkgDir = resolve(currentDirPath, NODE_MODULES, packageName);
-        const pkgJsonPath = resolve(pkgDir, PACKAGE_JSON);
+        pkgInstallDir = resolve(currentDirPath, NODE_MODULES, packageName);
+        const pkgJsonPath = resolve(pkgInstallDir, PACKAGE_JSON);
+
         // eslint-disable-next-line no-await-in-loop
-        if ((await Promise.all([pathExists(pkgDir), pathExists(pkgJsonPath)])).every(Boolean)) {
-            return {
-                pkgDir,
-                pkgJsonPath,
-            };
+        const pkgExists = await Promise.all([pathExists(pkgInstallDir), pathExists(pkgJsonPath)]);
+        if (pkgExists.every(Boolean)) {
+            return pkgInstallDir;
         }
 
         if (currentDirPath === endPath) {
@@ -91,7 +85,7 @@ export async function getPkgNameAndVersionFromDocPosition(
  * Ref: [vscode builtin npm extension npmView
  * implementation](https://github.com/microsoft/vscode/blob/main/extensions/npm/src/features/packageJSONContribution.ts#L285)
  */
-export async function getPackageInfoFromNpmView<
+export async function getPkgInfoFromNpmView<
     V extends JsonValue,
     const PA extends readonly string[] = readonly string[],
 >(

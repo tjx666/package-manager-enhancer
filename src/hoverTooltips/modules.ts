@@ -3,7 +3,7 @@ import type { CancellationToken, HoverProvider, Position, TextDocument } from 'v
 import { Hover } from 'vscode';
 
 import { findQuote } from '../utils/editor';
-import { findPackagePath } from '../utils/pkg';
+import { findPkgInstallDir } from '../utils/pkg';
 import { getPkgHoverContentsCreator } from '../utils/pkg-hover-contents';
 import { getPackageInfo } from '../utils/pkg-info';
 
@@ -86,7 +86,7 @@ export class ModulesHoverProvider implements HoverProvider {
         if (!isModule) return;
 
         const packageInfo = await getPackageInfo(packageName, {
-            packageInstalledPath: (await findPackagePath(packageName, document.uri.fsPath))?.pkgDir,
+            packageInstallDir: await findPkgInstallDir(packageName, document.uri.fsPath),
             fetchBundleSize: true,
             token,
             skipBuiltinModuleCheck: false,

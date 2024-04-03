@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { resolve } from 'node:path';
 
 import {
     type CancellationToken,
@@ -10,9 +11,10 @@ import {
     Uri,
 } from 'vscode';
 
+import { PACKAGE_JSON } from '../utils/constants';
 import { getFileRange } from '../utils/editor';
 import { jsoncStringNodeToRange } from '../utils/jsonc';
-import { findPackagePath, getPkgNameAndVersionFromDocPosition } from '../utils/pkg';
+import { findPkgInstallDir, getPkgNameAndVersionFromDocPosition } from '../utils/pkg';
 
 export class DependenciesDefinitionProvider implements DefinitionProvider {
     async provideDefinition(
@@ -23,12 +25,13 @@ export class DependenciesDefinitionProvider implements DefinitionProvider {
         const pkgInfo = await getPkgNameAndVersionFromDocPosition(document, position);
         if (!pkgInfo) return;
 
-        const pkgPath = await findPackagePath(pkgInfo.name, document.uri.fsPath);
-        if (!pkgPath) return;
+        const installDir = await findPkgInstallDir(pkgInfo.name, document.uri.fsPath);
+        if (!installDir) return;
 
+        const pkgJsonPath = resolve(installDir, PACKAGE_JSON);
         const [targetUri, targetRange] = await Promise.all([
-            fs.realpath(pkgPath.pkgJsonPath).then((p) => Uri.file(p)),
-            getFileRange(pkgPath.pkgJsonPath),
+            fs.realpath(pkgJsonPath).then((p) => Uri.file(p)),
+            getFileRange(pkgJsonPath),
         ]);
         const definition: DefinitionLink = {
             originSelectionRange: jsoncStringNodeToRange(document, pkgInfo.nameNode),

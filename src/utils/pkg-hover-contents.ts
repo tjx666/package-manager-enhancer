@@ -52,7 +52,7 @@ class PkgHoverContentsCreator {
         } else {
             packageName = getPkgNameAndVersion(packageInfo);
             const pkgJsonPath =
-                packageInfo.installedPath && join(packageInfo.installedPath, PACKAGE_JSON);
+                packageInfo.installDir && join(packageInfo.installDir, PACKAGE_JSON);
             if (pkgJsonPath) {
                 // command uri: https://liiked.github.io/VS-Code-Extension-Doc-ZH/#/extension-guides/command?id=%e5%91%bd%e4%bb%a4%e7%9a%84urls
                 showTextDocumentCmdUri = Uri.parse(
