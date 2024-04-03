@@ -124,9 +124,9 @@ class PkgHoverContentsCreator {
 
         let result = '';
         if (!packageInfo.isBuiltinModule && packageInfo.webpackBundleSize) {
-            result = `BundleSize:${spacing(3)}${formatSize(
+            result = `[BundleSize](https://bundlephobia.com/package/${getPkgNameAndVersion(packageInfo)}):${spacing(1)}${formatSize(
                 packageInfo.webpackBundleSize.normal,
-            )}${spacing(3)}(gzip:${spacing(1)}${formatSize(packageInfo.webpackBundleSize.gzip)})`;
+            )}${spacing(1)}(gzip:${spacing(1)}${formatSize(packageInfo.webpackBundleSize.gzip)})`;
         }
         return result;
     }
