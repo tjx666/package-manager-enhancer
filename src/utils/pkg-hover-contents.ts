@@ -97,62 +97,6 @@ class PkgHoverContentsCreator {
         return result;
     }
 
-    get pkgUrl() {
-        const packageInfo = this.packageInfo;
-        if (packageInfo.isBuiltinModule) return;
-
-        let homepageUrl: string | undefined, repositoryUrl: string | undefined;
-
-        homepageUrl = tryGetUrl(packageInfo.packageJson.homepage);
-        repositoryUrl = tryGetUrl(packageInfo.packageJson.repository);
-
-        if (repositoryUrl) {
-            repositoryUrl = extractGitUrl(repositoryUrl);
-        }
-
-        if (!repositoryUrl) {
-            let bugsUrl = tryGetUrl(packageInfo.packageJson.bugs);
-            if (bugsUrl) {
-                const idx = bugsUrl.indexOf('/issues');
-                if (idx !== -1) {
-                    bugsUrl = bugsUrl.slice(0, idx);
-                }
-                repositoryUrl = extractGitUrl(bugsUrl);
-            }
-        }
-
-        if (repositoryUrl === homepageUrl) {
-            homepageUrl = undefined;
-        }
-
-        const npmUrl = `https://www.npmjs.com/package/${packageInfo.name}${
-            packageInfo.installedVersion ? `/v/${packageInfo.installedVersion}` : ''
-        }`;
-
-        const infos: string[] = [];
-        if (npmUrl) {
-            infos.push(`[Npm](${npmUrl})`);
-        }
-        if (homepageUrl) {
-            infos.push(`[HomePage](${homepageUrl})`);
-        }
-        if (repositoryUrl) {
-            infos.push(`[Repository](${repositoryUrl})`);
-        }
-
-        const { pkgName, packageNameAndVersion } = this;
-        infos.push(
-            `[Npm View](https://npmview.vercel.app/${packageNameAndVersion})`,
-            `[Npm Trends](https://npmtrends.com/${pkgName})`,
-            `[Npm Graph](https://npmgraph.js.org/?q=${packageNameAndVersion})`,
-            `[Npm Charts](https://npmcharts.com/compare/${pkgName})`,
-            `[Npm Stats](https://npm-stat.com/charts.html?package=${pkgName})`,
-            `[Moiva](https://moiva.io/?npm=${pkgName})`,
-            `[RunKit](https://npm.runkit.com/${pkgName})`,
-        );
-        return infos.join(spacing(4));
-    }
-
     get bundleSize() {
         const packageInfo = this.packageInfo;
 
@@ -220,6 +164,63 @@ class PkgHoverContentsCreator {
         return infos.length > 0 ? infos.join(spacing(4)) : undefined;
     }
 
+    get pkgWebsites() {
+        const packageInfo = this.packageInfo;
+        if (packageInfo.isBuiltinModule) return;
+
+        let homepageUrl: string | undefined, repositoryUrl: string | undefined;
+
+        homepageUrl = tryGetUrl(packageInfo.packageJson.homepage);
+        repositoryUrl = tryGetUrl(packageInfo.packageJson.repository);
+
+        if (repositoryUrl) {
+            repositoryUrl = extractGitUrl(repositoryUrl);
+        }
+
+        if (!repositoryUrl) {
+            let bugsUrl = tryGetUrl(packageInfo.packageJson.bugs);
+            if (bugsUrl) {
+                const idx = bugsUrl.indexOf('/issues');
+                if (idx !== -1) {
+                    bugsUrl = bugsUrl.slice(0, idx);
+                }
+                repositoryUrl = extractGitUrl(bugsUrl);
+            }
+        }
+
+        if (repositoryUrl === homepageUrl) {
+            homepageUrl = undefined;
+        }
+
+        const npmUrl = `https://www.npmjs.com/package/${packageInfo.name}${
+            packageInfo.installedVersion ? `/v/${packageInfo.installedVersion}` : ''
+        }`;
+
+        const infos: string[] = [];
+        if (npmUrl) {
+            infos.push(`[Npm](${npmUrl})`);
+        }
+        if (homepageUrl) {
+            infos.push(`[HomePage](${homepageUrl})`);
+        }
+        if (repositoryUrl) {
+            infos.push(`[Repository](${repositoryUrl})`);
+        }
+
+        const { pkgName, packageNameAndVersion } = this;
+        infos.push(
+            `[Sync Mirror](https://npmmirror.com/sync/${pkgName})`,
+            `[Npm View](https://npmview.vercel.app/${packageNameAndVersion})`,
+            `[Npm Trends](https://npmtrends.com/${pkgName})`,
+            `[Npm Graph](https://npmgraph.js.org/?q=${packageNameAndVersion})`,
+            `[Npm Charts](https://npmcharts.com/compare/${pkgName})`,
+            `[Npm Stats](https://npm-stat.com/charts.html?package=${pkgName})`,
+            `[Moiva](https://moiva.io/?npm=${pkgName})`,
+            `[RunKit](https://npm.runkit.com/${pkgName})`,
+        );
+        return infos.join(spacing(4));
+    }
+
     get badgesInfo() {
         return [
             this.latestVersion,
@@ -260,7 +261,7 @@ class PkgHoverContentsCreator {
             }
         }
 
-        return [basicInfoMd, this.pkgUrl, badgesInfoMd].filter(Boolean).map((md) => {
+        return [basicInfoMd, this.pkgWebsites, badgesInfoMd].filter(Boolean).map((md) => {
             const contents = new MarkdownString(md);
             contents.isTrusted = true;
             contents.supportHtml = true;

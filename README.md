@@ -34,10 +34,6 @@ You can click editor title icon toggle it:
 
 ![Npm Script Run Background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
 
-### go to symbol in editor
-
-check issue: [Go to Symbol in Editor doesn't auto fill symbol which current cursor locate in editor](https://github.com/microsoft/vscode/issues/167223)
-
 ### add missing dependencies
 
 useful when you refactor code from one package to another new package.
@@ -54,7 +50,6 @@ useful when you refactor code from one package to another new package.
 
 ## TODOs
 
-- [ ] sync registries
 - [ ] search packages
 - [ ] [warning outdated packages](https://github.com/zyrong/vscode-node-modules/issues/29)
 - [ ] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26)
