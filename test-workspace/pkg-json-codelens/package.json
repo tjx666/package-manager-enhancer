@@ -12,6 +12,7 @@
         "!src/exclude"
     ],
     "dependencies": {
+        "is-builtin-module": "^3.2.1",
         "@yutengjing/eslint-config-typescript": "^0.6.0",
         "axios": "^1.6.8",
         "lodash": "^4.17.21",

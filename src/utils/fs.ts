@@ -44,7 +44,7 @@ export async function readJsonFile<T extends JsonValue>(jsonPath: string): Promi
     }
 }
 
-export function formatSize(byteSize: number, decimal = 2): string {
+export function formatSize(byteSize: number, decimal = 1): string {
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     let i = 0;
     for (; i < units.length; i++) {

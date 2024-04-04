@@ -6,7 +6,7 @@ import type { CancellationToken } from 'vscode';
 
 import { fetchBundleSize, fetchRemotePackageJson, tryFetch } from '../apis';
 import { PACKAGE_JSON } from './constants';
-import { readJsonFile } from './fs';
+import { pathExists, readJsonFile } from './fs';
 
 interface PackageJsonData {
     name: string;
@@ -126,6 +126,13 @@ async function getPackageInfo(
             ) {
                 containsTypes = true;
             }
+        }
+
+        if (!containsTypes && result.installDir) {
+            const main = result.packageJson.main ?? 'index.js';
+            containsTypes = await pathExists(
+                resolve(result.installDir, main.replace(/\.[^.]*$/, '.d.ts')),
+            );
         }
         result.containsTypes = containsTypes;
         result.isESMModule = Boolean(packageJson.module);
