@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.13.2 (2024-04-05)
+
+### 🐞 Bug Fixes
+
+- Typed package should consider only contains index.d.ts ([0456a6a](https://github.com/tjx666/package-manager-enhancer/commit/0456a6a))
+
+### ❤️ Contributors
+
+- YuTengjing ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.13.1...v0.13.2 '2024-04-05')
+
 ## v0.13.1 (2024-04-04)
 
 ### 🚀 Features
