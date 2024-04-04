@@ -140,7 +140,7 @@ class PkgHoverContentsCreator {
         if (!packageInfo.isBuiltinModule && packageInfo.bundleSize) {
             const { normal, gzip } = packageInfo.bundleSize;
             const bundlephobiaWebsite = `https://bundlephobia.com/package/${this.packageNameAndVersion}`;
-            return `[![bundle size](https://img.shields.io/badge/bundle_size-${formatSize(normal)}_(gzip%3A_${formatSize(gzip)})-green)](${bundlephobiaWebsite})`;
+            return `[![size](https://img.shields.io/badge/size-${formatSize(normal)}_%7C_gzip_${formatSize(gzip)}-green)](${bundlephobiaWebsite})`;
         }
         return undefined;
     }
@@ -167,7 +167,7 @@ class PkgHoverContentsCreator {
         const { githubUserAndRepo } = this;
         if (!githubUserAndRepo) return;
 
-        const badge = `![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/${githubUserAndRepo})`;
+        const badge = `![GitHub Issues](https://img.shields.io/github/issues-raw/${githubUserAndRepo}?label=issues)`;
         return `[${badge}](https://github.com/${githubUserAndRepo}/issues)`;
     }
 
@@ -196,8 +196,8 @@ class PkgHoverContentsCreator {
         if (this.packageInfo.isBuiltinModule) {
             const homepageUrl = `https://nodejs.org/docs/latest/api/${this.pkgName}.html`;
             const repositoryUrl = `https://github.com/nodejs/node/blob/main/lib/${this.pkgName}.js`;
-            markdown += `[HomePage](${homepageUrl})${spacing(4)}`;
-            markdown += `[Repository](${repositoryUrl})`;
+            markdown += `[Documentation](${homepageUrl})${spacing(4)}`;
+            markdown += `[Source Code](${repositoryUrl})`;
         } else {
             markdown += this.pkgUrl;
             markdown += `<br/><br/>${this.badgeInfos}`;

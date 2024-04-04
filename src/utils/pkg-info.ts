@@ -74,6 +74,7 @@ async function getPackageInfo(
         const localPkgJson = await readJsonFile<PackageJson>(
             resolve(options.packageInstallDir, PACKAGE_JSON),
         );
+
         if (localPkgJson !== undefined) {
             result = {
                 name: packageName,
