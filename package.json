@@ -208,6 +208,20 @@
                     "package-manager-enhancer.enableNodeVersionCodeLens": {
                         "type": "boolean",
                         "default": true
+                    },
+                    "package-manager-enhancer.packageHoverTooltip.websites": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "builtin:npm",
+                            "builtin:homepage",
+                            "builtin:repository",
+                            "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
+                            "[Npm Trends](https://npmtrends.com/${packageName})",
+                            "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})"
+                        ]
                     }
                 }
             }

@@ -22,6 +22,9 @@ interface Configuration {
     };
     enablePackageJsonVersionCodeLens: boolean;
     enableNodeVersionCodeLens: boolean;
+    packageHoverTooltip: {
+        websites: string[];
+    };
 }
 
 export const configuration: Configuration = {} as Configuration;
@@ -61,6 +64,8 @@ export async function updateConfiguration() {
     configuration.enableNodeVersionCodeLens = extensionConfig.get<boolean>(
         'enableNodeVersionCodeLens',
     )!;
+    configuration.packageHoverTooltip =
+        extensionConfig.get<Configuration['packageHoverTooltip']>('packageHoverTooltip')!;
 }
 updateConfiguration();
 
