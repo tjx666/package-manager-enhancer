@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.13.1 (2024-04-04)
+
+### 🚀 Features
+
+- Add docs about config package hover tooltip ([9f3f091](https://github.com/tjx666/package-manager-enhancer/commit/9f3f091))
+
+### ❤️ Contributors
+
+- YuTengjing ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.13.0...v0.13.1 '2024-04-04')
+
 ## v0.13.0 (2024-04-04)
 
 ### 🚀 Features
