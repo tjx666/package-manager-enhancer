@@ -1,5 +1,26 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.13.0 (2024-04-04)
+
+### 🚀 Features
+
+- Support run npm script in terminal ([49506e7](https://github.com/tjx666/package-manager-enhancer/commit/49506e7))
+- Support package.json dependencies definition ([37db3f4](https://github.com/tjx666/package-manager-enhancer/commit/37db3f4))
+- Support package.json deps hover tooltip ([9088f07](https://github.com/tjx666/package-manager-enhancer/commit/9088f07))
+- Import statement hover tooltip ([4aea8f0](https://github.com/tjx666/package-manager-enhancer/commit/4aea8f0))
+- Make bundle size clickable ([8aac267](https://github.com/tjx666/package-manager-enhancer/commit/8aac267))
+- Support show latest version, github star count etc ([dc52060](https://github.com/tjx666/package-manager-enhancer/commit/dc52060))
+- Support show package description on imported module ([882703a](https://github.com/tjx666/package-manager-enhancer/commit/882703a))
+- Support sync npm mirror package ([7b4287c](https://github.com/tjx666/package-manager-enhancer/commit/7b4287c))
+- Support custom package hover websites ([e2cd10e](https://github.com/tjx666/package-manager-enhancer/commit/e2cd10e))
+- Support config package hover tooltip badges ([acedf56](https://github.com/tjx666/package-manager-enhancer/commit/acedf56))
+
+### ❤️ Contributors
+
+- YuTengjing ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.12.0...v0.13.0 '2024-04-04')
+
 ## v0.12.0 (2024-03-31)
 
 ### 🚀 Features
