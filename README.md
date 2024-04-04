@@ -56,12 +56,41 @@ useful when you refactor code from one package to another new package.
 
 ![package hover tooltip](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-hover-tooltip.png?raw=true)
 
+you can custom the tooltip by settings:
+
+```jsonc
+{
+  "package-manager-enhancer.packageHoverTooltip.websites": [
+    "builtin:npm",
+    "builtin:homepage",
+    "builtin:repository",
+    "[Sync Mirror](https://npmmirror.com/sync/${packageName})",
+    "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
+    "[Npm Trends](https://npmtrends.com/${packageName})",
+    "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})",
+    "[Npm Charts](https://npmcharts.com/compare/${packageName})",
+    "[Npm Stats](https://npm-stat.com/charts.html?package=${packageName})",
+    "[Moiva](https://moiva.io/?npm=${packageName})",
+    "[RunKit](https://npm.runkit.com/${packageName})",
+  ],
+  "package-manager-enhancer.packageHoverTooltip.badges": [
+    "[![latest version](https://img.shields.io/npm/v/${packageName}?label=latest)](https://www.npmjs.com/package/${packageName})",
+    "[![NPM Downloads](https://img.shields.io/npm/dw/${packageName})](https://www.npmjs.com/package/${packageName}?activeTab=versions)",
+    "[![GitHub Repo stars](https://img.shields.io/github/stars/${githubUserAndRepo})](https://github.com/${githubUserAndRepo})",
+    "[![GitHub Issues](https://img.shields.io/github/issues-raw/${githubUserAndRepo}?label=issues)](https://github.com/${githubUserAndRepo}/issues)",
+    "[![NPM Type Definitions](https://img.shields.io/npm/types/${packageName})](https://arethetypeswrong.github.io/?p=${packageNameAtVersion})",
+    // add more please check: https://shields.io/badges
+  ],
+}
+```
+
 ## TODOs
 
 - [ ] [outdated packages warning](https://github.com/zyrong/vscode-node-modules/issues/29)
 - [ ] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26)
 - [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
+- [ ] color bundle size
 - [ ] search packages
 
 ## My extensions
