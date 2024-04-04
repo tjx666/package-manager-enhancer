@@ -93,7 +93,9 @@ export class ModulesHoverProvider implements HoverProvider {
         });
         if (packageInfo) {
             const pkgHoverContentsCreator = getPkgHoverContentsCreator();
-            const hoverContents = pkgHoverContentsCreator.generate(packageInfo);
+            const hoverContents = pkgHoverContentsCreator.generate(packageInfo, {
+                showDescription: true,
+            });
             return new Hover(hoverContents);
         }
 

@@ -31,6 +31,8 @@ type PackageInfo =
           installDir?: string;
           bundleSize?: BundleSize;
           packageJson: PackageJson;
+          containsTypes?: boolean;
+          isESMModule?: boolean;
       }
     | { isBuiltinModule: true; name: string };
 
@@ -107,6 +109,26 @@ async function getPackageInfo(
         if (bundleSize) {
             (result as any).bundleSize = bundleSize;
         }
+    }
+
+    if (result && !result.isBuiltinModule && result.packageJson) {
+        const { packageJson } = result;
+        let containsTypes = Boolean(
+            packageJson.types || packageJson.typings || packageJson.typesVersion,
+        );
+        if (packageJson.exports !== null && typeof packageJson.exports === 'object') {
+            const { exports } = packageJson;
+            if (
+                'types' in exports ||
+                Object.values(exports).some(
+                    (value) => value !== null && typeof value === 'object' && 'types' in value,
+                )
+            ) {
+                containsTypes = true;
+            }
+        }
+        result.containsTypes = containsTypes;
+        result.isESMModule = Boolean(packageJson.module);
     }
 
     return result;

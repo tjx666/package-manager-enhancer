@@ -33,6 +33,9 @@ function extractGitUrl(url: string) {
     return result;
 }
 
+interface GenerateOptions {
+    showDescription?: boolean;
+}
 class PkgHoverContentsCreator {
     packageInfo!: PackageInfo;
 
@@ -61,6 +64,11 @@ class PkgHoverContentsCreator {
 
     get pkgName() {
         return this.packageInfo.name;
+    }
+
+    get pkgDescription() {
+        if (this.packageInfo.isBuiltinModule) return;
+        return this.packageInfo.packageJson.description;
     }
 
     get pkgNameLink() {
@@ -121,17 +129,28 @@ class PkgHoverContentsCreator {
             packageInfo.installedVersion ? `/v/${packageInfo.installedVersion}` : ''
         }`;
 
-        let result = '';
+        const infos: string[] = [];
         if (npmUrl) {
-            result += `[NPM](${npmUrl})${spacing(4)}`;
+            infos.push(`[Npm](${npmUrl})`);
         }
         if (homepageUrl) {
-            result += `[HomePage](${homepageUrl})${spacing(4)}`;
+            infos.push(`[HomePage](${homepageUrl})`);
         }
         if (repositoryUrl) {
-            result += `[Repository](${repositoryUrl})${spacing(4)}`;
+            infos.push(`[Repository](${repositoryUrl})`);
         }
-        return result;
+
+        const { pkgName, packageNameAndVersion } = this;
+        infos.push(
+            `[Npm View](https://npmview.vercel.app/${packageNameAndVersion})`,
+            `[Npm Trends](https://npmtrends.com/${pkgName})`,
+            `[Npm Graph](https://npmgraph.js.org/?q=${packageNameAndVersion})`,
+            `[Npm Charts](https://npmcharts.com/compare/${pkgName})`,
+            `[Npm Stats](https://npm-stat.com/charts.html?package=${pkgName})`,
+            `[Moiva](https://moiva.io/?npm=${pkgName})`,
+            `[RunKit](https://npm.runkit.com/${pkgName})`,
+        );
+        return infos.join(spacing(4));
     }
 
     get bundleSize() {
@@ -176,37 +195,77 @@ class PkgHoverContentsCreator {
         return `[${badge}](https://arethetypeswrong.github.io/?p=${this.packageNameAndVersion})`;
     }
 
-    get badgeInfos() {
+    get moduleInfo() {
+        if (this.packageInfo.isBuiltinModule) return;
+
+        const { packageInfo } = this;
+        const infos: string[] = [];
+        if (packageInfo.isESMModule) {
+            infos.push(`[ESM](https://nodejs.org/api/esm.html)`);
+        }
+
+        if (packageInfo.containsTypes !== undefined) {
+            infos.push(
+                `[${packageInfo.containsTypes ? 'Typed' : 'No Types'}](https://arethetypeswrong.github.io/?p=${this.packageNameAndVersion})`,
+            );
+        }
+
+        if (packageInfo.bundleSize) {
+            const { normal, gzip } = packageInfo.bundleSize;
+            infos.push(
+                `[BundleSize](https://bundlephobia.com/package/${this.packageNameAndVersion}):${spacing(1)}${formatSize(normal)}${spacing(1)}(gzip:${spacing(1)}${formatSize(gzip)})`,
+            );
+        }
+
+        return infos.length > 0 ? infos.join(spacing(4)) : undefined;
+    }
+
+    get badgesInfo() {
         return [
             this.latestVersion,
             this.downloadCountPerWeek,
-            this.bundleSize,
+            // this.bundleSize,
             this.githubStar,
             this.githubIssueCount,
-            this.typeDefinition,
+            // this.typeDefinition,
         ]
             .filter(Boolean)
             .join(spacing(3));
     }
 
-    generate(packageInfo: PackageInfo): MarkdownString {
+    generate(
+        packageInfo: PackageInfo,
+        options?: GenerateOptions,
+    ): MarkdownString | MarkdownString[] {
         this.packageInfo = packageInfo;
 
-        let markdown = `${this.pkgNameLink}${spacing(2)}`;
+        let basicInfoMd = `${this.pkgNameLink}${spacing(2)}`;
+        let badgesInfoMd = '';
+
         if (this.packageInfo.isBuiltinModule) {
             const homepageUrl = `https://nodejs.org/docs/latest/api/${this.pkgName}.html`;
             const repositoryUrl = `https://github.com/nodejs/node/blob/main/lib/${this.pkgName}.js`;
-            markdown += `[Documentation](${homepageUrl})${spacing(4)}`;
-            markdown += `[Source Code](${repositoryUrl})`;
+            basicInfoMd += `[Documentation](${homepageUrl})${spacing(4)}`;
+            basicInfoMd += `[Source Code](${repositoryUrl})`;
         } else {
-            markdown += this.pkgUrl;
-            markdown += `<br/><br/>${this.badgeInfos}`;
+            const { moduleInfo, badgesInfo, pkgDescription } = this;
+            if (moduleInfo) {
+                basicInfoMd += `${moduleInfo}`;
+            }
+            if (options?.showDescription && pkgDescription) {
+                basicInfoMd += `<br />${pkgDescription}`;
+            }
+            if (badgesInfo) {
+                badgesInfoMd = badgesInfo;
+            }
         }
 
-        const contents = new MarkdownString(markdown);
-        contents.isTrusted = true;
-        contents.supportHtml = true;
-        return contents;
+        return [basicInfoMd, this.pkgUrl, badgesInfoMd].filter(Boolean).map((md) => {
+            const contents = new MarkdownString(md);
+            contents.isTrusted = true;
+            contents.supportHtml = true;
+            return contents;
+        });
     }
 }
 

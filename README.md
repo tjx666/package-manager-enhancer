@@ -54,11 +54,8 @@ useful when you refactor code from one package to another new package.
 
 ## TODOs
 
-- [ ] package hover tip
-  - [ ] websites: npm trending, npm view, npm graph etc
-  - [ ] [show description](https://github.com/zyrong/vscode-node-modules/issues/28)
-  - [ ] [show module system](https://github.com/zyrong/vscode-node-modules/issues/24)
 - [ ] sync registries
+- [ ] search packages
 - [ ] [warning outdated packages](https://github.com/zyrong/vscode-node-modules/issues/29)
 - [ ] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26)
 - [ ] `pnpm why` visualization
