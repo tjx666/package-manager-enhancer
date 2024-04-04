@@ -32,29 +32,37 @@ You can click editor title icon toggle it:
 
 ### npm script run in background
 
-![Npm Script Run Background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
+![npm script run in background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
 
 ### add missing dependencies
 
 useful when you refactor code from one package to another new package.
 
-![Add Missing Dependencies](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/add-missing-deps.gif?raw=true)
+![add missing dependencies](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/add-missing-deps.gif?raw=true)
 
-### corepack `PackageManager` codelens
+### corepack packageManager codelens
 
-![PackageManager version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-codelens.gif?raw=true)
+![corepack PackageManager codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-manage-codelens.gif?raw=true)
 
 ### node version codelens
 
-![Node version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/node-version-codelens.gif?raw=true)
+![node version codelens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/node-version-codelens.gif?raw=true)
+
+### package.json dependencies definition
+
+![package.json dependencies definition](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/packagejson-definition.gif?raw=true)
+
+### package hover tooltip
+
+![package hover tooltip](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/package-hover-tooltip.png?raw=true)
 
 ## TODOs
 
-- [ ] search packages
-- [ ] [warning outdated packages](https://github.com/zyrong/vscode-node-modules/issues/29)
+- [ ] [outdated packages warning](https://github.com/zyrong/vscode-node-modules/issues/29)
 - [ ] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26)
 - [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
+- [ ] search packages
 
 ## My extensions
 

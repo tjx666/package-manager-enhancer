@@ -55,7 +55,7 @@ export const fetchBundleSize = (() => {
     const request = async (pkgNameAndVersion: string) => {
         const url = `https://bundlephobia.com/api/size?package=${pkgNameAndVersion}`;
         const { data } = await axios.get<{ gzip?: number; size?: number }>(url, {
-            timeout: 5 * 1000,
+            timeout: 3 * 1000,
         });
         if (data && typeof data.size === 'number') {
             return {
@@ -75,7 +75,8 @@ export async function tryFetch<P extends Promise<any>>(
     let resp: Awaited<P>;
     try {
         resp = await promise;
-    } catch {
+    } catch (error) {
+        console.error(error);
         return undefined;
     }
     return resp;

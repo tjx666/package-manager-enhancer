@@ -224,6 +224,7 @@
                         ]
                     },
                     "package-manager-enhancer.packageHoverTooltip.badges": {
+                        "markdownDescription": "<https://shields.io/>",
                         "type": "array",
                         "items": {
                             "type": "string"

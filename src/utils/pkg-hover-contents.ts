@@ -189,13 +189,13 @@ class PkgHoverContentsCreator {
         return str;
     }
 
-    get pkgWebsites() {
+    get websites() {
         const packageInfo = this.packageInfo;
         if (packageInfo.isBuiltinModule) return;
 
-        // 'builtin:npm'
-        // 'builtin:homepage'
-        // 'builtin:repository"
+        // "builtin:npm"
+        // "builtin:homepage"
+        // "builtin:repository"
         // "[Sync Mirror](https://npmmirror.com/sync/${packageName})",
         // "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
         // "[Npm Trends](https://npmtrends.com/${packageName})",
@@ -237,12 +237,11 @@ class PkgHoverContentsCreator {
             .join(spacing(4));
     }
 
-    get badgesInfo() {
+    get badges() {
         const packageInfo = this.packageInfo;
         if (packageInfo.isBuiltinModule) return;
 
         // "[![NPM Type Definitions](https://img.shields.io/npm/types/${packageName})](https://arethetypeswrong.github.io/?p=${packageNameAtVersion})"
-
         const { badges } = configuration.packageHoverTooltip;
         return badges
             .map((badge) => {
@@ -259,7 +258,6 @@ class PkgHoverContentsCreator {
         this.packageInfo = packageInfo;
 
         let basicInfoMd = `${this.pkgNameLink}${spacing(2)}`;
-        let badgesInfoMd = '';
 
         if (this.packageInfo.isBuiltinModule) {
             const homepageUrl = `https://nodejs.org/docs/latest/api/${this.packageName}.html`;
@@ -267,19 +265,16 @@ class PkgHoverContentsCreator {
             basicInfoMd += `[Documentation](${homepageUrl})${spacing(4)}`;
             basicInfoMd += `[Source Code](${repositoryUrl})`;
         } else {
-            const { moduleInfo, badgesInfo, pkgDescription } = this;
+            const { moduleInfo, pkgDescription } = this;
             if (moduleInfo) {
                 basicInfoMd += `${moduleInfo}`;
             }
             if (options?.showDescription && pkgDescription) {
                 basicInfoMd += `<br />${pkgDescription}`;
             }
-            if (badgesInfo) {
-                badgesInfoMd = badgesInfo;
-            }
         }
 
-        return [basicInfoMd, this.pkgWebsites, badgesInfoMd].filter(Boolean).map((md) => {
+        return [basicInfoMd, this.websites, this.badges].filter(Boolean).map((md) => {
             const contents = new MarkdownString(md);
             contents.isTrusted = true;
             contents.supportHtml = true;

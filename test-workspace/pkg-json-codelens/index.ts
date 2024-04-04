@@ -1,5 +1,5 @@
 import { globby } from 'globby';
-import lodash from 'lodash';
+import lodash from 'lodash-es';
 import 'lodash/add';
 import type { x} from 'bbb';
 import { EventEmitter, workspace } from 'vscode';
