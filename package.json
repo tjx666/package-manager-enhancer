@@ -222,6 +222,18 @@
                             "[Npm Trends](https://npmtrends.com/${packageName})",
                             "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})"
                         ]
+                    },
+                    "package-manager-enhancer.packageHoverTooltip.badges": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "[![latest version](https://img.shields.io/npm/v/${packageName}?label=latest)](https://www.npmjs.com/package/${packageName})",
+                            "[![NPM Downloads](https://img.shields.io/npm/dw/${packageName})](https://www.npmjs.com/package/${packageName}?activeTab=versions)",
+                            "[![GitHub Repo stars](https://img.shields.io/github/stars/${githubUserAndRepo})](https://github.com/${githubUserAndRepo})",
+                            "[![GitHub Issues](https://img.shields.io/github/issues-raw/${githubUserAndRepo}?label=issues)](https://github.com/${githubUserAndRepo}/issues)"
+                        ]
                     }
                 }
             }

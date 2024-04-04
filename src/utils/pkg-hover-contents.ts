@@ -143,37 +143,6 @@ class PkgHoverContentsCreator {
         return undefined;
     }
 
-    get latestVersion() {
-        const badge = `![latest version](https://img.shields.io/npm/v/${this.packageName}?label=latest)`;
-        return `[${badge}](https://www.npmjs.com/package/${this.packageName})`;
-    }
-
-    get downloadCountPerWeek() {
-        const badge = `![NPM Downloads](https://img.shields.io/npm/dw/${this.packageName})`;
-        return `[${badge}](https://www.npmjs.com/package/${this.packageName}?activeTab=versions)`;
-    }
-
-    get githubStar() {
-        const { githubUserAndRepo } = this;
-        if (!githubUserAndRepo) return;
-
-        const badge = `![GitHub Repo stars](https://img.shields.io/github/stars/${githubUserAndRepo})`;
-        return `[${badge}](https://github.com/${githubUserAndRepo})`;
-    }
-
-    get githubIssueCount() {
-        const { githubUserAndRepo } = this;
-        if (!githubUserAndRepo) return;
-
-        const badge = `![GitHub Issues](https://img.shields.io/github/issues-raw/${githubUserAndRepo}?label=issues)`;
-        return `[${badge}](https://github.com/${githubUserAndRepo}/issues)`;
-    }
-
-    get typeDefinition() {
-        const badge = `![NPM Type Definitions](https://img.shields.io/npm/types/${this.packageName})`;
-        return `[${badge}](https://arethetypeswrong.github.io/?p=${this.packageNameAtVersion})`;
-    }
-
     get moduleInfo() {
         if (this.packageInfo.isBuiltinModule) return;
 
@@ -199,10 +168,42 @@ class PkgHoverContentsCreator {
         return infos.length > 0 ? infos.join(spacing(4)) : undefined;
     }
 
+    replacePlaceholders(str: string) {
+        const placeholderKeys = [
+            'packageName',
+            'packageVersion',
+            'packageNameAtVersion',
+            'githubUserAndRepo',
+        ] as const;
+        for (const key of placeholderKeys) {
+            // eslint-disable-next-line prefer-template
+            const placeholder = '${' + key + '}';
+            if (str.includes(placeholder)) {
+                if (this[key] === undefined) {
+                    return undefined;
+                } else {
+                    str = str.replaceAll(placeholder, this[key]!);
+                }
+            }
+        }
+        return str;
+    }
+
     get pkgWebsites() {
         const packageInfo = this.packageInfo;
         if (packageInfo.isBuiltinModule) return;
 
+        // 'builtin:npm'
+        // 'builtin:homepage'
+        // 'builtin:repository"
+        // "[Sync Mirror](https://npmmirror.com/sync/${packageName})",
+        // "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
+        // "[Npm Trends](https://npmtrends.com/${packageName})",
+        // "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})",
+        // "[Npm Charts](https://npmcharts.com/compare/${packageName})",
+        // "[Npm Stats](https://npm-stat.com/charts.html?package=${packageName})",
+        // "[Moiva](https://moiva.io/?npm=${packageName})",
+        // "[RunKit](https://npm.runkit.com/${packageName})"
         const { websites } = configuration.packageHoverTooltip;
         return websites
             .map((website) => {
@@ -229,35 +230,7 @@ class PkgHoverContentsCreator {
                     }
                     return undefined;
                 } else {
-                    // 'builtin:npm'
-                    // 'builtin:homepage'
-                    // 'builtin:repository"
-                    // "[Sync Mirror](https://npmmirror.com/sync/${packageName})",
-                    // "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
-                    // "[Npm Trends](https://npmtrends.com/${packageName})",
-                    // "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})",
-                    // "[Npm Charts](https://npmcharts.com/compare/${packageName})",
-                    // "[Npm Stats](https://npm-stat.com/charts.html?package=${packageName})",
-                    // "[Moiva](https://moiva.io/?npm=${packageName})",
-                    // "[RunKit](https://npm.runkit.com/${packageName})"
-
-                    const placeholderKeys = [
-                        'packageName',
-                        'packageVersion',
-                        'packageNameAtVersion',
-                    ] as const;
-                    for (const key of placeholderKeys) {
-                        // eslint-disable-next-line prefer-template
-                        const placeholder = '${' + key + '}';
-                        if (website.includes(placeholder)) {
-                            if (this[key] === undefined) {
-                                return undefined;
-                            } else {
-                                website = website.replaceAll(placeholder, this[key]!);
-                            }
-                        }
-                    }
-                    return website;
+                    return this.replacePlaceholders(website);
                 }
             })
             .filter(Boolean)
@@ -265,14 +238,16 @@ class PkgHoverContentsCreator {
     }
 
     get badgesInfo() {
-        return [
-            this.latestVersion,
-            this.downloadCountPerWeek,
-            // this.bundleSize,
-            this.githubStar,
-            this.githubIssueCount,
-            // this.typeDefinition,
-        ]
+        const packageInfo = this.packageInfo;
+        if (packageInfo.isBuiltinModule) return;
+
+        // "[![NPM Type Definitions](https://img.shields.io/npm/types/${packageName})](https://arethetypeswrong.github.io/?p=${packageNameAtVersion})"
+
+        const { badges } = configuration.packageHoverTooltip;
+        return badges
+            .map((badge) => {
+                return this.replacePlaceholders(badge);
+            })
             .filter(Boolean)
             .join(spacing(3));
     }

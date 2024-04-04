@@ -24,6 +24,7 @@ interface Configuration {
     enableNodeVersionCodeLens: boolean;
     packageHoverTooltip: {
         websites: string[];
+        badges: string[];
     };
 }
 
