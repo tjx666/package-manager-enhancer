@@ -13,7 +13,7 @@ import type {
 } from 'vscode';
 import * as 
 e from 'execa'
-import {resolve} from 'path'
+import {resolve} from 'node:path'
 
 
 console.log(lodash);

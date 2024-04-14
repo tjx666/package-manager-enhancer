@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { isBuiltin } from 'node:module';
 import { dirname, resolve } from 'node:path';
 
 import { execa } from 'execa';
@@ -10,6 +11,10 @@ import { NODE_MODULES, PACKAGE_JSON } from './constants';
 import { pathExists } from './fs';
 import { parseJsonc } from './jsonc';
 import { getRoot } from './path';
+
+export function isValidPkgName(pkgName: string) {
+    return isBuiltin(pkgName) || validatePkgName(pkgName).validForOldPackages;
+}
 
 export async function findPkgInstallDir(packageName: string, baseFilePath: string) {
     // maybe soft symbolic link
@@ -71,7 +76,7 @@ export async function getPkgNameAndVersionFromDocPosition(
     if (!isHoverOverDependency) return;
 
     const pkgName = nameNode.value;
-    if (!validatePkgName(pkgName).validForOldPackages) return;
+    if (!isValidPkgName(pkgName)) return;
 
     return {
         nameNode,

@@ -1,6 +1,6 @@
+import { isBuiltin } from 'node:module';
 import { resolve } from 'node:path';
 
-import isBuiltinModule from 'is-builtin-module';
 import type { PackageJson } from 'type-fest';
 import type { CancellationToken } from 'vscode';
 
@@ -60,13 +60,9 @@ async function getPackageInfo(
     let result: PackageInfo | undefined;
     // const getLatestVersion = options.getLatestVersion || false
 
-    if (
-        !options.packageInstallDir &&
-        !options.skipBuiltinModuleCheck &&
-        isBuiltinModule(packageName)
-    ) {
+    if (!options.packageInstallDir && !options.skipBuiltinModuleCheck && isBuiltin(packageName)) {
         result = {
-            name: packageName,
+            name: packageName.replace('node:', ''),
             isBuiltinModule: true,
         };
         return result;

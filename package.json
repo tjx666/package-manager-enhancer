@@ -285,7 +285,6 @@
         "expiry-map": "^2.0.0",
         "globby": "^14.0.1",
         "hosted-git-info": "^7.0.1",
-        "is-builtin-module": "^3.2.1",
         "jsonc-parser": "^3.2.1",
         "lodash-es": "^4.17.21",
         "lru-cache": "^10.2.0",

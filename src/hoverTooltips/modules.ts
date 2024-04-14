@@ -1,9 +1,8 @@
-import validate from 'validate-npm-package-name';
 import type { CancellationToken, HoverProvider, Position, TextDocument } from 'vscode';
 import { Hover } from 'vscode';
 
 import { findQuote } from '../utils/editor';
-import { findPkgInstallDir } from '../utils/pkg';
+import { findPkgInstallDir, isValidPkgName } from '../utils/pkg';
 import { getPkgHoverContentsCreator } from '../utils/pkg-hover-contents';
 import { getPackageInfo } from '../utils/pkg-info';
 
@@ -62,7 +61,7 @@ export class ModulesHoverProvider implements HoverProvider {
             }
         }
 
-        if (!validate(packageName).validForOldPackages) {
+        if (!isValidPkgName(packageName)) {
             return;
         }
 

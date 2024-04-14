@@ -269,10 +269,13 @@ class PkgHoverContentsCreator {
             if (moduleInfo) {
                 basicInfoMd += `${moduleInfo}`;
             }
+            if (this.websites && this.websites.trim().length > 0) {
+                basicInfoMd += `<br />${this.websites}`;
+            }
         }
 
         const mds = [
-            `${basicInfoMd}<br />${this.websites}`,
+            basicInfoMd,
             this.badges,
             ...(options?.showDescription ? [this.pkgDescription] : []),
         ].filter((md) => md && md.trim().length > 0);
