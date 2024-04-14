@@ -265,16 +265,19 @@ class PkgHoverContentsCreator {
             basicInfoMd += `[Documentation](${homepageUrl})${spacing(4)}`;
             basicInfoMd += `[Source Code](${repositoryUrl})`;
         } else {
-            const { moduleInfo, pkgDescription } = this;
+            const { moduleInfo } = this;
             if (moduleInfo) {
                 basicInfoMd += `${moduleInfo}`;
             }
-            if (options?.showDescription && pkgDescription) {
-                basicInfoMd += `<br />${pkgDescription}`;
-            }
         }
 
-        return [basicInfoMd, this.websites, this.badges].filter(Boolean).map((md) => {
+        const mds = [
+            `${basicInfoMd}<br />${this.websites}`,
+            this.badges,
+            ...(options?.showDescription ? [this.pkgDescription] : []),
+        ].filter((md) => md && md.trim().length > 0);
+
+        return mds.map((md) => {
             const contents = new MarkdownString(md);
             contents.isTrusted = true;
             contents.supportHtml = true;
