@@ -1,5 +1,21 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.13.3 (2024-04-14)
+
+### 🚀 Features
+
+- Optimize package hover tooltip style ([57b3864](https://github.com/tjx666/package-manager-enhancer/commit/57b3864))
+
+### 🐞 Bug Fixes
+
+- Can't recogonize builtin module with protocol prefix ([495b665](https://github.com/tjx666/package-manager-enhancer/commit/495b665))
+
+### ❤️ Contributors
+
+- YuTengjing <yutengjing@openYuTengjingart.ai>
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.13.2...v0.13.3 '2024-04-14')
+
 ## v0.13.2 (2024-04-05)
 
 ### 🐞 Bug Fixes
