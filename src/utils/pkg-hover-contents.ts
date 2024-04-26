@@ -117,9 +117,9 @@ class PkgHoverContentsCreator {
             const pkgJsonPath =
                 packageInfo.installDir && join(packageInfo.installDir, PACKAGE_JSON);
             if (pkgJsonPath) {
-                // command uri: https://liiked.github.io/VS-Code-Extension-Doc-ZH/#/extension-guides/command?id=%e5%91%bd%e4%bb%a4%e7%9a%84urls
+                const fileUri = Uri.file(pkgJsonPath);
                 showTextDocumentCmdUri = Uri.parse(
-                    `command:extension.show.textDocument?${encodeURIComponent(`"${pkgJsonPath}"`)}`,
+                    `command:vscode.open?${encodeURIComponent(JSON.stringify([fileUri]))}`,
                 );
             }
         }
