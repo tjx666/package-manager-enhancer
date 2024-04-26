@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.13.4 (2024-04-26)
+
+### 🐞 Bug Fixes
+
+- Hover tooltip can't go to package.json ([e9a7aa9](https://github.com/tjx666/package-manager-enhancer/commit/e9a7aa9))
+
+### ❤️ Contributors
+
+- YuTengjing <yutengjing@openart.ai>
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.13.3...v0.13.4 '2024-04-26')
+
 ## v0.13.3 (2024-04-14)
 
 ### 🚀 Features
