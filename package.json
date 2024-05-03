@@ -259,7 +259,7 @@
     "simple-git-hooks": {
         "pre-commit": "npx lint-staged"
     },
-    "packageManager": "pnpm@8.15.5",
+    "packageManager": "pnpm@9.0.6",
     "scripts": {
         "vscode:prepublish": "pnpm esbuild:base --minify",
         "preinstall": "npx only-allow pnpm",
@@ -287,13 +287,13 @@
         "hosted-git-info": "^7.0.1",
         "jsonc-parser": "^3.2.1",
         "lodash-es": "^4.17.21",
-        "lru-cache": "^10.2.1",
+        "lru-cache": "^10.2.2",
         "micromatch": "^4.0.5",
         "p-memoize": "^7.1.1",
         "p-queue": "^8.0.1",
         "package-json": "^10.0.0",
         "validate-npm-package-name": "^5.0.0",
-        "yaml": "^2.4.1"
+        "yaml": "^2.4.2"
     },
     "devDependencies": {
         "@types/glob": "^8.1.0",
@@ -305,7 +305,7 @@
         "@types/validate-npm-package-name": "^4.0.2",
         "@types/vscode": "^1.86.0",
         "@vscode/test-electron": "^2.3.9",
-        "@vscode/vsce": "^2.26.0",
+        "@vscode/vsce": "^2.26.1",
         "@yutengjing/eslint-config-typescript": "^0.7.0",
         "@yutengjing/prettier-config": "^1.2.0",
         "@yutengjing/release": "^0.2.0",
@@ -321,8 +321,8 @@
         "rimraf": "^5.0.5",
         "simple-git-hooks": "^2.11.1",
         "stale-dep": "^0.7.0",
-        "tsx": "^4.7.3",
-        "type-fest": "^4.17.0",
+        "tsx": "^4.9.0",
+        "type-fest": "^4.18.1",
         "typescript": "^5.4.5"
     }
 }
