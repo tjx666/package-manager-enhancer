@@ -93,8 +93,8 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
-    registerCommand(commands.searchPackage, (uri) =>
-        import('./commands/searchPackage').then((mod) => mod.searchPackage(uri)),
+    registerCommand(commands.findNpmPackage, (uri) =>
+        import('./commands/findNpmPackage').then((mod) => mod.findNpmPackage(uri)),
     );
 
     const pkgJsonSelector: DocumentSelector = {

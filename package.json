@@ -89,8 +89,8 @@
                 "title": "Add Missing Dependencies"
             },
             {
-                "command": "package-manager-enhancer.searchPackage",
-                "title": "Search Npm Package"
+                "command": "package-manager-enhancer.findNpmPackage",
+                "title": "Find Npm Package"
             }
         ],
         "menus": {
@@ -115,7 +115,7 @@
             "explorer/context": [
                 {
                     "when": "resourceFilename == node_modules",
-                    "command": "package-manager-enhancer.searchPackage",
+                    "command": "package-manager-enhancer.findNpmPackage",
                     "group": "4_search@2"
                 }
             ]

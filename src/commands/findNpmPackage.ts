@@ -8,7 +8,7 @@ import { logger } from '../logger';
 import { NODE_MODULES, PACKAGE_JSON } from '../utils/constants';
 import { getWorkspaceFolderPathByPath, showPickWorkspaceFolder } from '../utils/window';
 
-export async function searchPackage(uri: Uri) {
+export async function findNpmPackage(uri: Uri) {
     // package.json 中 menus 已经限定目录名为 node_modules 才触发该命令，所以 uri.path 存在必定是 node_modulesPath
     let node_modulesPath = uri ? uri.path : '';
 
