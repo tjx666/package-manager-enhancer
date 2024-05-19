@@ -1,7 +1,7 @@
 {
     "name": "package-manager-enhancer",
     "displayName": "Package Manager Enhancer",
-    "version": "0.13.4",
+    "version": "0.14.0",
     "description": "A vscode extension enhance package manager DX",
     "publisher": "YuTengjing",
     "private": true,

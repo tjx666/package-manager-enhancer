@@ -1,5 +1,19 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.14.0 (2024-05-19)
+
+### 🚀 Features
+
+- Upgrade deps ([768b0a1](https://github.com/tjx666/package-manager-enhancer/commit/768b0a1))
+- Support search npm package ([2f839a8](https://github.com/tjx666/package-manager-enhancer/commit/2f839a8))
+- Find path in node_modules ([f8b224e](https://github.com/tjx666/package-manager-enhancer/commit/f8b224e))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.13.4...v0.14.0 '2024-05-19')
+
 ## v0.13.4 (2024-04-26)
 
 ### 🐞 Bug Fixes
