@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import { cpus } from 'node:os';
 import { resolve } from 'node:path';
 
-import type { ExecaChildProcess, ExecaError } from 'execa';
+import type { ExecaError } from 'execa';
 import { execa } from 'execa';
 import PQueue from 'p-queue';
 import vscode from 'vscode';
@@ -43,9 +43,6 @@ export async function getRgPath() {
  */
 async function createRegexpFile(regexp: string) {
     const storageDir = store.storageDir!;
-    if (!(await pathExists(storageDir))) {
-        await fs.mkdir(storageDir);
-    }
 
     const uuid = crypto.randomBytes(16).toString('hex');
     const patternFile = resolve(storageDir, `ripgrep-pattern-${uuid}.txt`);
@@ -58,7 +55,7 @@ interface SearchOptions {
     heavy: boolean;
 }
 
-const searchPrecessMap = new Map<string, ExecaChildProcess<string>>();
+const searchPrecessMap = new Map<string, ReturnType<typeof execa>>();
 async function _searchByRg(regexpStr: string, cwd: string, options?: Partial<SearchOptions>) {
     const patternFile = await createRegexpFile(regexpStr);
 
@@ -126,7 +123,7 @@ async function _searchByRg(regexpStr: string, cwd: string, options?: Partial<Sea
         logger.error(String(error));
         logger.error(`pattern: ${regexpStr.replaceAll('/', '\\/')}`);
         logger.error(`command: ${error.escapedCommand}`);
-        if (error.killed) {
+        if (error.isTerminated) {
             logger.error(`killed search process: ${searchProcessKey}`);
         }
         return [];

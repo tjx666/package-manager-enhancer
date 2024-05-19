@@ -9,6 +9,7 @@ const commandsArray = [
     'addMissingDeps',
     'upgradeVersion',
     'findNpmPackage',
+    'findPathInNodeModules',
 ] as const;
 
 type CommandsArrayUnion = (typeof commandsArray)[number];

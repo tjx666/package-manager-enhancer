@@ -91,6 +91,10 @@
             {
                 "command": "package-manager-enhancer.findNpmPackage",
                 "title": "Find Npm Package"
+            },
+            {
+                "command": "package-manager-enhancer.findPathInNodeModules",
+                "title": "Find Path in node_modules"
             }
         ],
         "menus": {
@@ -116,6 +120,11 @@
                 {
                     "when": "resourceFilename == node_modules",
                     "command": "package-manager-enhancer.findNpmPackage",
+                    "group": "4_search@1"
+                },
+                {
+                    "when": "resourceFilename == node_modules",
+                    "command": "package-manager-enhancer.findPathInNodeModules",
                     "group": "4_search@2"
                 }
             ]

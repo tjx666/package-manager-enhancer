@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import type { DocumentSelector, TextEditor } from 'vscode';
 import vscode from 'vscode';
 
@@ -14,11 +15,20 @@ import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
 import { commands, EXT_NAME } from './utils/constants';
+import { pathExists } from './utils/fs';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {
     const { storageUri, subscriptions } = context;
-    store.storageDir = storageUri!.fsPath;
+
+    const storageDir = storageUri!.fsPath;
+    store.storageDir = storageDir;
+    (async function () {
+        if (!(await pathExists(storageDir))) {
+            await fs.mkdir(storageDir);
+        }
+    })();
+
     vscode.workspace.onDidChangeConfiguration(
         async (event) => {
             if (event.affectsConfiguration(EXT_NAME)) {
@@ -97,11 +107,16 @@ export function activate(context: vscode.ExtensionContext) {
         import('./commands/findNpmPackage').then((mod) => mod.findNpmPackage(uri)),
     );
 
+    registerCommand(commands.findPathInNodeModules, (uri) =>
+        import('./commands/findPathInNodeModules').then((mod) => mod.findPathInNodeModules(uri)),
+    );
+
     const pkgJsonSelector: DocumentSelector = {
         language: 'json',
         scheme: 'file',
         pattern: '**/package.json',
     };
+
     subscriptions.push(
         vscode.languages.registerCodeLensProvider(
             {
