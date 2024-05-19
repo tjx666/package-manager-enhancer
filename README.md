@@ -84,6 +84,14 @@ you can custom the tooltip by settings:
 }
 ```
 
+### Find Npm Package
+
+![Find Npm Package usage gif](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/find-npm-package.gif?raw=true)
+
+### Find Path in node_modules
+
+![Find Path in node_modules usage gif](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/find-path-in-node-modules.gif?raw=true)
+
 ## TODOs
 
 - [ ] [outdated packages warning](https://github.com/zyrong/vscode-node-modules/issues/29)
