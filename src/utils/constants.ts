@@ -8,6 +8,7 @@ const commandsArray = [
     'runNpmScriptInTerminal',
     'addMissingDeps',
     'upgradeVersion',
+    'searchPackage',
 ] as const;
 
 type CommandsArrayUnion = (typeof commandsArray)[number];

@@ -87,6 +87,10 @@
             {
                 "command": "package-manager-enhancer.addMissingDeps",
                 "title": "Add Missing Dependencies"
+            },
+            {
+                "command": "package-manager-enhancer.searchPackage",
+                "title": "Search Npm Package"
             }
         ],
         "menus": {
@@ -106,6 +110,13 @@
                     "command": "package-manager-enhancer.hidePackageJsonDependenciesCodeLens",
                     "when": "resourceFilename == package.json && package-manager-enhancer.enablePackageJsonDependenciesCodeLens === true",
                     "group": "navigation@1"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "when": "resourceFilename == node_modules",
+                    "command": "package-manager-enhancer.searchPackage",
+                    "group": "4_search@2"
                 }
             ]
         },

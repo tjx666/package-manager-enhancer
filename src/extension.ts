@@ -93,6 +93,10 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
+    registerCommand(commands.searchPackage, (uri) =>
+        import('./commands/searchPackage').then((mod) => mod.searchPackage(uri)),
+    );
+
     const pkgJsonSelector: DocumentSelector = {
         language: 'json',
         scheme: 'file',
