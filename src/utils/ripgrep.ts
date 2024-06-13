@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import { cpus } from 'node:os';
 import { resolve } from 'node:path';
+import { platform } from 'node:process';
 
 import type { ExecaError } from 'execa';
 import { execa } from 'execa';
@@ -17,7 +18,7 @@ import { store } from './store';
  * Get vscode bundled ripgrep executable file path
  */
 export async function getRgPath() {
-    const isWin = process.platform.startsWith('win');
+    const isWin = platform.startsWith('win');
     const rgExe = isWin ? 'rg.exe' : 'rg';
 
     const candidateDirs = [
@@ -112,7 +113,7 @@ async function _searchByRg(regexpStr: string, cwd: string, options?: Partial<Sea
         searchPrecessMap.set(searchProcessKey, searchProcess);
         const { stdout, escapedCommand } = await searchProcess;
 
-        logger.info(`pattern: ${regexpStr.replaceAll('/', '\\/')}`);
+        logger.info(`pattern: ${regexpStr.replaceAll('/', String.raw`\/`)}`);
         logger.info(`command: ${escapedCommand}`);
         const costs = ((Date.now() - start) / 1000).toFixed(3);
         logger.info(`search ${searchProcessKey} costs: ${costs}s`);
@@ -121,7 +122,7 @@ async function _searchByRg(regexpStr: string, cwd: string, options?: Partial<Sea
     } catch (_error: any) {
         const error = _error as ExecaError;
         logger.error(String(error));
-        logger.error(`pattern: ${regexpStr.replaceAll('/', '\\/')}`);
+        logger.error(`pattern: ${regexpStr.replaceAll('/', String.raw`\/`)}`);
         logger.error(`command: ${error.escapedCommand}`);
         if (error.isTerminated) {
             logger.error(`killed search process: ${searchProcessKey}`);

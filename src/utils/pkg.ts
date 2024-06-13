@@ -24,6 +24,7 @@ export async function findPkgInstallDir(packageName: string, baseFilePath: strin
     let pkgInstallDir = '';
     const endPath = getRoot(baseFilePath);
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         pkgInstallDir = resolve(currentDirPath, NODE_MODULES, packageName);
         const pkgJsonPath = resolve(pkgInstallDir, PACKAGE_JSON);

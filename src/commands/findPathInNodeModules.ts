@@ -1,4 +1,5 @@
 import { basename, dirname, join } from 'path';
+
 import type { Uri } from 'vscode';
 import { window, workspace } from 'vscode';
 

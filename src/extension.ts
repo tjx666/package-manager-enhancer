@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+
 import type { DocumentSelector, TextEditor } from 'vscode';
 import vscode from 'vscode';
 

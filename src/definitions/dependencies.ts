@@ -1,15 +1,15 @@
 import fs from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-import {
-    type CancellationToken,
-    type Definition,
-    type DefinitionLink,
-    type DefinitionProvider,
-    type Position,
-    type TextDocument,
-    Uri,
+import type {
+    CancellationToken,
+    Definition,
+    DefinitionLink,
+    DefinitionProvider,
+    Position,
+    TextDocument,
 } from 'vscode';
+import { Uri } from 'vscode';
 
 import { PACKAGE_JSON } from '../utils/constants';
 import { getFileRange } from '../utils/editor';

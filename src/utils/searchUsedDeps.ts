@@ -3,7 +3,7 @@ import validateNpmPackageName from 'validate-npm-package-name';
 
 import { parseRgOutputLine, searchByRg } from './ripgrep';
 
-const moduleCharactersWithoutDot = '\\w\\-@/';
+const moduleCharactersWithoutDot = String.raw`\w\-@/`;
 // exclude relative module
 const modulePath = `['"][${moduleCharactersWithoutDot}]{1,2}[${moduleCharactersWithoutDot}.]*['"]`;
 const unnamedImport = `import\\s*${modulePath}`;
