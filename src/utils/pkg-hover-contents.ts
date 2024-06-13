@@ -208,7 +208,6 @@ class PkgHoverContentsCreator {
         return websites
             .map((website) => {
                 if (website.startsWith('builtin:')) {
-                    // eslint-disable-next-line unicorn/prefer-switch
                     if (website === builtinWebsites.npm) {
                         const npmUrl = `https://www.npmjs.com/package/${packageInfo.name}${
                             packageInfo.installedVersion ? `/v/${packageInfo.installedVersion}` : ''
@@ -225,7 +224,7 @@ class PkgHoverContentsCreator {
                             return undefined;
                         }
                         return `[HomePage](${homepageUrl})`;
-                    } else if (website === builtinWebsites.repository) {
+                    } else if (website === builtinWebsites.repository && this.repositoryUrl) {
                         return `[Repository](${this.repositoryUrl})`;
                     }
                     return undefined;
