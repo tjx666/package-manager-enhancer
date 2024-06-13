@@ -1,5 +1,22 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.14.1 (2024-06-13)
+
+### 🚀 Features
+
+- Upgrade some deps ([2b363d0](https://github.com/tjx666/package-manager-enhancer/commit/2b363d0))
+
+### 🐞 Bug Fixes
+
+- Handle empty repository url ([c9383bc](https://github.com/tjx666/package-manager-enhancer/commit/c9383bc))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+- Stephen Zhou ([@hyoban](http://github.com/hyoban))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.14.0...v0.14.1 '2024-06-13')
+
 ## v0.14.0 (2024-05-19)
 
 ### 🚀 Features
