@@ -7,6 +7,7 @@ import type { JsonValue } from 'type-fest';
 import validatePkgName from 'validate-npm-package-name';
 import type { Position, TextDocument } from 'vscode';
 
+import { configuration } from '../configuration';
 import { NODE_MODULES, PACKAGE_JSON } from './constants';
 import { pathExists } from './fs';
 import { parseJsonc } from './jsonc';
@@ -51,20 +52,14 @@ export async function getPkgNameAndVersionFromDocPosition(
     const root = await parseJsonc(pkgJson);
     if (!root) return;
 
-    const dependenciesNodePath = [
-        'dependencies',
-        'devDependencies',
-        'peerDependencies',
-        'optionalDependencies',
-    ];
-
     const { findNodeAtOffset, findNodeAtLocation } = await import('jsonc-parser');
     const nameNode = findNodeAtOffset(root, document.offsetAt(position));
     if (!nameNode || !nameNode.parent) return;
 
-    const dependenciesNodes = dependenciesNodePath.map((path) =>
-        findNodeAtLocation(root, path.split('.')),
-    );
+    const dependenciesNodes =
+        configuration.packageJsonDependenciesCodeLens.dependenciesNodePaths.map((path) =>
+            findNodeAtLocation(root, path.split('.')),
+        );
 
     const versionNode = nameNode.parent.children![1];
     const isHoverOverDependency =
