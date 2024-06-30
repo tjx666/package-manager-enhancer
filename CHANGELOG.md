@@ -1,5 +1,22 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.14.2 (2024-06-30)
+
+### 🚀 Features
+
+- Upgrade deps ([8b72007](https://github.com/tjx666/package-manager-enhancer/commit/8b72007))
+- Show pkg desc on vscode not builtin dependencies node ([e76d32f](https://github.com/tjx666/package-manager-enhancer/commit/e76d32f))
+
+### 🐞 Bug Fixes
+
+- DependenciesNodePaths config not work ([360126d](https://github.com/tjx666/package-manager-enhancer/commit/360126d))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.14.1...v0.14.2 '2024-06-30')
+
 ## v0.14.1 (2024-06-13)
 
 ### 🚀 Features
