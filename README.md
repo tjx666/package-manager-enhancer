@@ -30,6 +30,20 @@ You can click editor title icon toggle it:
 
 ![toggle package json dependencies codeLens](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/toggle-package-json-dependencies-codelens.png?raw=true)
 
+You can custom the dependencies ast node path by:
+
+```json
+{
+  "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": [
+    "dependencies",
+    "peerDependencies",
+    "devDependencies",
+    "resolutions",
+    "pnpm.overrides"
+  ]
+}
+```
+
 ### npm script run in background
 
 ![npm script run in background](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/npm-script-run-background.png?raw=true)
@@ -84,6 +98,8 @@ you can custom the tooltip by settings:
 }
 ```
 
+this feature will reuse the setting `package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths` to recognize dependencies.
+
 ### Find Npm Package
 
 ![Find Npm Package usage gif](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/find-npm-package.gif?raw=true)
@@ -99,7 +115,6 @@ you can custom the tooltip by settings:
 - [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
 - [ ] color bundle size
-- [ ] search packages
 
 ## My extensions
 

@@ -14,7 +14,7 @@ export class DependenciesHoverProvider implements HoverProvider {
         const pkgNameAndVersion = await getPkgNameAndVersionFromDocPosition(document, position);
         if (!pkgNameAndVersion) return;
 
-        const { name, version } = pkgNameAndVersion;
+        const { name, version, dependenciesNodePath } = pkgNameAndVersion;
         const info = await getPackageInfo(name, {
             packageInstallDir: await findPkgInstallDir(name, document.uri.fsPath),
             searchVersionRange: version,
@@ -27,7 +27,11 @@ export class DependenciesHoverProvider implements HoverProvider {
         if (!info) return;
 
         const pkgHoverContentsCreator = getPkgHoverContentsCreator();
-        const hoverContents = pkgHoverContentsCreator.generate(info);
+        const isVscodeBuiltinShowDesc =
+            !dependenciesNodePath.includes('.') && dependenciesNodePath.endsWith('dependencies');
+        const hoverContents = pkgHoverContentsCreator.generate(info, {
+            showDescription: !isVscodeBuiltinShowDesc,
+        });
         return new Hover(hoverContents);
     }
 }
