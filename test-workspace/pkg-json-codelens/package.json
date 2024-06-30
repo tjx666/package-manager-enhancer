@@ -20,5 +20,8 @@
         "bbb": "233",
         "vscode": "1.1.37",
         "execa": "^7.1.1"
+    },
+    "resolutions": {
+        "axios": "0.28.1"
     }
 }
