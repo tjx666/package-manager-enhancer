@@ -162,7 +162,7 @@
                     },
                     "package-manager-enhancer.enablePackageJsonDependenciesCodeLens": {
                         "type": "boolean",
-                        "default": true
+                        "default": false
                     },
                     "package-manager-enhancer.packageJsonDependenciesCodeLens.dependenciesNodePaths": {
                         "markdownDescription": "display dependencies codeLens more than the default key `dependencies`, for example: `devDependencies`, `pnpm.overrides`",
@@ -171,7 +171,11 @@
                             "type": "string"
                         },
                         "default": [
-                            "dependencies"
+                            "dependencies",
+                            "peerDependencies",
+                            "devDependencies",
+                            "resolutions",
+                            "pnpm.overrides"
                         ]
                     },
                     "package-manager-enhancer.packageJsonDependenciesCodeLens.searchDependenciesFileExtensions": {

@@ -86,6 +86,7 @@ you can custom the tooltip by settings:
     "[Npm Stats](https://npm-stat.com/charts.html?package=${packageName})",
     "[Moiva](https://moiva.io/?npm=${packageName})",
     "[RunKit](https://npm.runkit.com/${packageName})",
+    "[Pkg Size](https://pkg-size.dev/${packageNameAtVersion})",
   ],
   "package-manager-enhancer.packageHoverTooltip.badges": [
     "[![latest version](https://img.shields.io/npm/v/${packageName}?label=latest)](https://www.npmjs.com/package/${packageName})",
