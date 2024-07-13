@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.15.2 (2024-07-13)
+
+### 🐞 Bug Fixes
+
+- Some dynamic import cases hover tooltip not work ([1b93301](https://github.com/tjx666/package-manager-enhancer/commit/1b93301))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.15.1...v0.15.2 '2024-07-13')
+
 ## v0.15.1 (2024-07-13)
 
 No significant changes
