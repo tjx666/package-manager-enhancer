@@ -1,5 +1,44 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.15.0 (2024-07-13)
+
+### 🚀 Features
+
+- Add Bundlephobia and pkg-size to website ([b56e363](https://github.com/tjx666/package-manager-enhancer/commit/b56e363))
+- Check if local dependency versions are correct ([7b25817](https://github.com/tjx666/package-manager-enhancer/commit/7b25817))
+- Add code action to run install ([3391709](https://github.com/tjx666/package-manager-enhancer/commit/3391709))
+- Add configuration ([92902ca](https://github.com/tjx666/package-manager-enhancer/commit/92902ca))
+- Upgrade deps ([d5b0946](https://github.com/tjx666/package-manager-enhancer/commit/d5b0946))
+- File watcher ([65d6eed](https://github.com/tjx666/package-manager-enhancer/commit/65d6eed))
+- Watch bun lock file to update diagnostic ([4606a94](https://github.com/tjx666/package-manager-enhancer/commit/4606a94))
+
+### 🏎 Performance
+
+- Parse once ([f663f4d](https://github.com/tjx666/package-manager-enhancer/commit/f663f4d))
+
+### 🐞 Bug Fixes
+
+- Update ([1d7f4b8](https://github.com/tjx666/package-manager-enhancer/commit/1d7f4b8))
+- Also show terminal after new created ([eb10fef](https://github.com/tjx666/package-manager-enhancer/commit/eb10fef))
+- Update default options ([a3d06bc](https://github.com/tjx666/package-manager-enhancer/commit/a3d06bc))
+- Push subscriptions ([ef117be](https://github.com/tjx666/package-manager-enhancer/commit/ef117be))
+- Output the fetch error to output panel ([1c5e31a](https://github.com/tjx666/package-manager-enhancer/commit/1c5e31a))
+- Load configuration ([c169a46](https://github.com/tjx666/package-manager-enhancer/commit/c169a46))
+- Detect pm ([65b2d96](https://github.com/tjx666/package-manager-enhancer/commit/65b2d96))
+- Code action ([924e90a](https://github.com/tjx666/package-manager-enhancer/commit/924e90a))
+- Ignore node_modules ([67118bc](https://github.com/tjx666/package-manager-enhancer/commit/67118bc))
+- Empty action ([b476a5a](https://github.com/tjx666/package-manager-enhancer/commit/b476a5a))
+- Update vscode engine ([6ea0f9e](https://github.com/tjx666/package-manager-enhancer/commit/6ea0f9e))
+- Support x.y.z ([e836929](https://github.com/tjx666/package-manager-enhancer/commit/e836929))
+- Diagnostic collection name ([c44ff62](https://github.com/tjx666/package-manager-enhancer/commit/c44ff62))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+- Stephen Zhou ([@hyoban](http://github.com/hyoban))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.14.2...v0.15.0 '2024-07-13')
+
 ## v0.14.2 (2024-06-30)
 
 ### 🚀 Features
