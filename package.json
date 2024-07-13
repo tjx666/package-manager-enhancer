@@ -36,7 +36,7 @@
     "main": "./out/extension.js",
     "icon": "assets/icons/logo.png",
     "engines": {
-        "vscode": "^1.86.0"
+        "vscode": "^1.89.0"
     },
     "badges": [
         {
@@ -345,7 +345,7 @@
         "@types/node": "~20.14.10",
         "@types/semver": "^7.5.8",
         "@types/validate-npm-package-name": "^4.0.2",
-        "@types/vscode": "1.86.0",
+        "@types/vscode": "1.89.0",
         "@vscode/test-electron": "^2.4.1",
         "@vscode/vsce": "^2.30.0",
         "@yutengjing/eslint-config-typescript": "^1.1.1",
