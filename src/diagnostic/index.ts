@@ -28,6 +28,7 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     if (!configuration.depsVersionCheck.enable) return;
 
     if (
+        document.uri.fsPath.includes('node_modules') ||
         !path.basename(document.uri.fsPath).includes('package.json') ||
         document.languageId !== 'json'
     )
