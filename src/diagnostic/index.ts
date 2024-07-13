@@ -61,25 +61,25 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                 if (packageInfo?.isBuiltinModule) return;
 
                 if (!packageInfo || !packageInfo.installedVersion) {
-                    diagnostics.push(
-                        new vscode.Diagnostic(
-                            range,
-                            `Package "${name}" not found`,
-                            vscode.DiagnosticSeverity.Warning,
-                        ),
+                    const diagnostic = new vscode.Diagnostic(
+                        range,
+                        `Package "${name}" not installed`,
+                        vscode.DiagnosticSeverity.Warning,
                     );
+                    diagnostic.code = 'package-manager-enhancer.packageNotFound';
+                    diagnostics.push(diagnostic);
                     return;
                 }
 
                 const { version: installedVersion } = packageInfo;
                 if (semver.validRange(version) && !semver.satisfies(installedVersion, version)) {
-                    diagnostics.push(
-                        new vscode.Diagnostic(
-                            range,
-                            `Installed version "${installedVersion}" does not satisfy "${version}"`,
-                            vscode.DiagnosticSeverity.Warning,
-                        ),
+                    const diagnostic = new vscode.Diagnostic(
+                        range,
+                        `Installed ${name} version "${installedVersion}" doesn't match declared version: "${version}"`,
+                        vscode.DiagnosticSeverity.Warning,
                     );
+                    diagnostic.code = 'package-manager-enhancer.unmetDependency';
+                    diagnostics.push(diagnostic);
                 }
             }),
         );

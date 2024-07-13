@@ -4,11 +4,15 @@ import vscode, { Uri, workspace } from 'vscode';
 
 import { detectPm } from '../utils/pm';
 
-interface Args {
-    scriptName: string;
-    script: string;
-    cwd: string;
-}
+type Args =
+    | {
+          scriptName: string;
+          cwd: string;
+      }
+    | {
+          command: string;
+          cwd: string;
+      };
 
 export async function runNpmScriptInTerminal(args: Args) {
     const workspaceFolder = workspace.getWorkspaceFolder(
@@ -27,6 +31,10 @@ export async function runNpmScriptInTerminal(args: Args) {
             cwd: args.cwd,
         });
     }
-    terminal.sendText(`${pm} run ${args.scriptName}`);
+    if ('command' in args) {
+        terminal.sendText(`${pm} ${args.command}`);
+    } else {
+        terminal.sendText(`${pm} run ${args.scriptName}`);
+    }
     terminal.show();
 }
