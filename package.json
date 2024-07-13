@@ -244,8 +244,7 @@
                             "builtin:repository",
                             "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
                             "[Npm Trends](https://npmtrends.com/${packageName})",
-                            "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})",
-                            "[pkg-size](https://pkg-size.dev/${packageNameAtVersion})"
+                            "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})"
                         ]
                     },
                     "package-manager-enhancer.packageHoverTooltip.badges": {
