@@ -9,7 +9,9 @@ import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
 import { detectPm } from '../utils/pm';
 
-export const diagnosticCollection = vscode.languages.createDiagnosticCollection('lints');
+export const diagnosticCollection = vscode.languages.createDiagnosticCollection(
+    'package-manager-enhancer:depsVersionCheck',
+);
 
 export async function updateDiagnostic(document: vscode.TextDocument) {
     if (configuration.depsVersionCheck.enable === undefined) {
