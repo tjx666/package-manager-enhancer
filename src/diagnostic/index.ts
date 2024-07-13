@@ -3,7 +3,7 @@ import path from 'path';
 import semver from 'semver';
 import vscode from 'vscode';
 
-import { configuration } from '../configuration';
+import { configuration, updateConfiguration } from '../configuration';
 import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
 
@@ -19,6 +19,12 @@ function isJSONParsable(str: string) {
 export const diagnosticCollection = vscode.languages.createDiagnosticCollection('lints');
 
 export async function updateDiagnostic(document: vscode.TextDocument) {
+    if (configuration.depsVersionCheck.enable === undefined) {
+        await updateConfiguration();
+    }
+
+    if (!configuration.depsVersionCheck.enable) return;
+
     if (
         !path.basename(document.uri.fsPath).includes('package.json') ||
         document.languageId !== 'json'
