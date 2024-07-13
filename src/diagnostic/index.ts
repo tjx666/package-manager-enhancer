@@ -28,7 +28,6 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     if (!configuration.depsVersionCheck.enable) return;
 
     if (
-        document.uri.fsPath.includes('node_modules') ||
         !path.basename(document.uri.fsPath).includes('package.json') ||
         document.languageId !== 'json'
     )
@@ -44,12 +43,19 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     const parsed = getParsedByString(text);
 
     async function checkDependency(key: string) {
+        const nodePath = key.split('.');
+        if (nodePath.length === 0) return;
+
+        let dependencies: Record<string, any> = packageJSON;
+        nodePath.forEach((node) => {
+            dependencies = dependencies[node] ?? {};
+        });
         await Promise.all(
-            Object.entries(packageJSON[key] ?? {}).map(async ([name, version]) => {
+            Object.entries(dependencies).map(async ([name, version]) => {
                 if (typeof version !== 'string') return;
 
                 const location = getLocation(parsed, {
-                    path: [key, name],
+                    path: [...nodePath, name],
                 });
 
                 if (!location.start || !location.end) return;
