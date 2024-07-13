@@ -1,4 +1,6 @@
+import { watchFile } from 'fs';
 import fs from 'fs/promises';
+import path from 'path';
 
 import type { DocumentSelector, TextEditor } from 'vscode';
 import vscode from 'vscode';
@@ -10,6 +12,7 @@ import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersio
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
+import { codeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -168,8 +171,44 @@ export function activate(context: vscode.ExtensionContext) {
             new DependenciesDefinitionProvider(),
         ),
     );
+
+    for (const editor of vscode.window.visibleTextEditors) {
+        updateDiagnostic(editor.document);
+    }
+
+    subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument((document) => {
+            updateDiagnostic(document);
+        }),
+        vscode.workspace.onDidChangeTextDocument((event) => {
+            updateDiagnostic(event.document);
+        }),
+        vscode.languages.registerCodeActionsProvider(pkgJsonSelector, codeActionProvider, {
+            providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+        }),
+    );
+
+    const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'].map((file) =>
+        path.resolve(vscode.workspace.workspaceFolders![0].uri.fsPath, file),
+    );
+    const watchers = filesToWatch.map((file) => {
+        const watcher = watchFile(file, () => {
+            for (const editor of vscode.window.visibleTextEditors) {
+                updateDiagnostic(editor.document);
+            }
+        });
+        return watcher;
+    });
+    subscriptions.push({
+        dispose() {
+            for (const watcher of watchers) {
+                watcher.removeAllListeners();
+            }
+        },
+    });
 }
 
 export function deactivate() {
+    diagnosticCollection.dispose();
     logger.dispose();
 }

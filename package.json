@@ -36,7 +36,7 @@
     "main": "./out/extension.js",
     "icon": "assets/icons/logo.png",
     "engines": {
-        "vscode": "^1.86.0"
+        "vscode": "^1.89.0"
     },
     "badges": [
         {
@@ -259,6 +259,21 @@
                             "[![GitHub Repo stars](https://img.shields.io/github/stars/${githubUserAndRepo})](https://github.com/${githubUserAndRepo})",
                             "[![GitHub Issues](https://img.shields.io/github/issues-raw/${githubUserAndRepo}?label=issues)](https://github.com/${githubUserAndRepo}/issues)"
                         ]
+                    },
+                    "package-manager-enhancer.depsVersionCheck.enable": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "package-manager-enhancer.depsVersionCheck.dependenciesNodePaths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "dependencies",
+                            "devDependencies",
+                            "peerDependencies"
+                        ]
                     }
                 }
             }
@@ -310,12 +325,14 @@
         "globby": "^14.0.2",
         "hosted-git-info": "^7.0.2",
         "jsonc-parser": "^3.3.1",
+        "jsonpos": "^4.1.2",
         "lodash-es": "^4.17.21",
         "lru-cache": "^11.0.0",
         "micromatch": "^4.0.7",
         "p-memoize": "^7.1.1",
         "p-queue": "^8.0.1",
         "package-json": "^10.0.0",
+        "semver": "^7.6.2",
         "validate-npm-package-name": "^5.0.1",
         "yaml": "^2.4.5"
     },
@@ -326,6 +343,7 @@
         "@types/micromatch": "^4.0.9",
         "@types/mocha": "^10.0.7",
         "@types/node": "~20.14.10",
+        "@types/semver": "^7.5.8",
         "@types/validate-npm-package-name": "^4.0.2",
         "@types/vscode": "1.89.0",
         "@vscode/test-electron": "^2.4.1",
