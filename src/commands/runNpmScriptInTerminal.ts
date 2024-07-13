@@ -20,7 +20,6 @@ export async function runNpmScriptInTerminal(args: Args) {
     const terminalName = 'Run Script';
     let terminal = vscode.window.terminals.find((terminal) => terminal.name === terminalName);
     if (terminal) {
-        terminal.show();
         terminal.sendText(`cd ${args.cwd}`);
     } else {
         terminal = vscode.window.createTerminal({
@@ -29,4 +28,5 @@ export async function runNpmScriptInTerminal(args: Args) {
         });
     }
     terminal.sendText(`${pm} run ${args.scriptName}`);
+    terminal.show();
 }
