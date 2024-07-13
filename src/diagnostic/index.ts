@@ -110,7 +110,15 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
 
 export const codeActionProvider: vscode.CodeActionProvider = {
     provideCodeActions: async (document) => {
-        const diagnostics = vscode.languages.getDiagnostics(document.uri);
+        const diagnostics = vscode.languages
+            .getDiagnostics(document.uri)
+            .filter(
+                (diagnostic) =>
+                    diagnostic.code === 'package-manager-enhancer.packageNotFound' ||
+                    diagnostic.code === 'package-manager-enhancer.unmetDependency',
+            );
+        if (diagnostics.length === 0) return;
+
         const pm = await detectPm(vscode.workspace.getWorkspaceFolder(document.uri)!.uri);
 
         const action = new vscode.CodeAction(`Run ${pm} install`, vscode.CodeActionKind.QuickFix);
@@ -124,11 +132,7 @@ export const codeActionProvider: vscode.CodeActionProvider = {
                 },
             ],
         };
-        action.diagnostics = diagnostics.filter(
-            (diagnostic) =>
-                diagnostic.code === 'package-manager-enhancer.packageNotFound' ||
-                diagnostic.code === 'package-manager-enhancer.unmetDependency',
-        );
+        action.diagnostics = diagnostics;
         return [action];
     },
 };
