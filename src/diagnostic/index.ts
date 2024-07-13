@@ -9,15 +9,6 @@ import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
 import { detectPm } from '../utils/pm';
 
-function isJSONParsable(str: string) {
-    try {
-        JSON.parse(str);
-    } catch {
-        return false;
-    }
-    return true;
-}
-
 export const diagnosticCollection = vscode.languages.createDiagnosticCollection('lints');
 
 export async function updateDiagnostic(document: vscode.TextDocument) {
@@ -34,11 +25,9 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
         return;
 
     const text = document.getText();
-    if (!isJSONParsable(text)) return;
 
     const diagnostics: vscode.Diagnostic[] = [];
 
-    const packageJSON = JSON.parse(text);
     const { getLocation, getParsedByString } = await import('jsonpos');
     const parsed = getParsedByString(text);
 
@@ -46,7 +35,7 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
         const nodePath = key.split('.');
         if (nodePath.length === 0) return;
 
-        let dependencies: Record<string, any> = packageJSON;
+        let dependencies: Record<string, any> = parsed.json;
         nodePath.forEach((node) => {
             dependencies = dependencies[node] ?? {};
         });
