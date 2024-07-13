@@ -10,6 +10,7 @@ import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersio
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
+import { diagnosticCollection, updateDiagnostic } from './diagnostic';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -168,8 +169,19 @@ export function activate(context: vscode.ExtensionContext) {
             new DependenciesDefinitionProvider(),
         ),
     );
+
+    for (const editor of vscode.window.visibleTextEditors) {
+        updateDiagnostic(editor.document);
+    }
+    vscode.workspace.onDidOpenTextDocument((document) => {
+        updateDiagnostic(document);
+    });
+    vscode.workspace.onDidChangeTextDocument((event) => {
+        updateDiagnostic(event.document);
+    });
 }
 
 export function deactivate() {
+    diagnosticCollection.dispose();
     logger.dispose();
 }

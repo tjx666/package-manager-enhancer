@@ -32,6 +32,9 @@ importers:
       jsonc-parser:
         specifier: ^3.3.1
         version: 3.3.1
+      jsonpos:
+        specifier: ^4.1.2
+        version: 4.1.2
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -50,6 +53,9 @@ importers:
       package-json:
         specifier: ^10.0.0
         version: 10.0.0
+      semver:
+        specifier: ^7.6.2
+        version: 7.6.2
       validate-npm-package-name:
         specifier: ^5.0.1
         version: 5.0.1
@@ -75,6 +81,9 @@ importers:
       '@types/node':
         specifier: ^20.14.9
         version: 20.14.9
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.5.8
       '@types/validate-npm-package-name':
         specifier: ^4.0.2
         version: 4.0.2
@@ -511,6 +520,9 @@ packages:
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
+
+  '@types/semver@7.5.8':
+    resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
 
   '@types/unist@2.0.10':
     resolution: {integrity: sha512-IfYcSBWE3hLpBg8+X2SEa8LVkJdJEkT2Ese2aaLs3ptGdVtABxndrMaxuFlQ1qdFf9Q5rDvDpxI3WwgvKFAsQA==}
@@ -2134,6 +2146,13 @@ packages:
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
+  json-cst@1.2.0:
+    resolution: {integrity: sha512-liC8jqILo2mZjKs/c/zDknohoLo2FocQH5ZGyPZzPNNHSC/LarVq42R4WA58lqPdH9ssP/JKArp6SZ6aP7vyhA==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+
+  json-lexer@1.2.0:
+    resolution: {integrity: sha512-7otpx5UPFeSELoF8nkZPHCfywg86wOsJV0WNOaysuO7mfWj1QFp2vlqESRRCeJKBXr+tqDgHh4HgqUFKTLcifQ==}
+
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
 
@@ -2156,6 +2175,10 @@ packages:
 
   jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
+
+  jsonpos@4.1.2:
+    resolution: {integrity: sha512-cn+7TiBMq9VUsHKp+8uZeSY0K2ZnjEwurSA8uJlBoOmMA7w67axpvfv+v77A/8iEXLkXMN06uvEzblGj51+VBQ==}
+    engines: {node: ^14.13.1 || >=16.0.0}
 
   jsonwebtoken@9.0.2:
     resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==}
@@ -2951,11 +2974,6 @@ packages:
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
-    hasBin: true
-
-  semver@7.6.0:
-    resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
-    engines: {node: '>=10'}
     hasBin: true
 
   semver@7.6.2:
@@ -3794,6 +3812,8 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
+  '@types/semver@7.5.8': {}
+
   '@types/unist@2.0.10': {}
 
   '@types/unist@3.0.2': {}
@@ -4098,7 +4118,7 @@ snapshots:
       global-cache-dir: 6.0.0
       is-plain-obj: 4.1.0
       path-exists: 5.0.0
-      semver: 7.6.0
+      semver: 7.6.2
       write-file-atomic: 5.0.1
 
   ansi-align@3.0.1:
@@ -5747,6 +5767,12 @@ snapshots:
 
   json-buffer@3.0.1: {}
 
+  json-cst@1.2.0:
+    dependencies:
+      json-lexer: 1.2.0
+
+  json-lexer@1.2.0: {}
+
   json-parse-even-better-errors@2.3.1: {}
 
   json-schema-traverse@0.4.1: {}
@@ -5771,6 +5797,10 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  jsonpos@4.1.2:
+    dependencies:
+      json-cst: 1.2.0
 
   jsonwebtoken@9.0.2:
     dependencies:
@@ -6367,7 +6397,7 @@ snapshots:
       follow-redirects: 1.15.6
       is-ci: 2.0.0
       leven: 3.1.0
-      semver: 7.6.0
+      semver: 7.6.2
       tmp: 0.2.3
     transitivePeerDependencies:
       - debug
@@ -6422,7 +6452,7 @@ snapshots:
       ky: 1.2.3
       registry-auth-token: 5.0.2
       registry-url: 6.0.1
-      semver: 7.6.0
+      semver: 7.6.2
 
   package-json@8.1.1:
     dependencies:
@@ -6732,10 +6762,6 @@ snapshots:
   semver@5.7.2: {}
 
   semver@6.3.1: {}
-
-  semver@7.6.0:
-    dependencies:
-      lru-cache: 6.0.0
 
   semver@7.6.2: {}
 
