@@ -111,6 +111,8 @@ this feature will reuse the setting `package-manager-enhancer.packageJsonDepende
 
 ### Deps check
 
+contributed by [@hyoban](https://github.com/hyoban).
+
 ![deps check](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/deps-check.gif?raw=true)
 
 also provide a quick fix:
@@ -125,16 +127,19 @@ settings:
   "package-manager-enhancer.depsVersionCheck.dependenciesNodePaths": [
     "dependencies",
     "devDependencies",
-    "peerDependencies"
+    "peerDependencies",
+    "resolutions",
+    "pnpm.overrides"
     // "xxx.yyy.zzz"
   ]
 }
 ```
 
+If you like this feature, you may also interesting with cli: [stale-dep](https://github.com/sxzz/stale-dep)
+
 ## TODOs
 
 - [ ] [outdated packages warning](https://github.com/zyrong/vscode-node-modules/issues/29)
-- [x] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26) thanks [@hyoban](https://github.com/hyoban)
 - [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
 - [ ] color bundle size
