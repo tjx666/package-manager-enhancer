@@ -57,11 +57,6 @@ export async function updateConfiguration() {
     configuration.packageJsonDependenciesCodeLens = extensionConfig.get<
         Configuration['packageJsonDependenciesCodeLens']
     >('packageJsonDependenciesCodeLens')!;
-    await vscode.commands.executeCommand(
-        'setContext',
-        `${EXT_NAME}.enablePackageJsonDependenciesCodeLens`,
-        configuration.enablePackageJsonDependenciesCodeLens,
-    );
 
     configuration.enablePackageJsonVersionCodeLens = extensionConfig.get<boolean>(
         'enablePackageJsonVersionCodeLens',
@@ -74,6 +69,13 @@ export async function updateConfiguration() {
 
     configuration.depsVersionCheck =
         extensionConfig.get<Configuration['depsVersionCheck']>('depsVersionCheck')!;
+
+    // !: async code should be last to make sure all before configurations are updated synchronously
+    await vscode.commands.executeCommand(
+        'setContext',
+        `${EXT_NAME}.enablePackageJsonDependenciesCodeLens`,
+        configuration.enablePackageJsonDependenciesCodeLens,
+    );
 }
 updateConfiguration();
 
