@@ -255,6 +255,21 @@
                             "[![GitHub Repo stars](https://img.shields.io/github/stars/${githubUserAndRepo})](https://github.com/${githubUserAndRepo})",
                             "[![GitHub Issues](https://img.shields.io/github/issues-raw/${githubUserAndRepo}?label=issues)](https://github.com/${githubUserAndRepo}/issues)"
                         ]
+                    },
+                    "package-manager-enhancer.depsVersionCheck.enable": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "package-manager-enhancer.depsVersionCheck.dependenciesNodePaths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": [
+                            "dependencies",
+                            "devDependencies",
+                            "peerDependencies"
+                        ]
                     }
                 }
             }

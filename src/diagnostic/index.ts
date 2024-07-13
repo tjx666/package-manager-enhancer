@@ -3,6 +3,7 @@ import path from 'path';
 import semver from 'semver';
 import vscode from 'vscode';
 
+import { configuration } from '../configuration';
 import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
 
@@ -86,11 +87,11 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     }
 
     try {
-        await Promise.all([
-            checkDependency('dependencies'),
-            checkDependency('devDependencies'),
-            checkDependency('peerDependencies'),
-        ]);
+        await Promise.all(
+            configuration.depsVersionCheck.dependenciesNodePaths.map((path) =>
+                checkDependency(path),
+            ),
+        );
 
         diagnosticCollection.set(document.uri, diagnostics);
     } catch (error) {

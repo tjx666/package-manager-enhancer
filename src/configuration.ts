@@ -26,6 +26,10 @@ interface Configuration {
         websites: string[];
         badges: string[];
     };
+    depsVersionCheck: {
+        enable: boolean;
+        dependenciesNodePaths: string[];
+    };
 }
 
 export const configuration: Configuration = {} as Configuration;
@@ -67,6 +71,9 @@ export async function updateConfiguration() {
     )!;
     configuration.packageHoverTooltip =
         extensionConfig.get<Configuration['packageHoverTooltip']>('packageHoverTooltip')!;
+
+    configuration.depsVersionCheck =
+        extensionConfig.get<Configuration['depsVersionCheck']>('depsVersionCheck')!;
 }
 updateConfiguration();
 
