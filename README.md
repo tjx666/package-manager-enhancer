@@ -109,10 +109,32 @@ this feature will reuse the setting `package-manager-enhancer.packageJsonDepende
 
 ![Find Path in node_modules usage gif](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/find-path-in-node-modules.gif?raw=true)
 
+### Deps check
+
+![deps check](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/deps-check.gif?raw=true)
+
+also provide a quick fix:
+
+![quick fix](https://github.com/tjx666/package-manager-enhancer/blob/main/assets/screenshots/deps-check-quick-fix.gif?raw=true)
+
+settings:
+
+```json
+{
+  "package-manager-enhancer.depsVersionCheck.enable": false,
+  "package-manager-enhancer.depsVersionCheck.dependenciesNodePaths": [
+    "dependencies",
+    "devDependencies",
+    "peerDependencies"
+    // "xxx.yyy.zzz"
+  ]
+}
+```
+
 ## TODOs
 
 - [ ] [outdated packages warning](https://github.com/zyrong/vscode-node-modules/issues/29)
-- [ ] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26)
+- [x] [not installed pkg wanning](https://github.com/zyrong/vscode-node-modules/issues/26) thanks [@hyoban](https://github.com/hyoban)
 - [ ] `pnpm why` visualization
 - [ ] `.npmrc` autocomplete
 - [ ] color bundle size
