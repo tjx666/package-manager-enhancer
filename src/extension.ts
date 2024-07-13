@@ -188,7 +188,9 @@ export function activate(context: vscode.ExtensionContext) {
                 provideCodeActions: async (document) => {
                     const actions: vscode.CodeAction[] = [];
                     const diagnostics = vscode.languages.getDiagnostics(document.uri);
-                    const pm = await detectPm(document.uri);
+                    const pm = await detectPm(
+                        vscode.workspace.getWorkspaceFolder(document.uri)!.uri,
+                    );
                     for (const diagnostic of diagnostics) {
                         if (
                             diagnostic.code === 'package-manager-enhancer.packageNotFound' ||
