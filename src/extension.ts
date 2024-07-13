@@ -188,8 +188,8 @@ export function activate(context: vscode.ExtensionContext) {
         }),
     );
 
-    const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'].map((file) =>
-        path.resolve(vscode.workspace.workspaceFolders![0].uri.fsPath, file),
+    const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lockb'].map(
+        (file) => path.resolve(vscode.workspace.workspaceFolders![0].uri.fsPath, file),
     );
     const watchers = filesToWatch.map((file) => {
         const watcher = watchFile(file, () => {
