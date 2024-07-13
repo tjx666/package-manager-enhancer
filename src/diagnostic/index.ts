@@ -14,7 +14,7 @@ export const diagnosticCollection = vscode.languages.createDiagnosticCollection(
 );
 
 export async function updateDiagnostic(document: vscode.TextDocument) {
-    if (configuration.depsVersionCheck.enable === undefined) {
+    if (configuration.depsVersionCheck?.enable === undefined) {
         await updateConfiguration();
     }
 

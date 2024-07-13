@@ -1,4 +1,6 @@
+import { watchFile } from 'fs';
 import fs from 'fs/promises';
+import path from 'path';
 
 import type { DocumentSelector, TextEditor } from 'vscode';
 import vscode from 'vscode';
@@ -185,6 +187,25 @@ export function activate(context: vscode.ExtensionContext) {
             providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
         }),
     );
+
+    const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'].map((file) =>
+        path.resolve(vscode.workspace.workspaceFolders![0].uri.fsPath, file),
+    );
+    const watchers = filesToWatch.map((file) => {
+        const watcher = watchFile(file, () => {
+            for (const editor of vscode.window.visibleTextEditors) {
+                updateDiagnostic(editor.document);
+            }
+        });
+        return watcher;
+    });
+    subscriptions.push({
+        dispose() {
+            for (const watcher of watchers) {
+                watcher.removeAllListeners();
+            }
+        },
+    });
 }
 
 export function deactivate() {
