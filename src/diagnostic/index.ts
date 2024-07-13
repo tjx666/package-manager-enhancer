@@ -1,9 +1,11 @@
 import path from 'path';
 
+import type { ParsedJson } from 'jsonpos';
 import semver from 'semver';
 import vscode from 'vscode';
 
-import { configuration, updateConfiguration } from '../configuration';
+import { configuration } from '../configuration';
+import { logger } from '../logger';
 import { commands } from '../utils/constants';
 import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
@@ -14,10 +16,6 @@ export const diagnosticCollection = vscode.languages.createDiagnosticCollection(
 );
 
 export async function updateDiagnostic(document: vscode.TextDocument) {
-    if (configuration.depsVersionCheck?.enable === undefined) {
-        await updateConfiguration();
-    }
-
     if (!configuration.depsVersionCheck.enable) return;
 
     if (
@@ -31,7 +29,13 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     const diagnostics: vscode.Diagnostic[] = [];
 
     const { getLocation, getParsedByString } = await import('jsonpos');
-    const parsed = getParsedByString(text);
+    let parsed: ParsedJson;
+    try {
+        parsed = getParsedByString(text);
+    } catch (error: any) {
+        logger.error(error);
+        return;
+    }
 
     async function checkDependency(key: string) {
         const nodePath = key.split('.');

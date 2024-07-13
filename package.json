@@ -28,7 +28,11 @@
         "corepack",
         "node",
         "workspace",
-        "monorepo"
+        "monorepo",
+        "node_modules",
+        "import",
+        "module",
+        "nodejs"
     ],
     "categories": [
         "Other"
