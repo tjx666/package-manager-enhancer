@@ -241,7 +241,7 @@
                             "[Npm View](https://npmview.vercel.app/${packageNameAtVersion})",
                             "[Npm Trends](https://npmtrends.com/${packageName})",
                             "[Npm Graph](https://npmgraph.js.org/?q=${packageNameAtVersion})",
-                            "[Bundlephobia](https://bundlephobia.com/package/${packageNameAtVersion}))",
+                            "[Bundlephobia](https://bundlephobia.com/package/${packageNameAtVersion})",
                             "[pkg-size](https://pkg-size.dev/${packageNameAtVersion})"
                         ]
                     },
