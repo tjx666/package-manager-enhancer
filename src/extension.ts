@@ -173,12 +173,15 @@ export function activate(context: vscode.ExtensionContext) {
     for (const editor of vscode.window.visibleTextEditors) {
         updateDiagnostic(editor.document);
     }
-    vscode.workspace.onDidOpenTextDocument((document) => {
-        updateDiagnostic(document);
-    });
-    vscode.workspace.onDidChangeTextDocument((event) => {
-        updateDiagnostic(event.document);
-    });
+
+    subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument((document) => {
+            updateDiagnostic(document);
+        }),
+        vscode.workspace.onDidChangeTextDocument((event) => {
+            updateDiagnostic(event.document);
+        }),
+    );
 }
 
 export function deactivate() {
