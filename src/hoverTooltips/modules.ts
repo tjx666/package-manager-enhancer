@@ -67,7 +67,7 @@ export class ModulesHoverProvider implements HoverProvider {
 
         const stringBeforeLeftQuote = lineText.slice(0, leftQuotaIndex);
         const stringAfterRightQuote = lineText.slice(rightQuotaIndex + 1);
-        const afterFnCallRegexp = /^\s*\)(?:;.*|\n?)$/;
+        const afterFnCallRegexp = /^\s*\)(?:;.*|\n?)/;
         const afterStatementRegexp = /^\s*(?:;.*)?$/;
         const isModule = // named imports/exports: import { pick } from 'lodash' or export * from 'antd'
             (/(?:\b|\s+)from\s+$/.test(stringBeforeLeftQuote) &&
@@ -75,8 +75,11 @@ export class ModulesHoverProvider implements HoverProvider {
             // unnamed import
             (/(?:\b|\s+)import\s+$/.test(stringBeforeLeftQuote) &&
                 afterStatementRegexp.test(stringAfterRightQuote)) ||
-            // dynamic imports: import( 'lodash'  )
-            (/(?:\b|\s+)import\s*\(\s*$/.test(stringBeforeLeftQuote) &&
+            // dynamic imports:
+            // case1: import( 'lodash'  )
+            // case2: import( 'lodash'  ).then()
+            // case3: /** @type {import('next').NextConfig} */
+            (/(?:\b|\{|\s+)import\s*\(\s*$/.test(stringBeforeLeftQuote) &&
                 afterFnCallRegexp.test(stringAfterRightQuote)) ||
             // require: require('lodash'    )
             (/require\s+\(\s*$/.test(stringBeforeLeftQuote) &&
