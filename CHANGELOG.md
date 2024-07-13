@@ -1,5 +1,11 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.15.1 (2024-07-13)
+
+No significant changes
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.15.0...v0.15.1 '2024-07-13')
+
 ## v0.15.0 (2024-07-13)
 
 ### 🚀 Features
