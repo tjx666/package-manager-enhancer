@@ -5,6 +5,8 @@ import pMemoize from 'p-memoize';
 import fetchPackageJson from 'package-json';
 import type { PackageJson } from 'type-fest';
 
+import { logger } from './logger';
+
 const min = 1000 * 60;
 
 export type NodeVersions =
@@ -75,8 +77,8 @@ export async function tryFetch<P extends Promise<any>>(
     let resp: Awaited<P>;
     try {
         resp = await promise;
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        logger.error(error);
         return undefined;
     }
     return resp;
