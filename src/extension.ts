@@ -10,7 +10,7 @@ import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersio
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
-import { diagnosticCollection, updateDiagnostic } from './diagnostic';
+import { codeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -18,7 +18,6 @@ import { logger } from './logger';
 import type { Command } from './utils/constants';
 import { commands, EXT_NAME } from './utils/constants';
 import { pathExists } from './utils/fs';
-import { detectPm } from './utils/pm';
 import { store } from './utils/store';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -182,45 +181,9 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeTextDocument((event) => {
             updateDiagnostic(event.document);
         }),
-        vscode.languages.registerCodeActionsProvider(
-            pkgJsonSelector,
-            {
-                provideCodeActions: async (document) => {
-                    const actions: vscode.CodeAction[] = [];
-                    const diagnostics = vscode.languages.getDiagnostics(document.uri);
-                    const pm = await detectPm(
-                        vscode.workspace.getWorkspaceFolder(document.uri)!.uri,
-                    );
-                    for (const diagnostic of diagnostics) {
-                        if (
-                            diagnostic.code === 'package-manager-enhancer.packageNotFound' ||
-                            diagnostic.code === 'package-manager-enhancer.unmetDependency'
-                        ) {
-                            const action = new vscode.CodeAction(
-                                `Run ${pm} install`,
-                                vscode.CodeActionKind.QuickFix,
-                            );
-                            action.command = {
-                                command: commands.runNpmScriptInTerminal,
-                                title: `Run ${pm} install`,
-                                arguments: [
-                                    {
-                                        command: 'install',
-                                        cwd: vscode.workspace.getWorkspaceFolder(document.uri)!.uri
-                                            .fsPath,
-                                    },
-                                ],
-                            };
-                            actions.push(action);
-                        }
-                    }
-                    return actions;
-                },
-            },
-            {
-                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-            },
-        ),
+        vscode.languages.registerCodeActionsProvider(pkgJsonSelector, codeActionProvider, {
+            providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+        }),
     );
 }
 

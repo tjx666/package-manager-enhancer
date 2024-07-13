@@ -4,8 +4,10 @@ import semver from 'semver';
 import vscode from 'vscode';
 
 import { configuration, updateConfiguration } from '../configuration';
+import { commands } from '../utils/constants';
 import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
+import { detectPm } from '../utils/pm';
 
 function isJSONParsable(str: string) {
     try {
@@ -104,3 +106,28 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
         console.error(error);
     }
 }
+
+export const codeActionProvider: vscode.CodeActionProvider = {
+    provideCodeActions: async (document) => {
+        const diagnostics = vscode.languages.getDiagnostics(document.uri);
+        const pm = await detectPm(vscode.workspace.getWorkspaceFolder(document.uri)!.uri);
+
+        const action = new vscode.CodeAction(`Run ${pm} install`, vscode.CodeActionKind.QuickFix);
+        action.command = {
+            command: commands.runNpmScriptInTerminal,
+            title: `Run ${pm} install`,
+            arguments: [
+                {
+                    command: 'install',
+                    cwd: vscode.workspace.getWorkspaceFolder(document.uri)!.uri.fsPath,
+                },
+            ],
+        };
+        action.diagnostics = diagnostics.filter(
+            (diagnostic) =>
+                diagnostic.code === 'package-manager-enhancer.packageNotFound' ||
+                diagnostic.code === 'package-manager-enhancer.unmetDependency',
+        );
+        return [action];
+    },
+};
