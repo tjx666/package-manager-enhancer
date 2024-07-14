@@ -137,11 +137,14 @@ settings:
 
 If you like this feature, you may also interesting with cli: [stale-dep](https://github.com/sxzz/stale-dep)
 
+### `.npmrc` autocomplete
+
+![ScreenShot 2024-07-14 12 58 00](https://github.com/user-attachments/assets/90a4c770-9dba-4236-af70-f3062ff1795a)
+
 ## TODOs
 
 - [ ] [outdated packages warning](https://github.com/zyrong/vscode-node-modules/issues/29)
 - [ ] `pnpm why` visualization
-- [ ] `.npmrc` autocomplete
 - [ ] color bundle size
 
 ## My extensions
