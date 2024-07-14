@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.16.0 (2024-07-14)
+
+### 🚀 Features
+
+- .npmrc auto complete ([#12](https://github.com/tjx666/package-manager-enhancer/pull/12))
+
+### ❤️ Contributors
+
+- Stephen Zhou ([@hyoban](http://github.com/hyoban))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.15.2...v0.16.0 '2024-07-14')
+
 ## v0.15.2 (2024-07-13)
 
 ### 🐞 Bug Fixes

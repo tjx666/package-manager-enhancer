@@ -8,5 +8,7 @@
         "**/.DS_Store": false,
         "**/Thumbs.db": false
     },
-    "references.preferredLocation": "peek"
+    "references.preferredLocation": "peek",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
 }
