@@ -324,7 +324,6 @@
     "dependencies": {
         "@npmcli/config": "^8.3.4",
         "@pnpm/config": "^21.6.1",
-        "axios": "^1.7.2",
         "detect-package-manager": "^3.0.2",
         "escape-string-regexp": "^5.0.0",
         "execa": "^9.3.0",
@@ -374,5 +373,10 @@
         "tsx": "^4.16.2",
         "type-fest": "^4.21.0",
         "typescript": "~5.5.3"
+    },
+    "pnpm": {
+        "patchedDependencies": {
+            "all-node-versions@13.0.0": "patches/all-node-versions@13.0.0.patch"
+        }
     }
 }
