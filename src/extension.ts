@@ -2,7 +2,7 @@ import { watchFile } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 
-import type { DocumentSelector, TextEditor } from 'vscode';
+import type { TextEditor } from 'vscode';
 import vscode from 'vscode';
 
 import { NodeVersionCodeLensProvider } from './codeLens/nodeVersion';
@@ -10,15 +10,16 @@ import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonD
 import { PackageJsonFilesCodeLensProvider } from './codeLens/packageJsonFiles';
 import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersion';
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
+import { NpmrcCompletionItemProvider } from './completion/npmrc';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
-import { codeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
+import { DepsCheckCodeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
 import { logger } from './logger';
 import type { Command } from './utils/constants';
-import { commands, EXT_NAME } from './utils/constants';
+import { commands, EXT_NAME, npmrcSelector, pkgJsonSelector } from './utils/constants';
 import { pathExists } from './utils/fs';
 import { store } from './utils/store';
 
@@ -115,12 +116,6 @@ export function activate(context: vscode.ExtensionContext) {
         import('./commands/findPathInNodeModules').then((mod) => mod.findPathInNodeModules(uri)),
     );
 
-    const pkgJsonSelector: DocumentSelector = {
-        language: 'json',
-        scheme: 'file',
-        pattern: '**/package.json',
-    };
-
     subscriptions.push(
         vscode.languages.registerCodeLensProvider(
             {
@@ -170,6 +165,10 @@ export function activate(context: vscode.ExtensionContext) {
             pkgJsonSelector,
             new DependenciesDefinitionProvider(),
         ),
+        vscode.languages.registerCompletionItemProvider(
+            npmrcSelector,
+            new NpmrcCompletionItemProvider(),
+        ),
     );
 
     for (const editor of vscode.window.visibleTextEditors) {
@@ -183,9 +182,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeTextDocument((event) => {
             updateDiagnostic(event.document);
         }),
-        vscode.languages.registerCodeActionsProvider(pkgJsonSelector, codeActionProvider, {
-            providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-        }),
+        vscode.languages.registerCodeActionsProvider(
+            pkgJsonSelector,
+            new DepsCheckCodeActionProvider(),
+            {
+                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+            },
+        ),
     );
 
     const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lockb'].map(

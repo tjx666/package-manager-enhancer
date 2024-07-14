@@ -1,3 +1,5 @@
+import type vscode from 'vscode';
+
 export const EXT_NAME = 'package-manager-enhancer';
 const commandsArray = [
     'removeUnusedDependency',
@@ -28,3 +30,15 @@ export const commands = commandsArray.reduce((acc, item) => {
 
 export const NODE_MODULES = 'node_modules';
 export const PACKAGE_JSON = 'package.json';
+
+export const pkgJsonSelector: vscode.DocumentSelector = {
+    language: 'json',
+    scheme: 'file',
+    pattern: '**/package.json',
+};
+
+export const npmrcSelector: vscode.DocumentSelector = {
+    language: 'properties',
+    scheme: 'file',
+    pattern: '**/.npmrc',
+};

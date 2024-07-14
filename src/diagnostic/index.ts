@@ -2,6 +2,7 @@ import path from 'path';
 
 import type { ParsedJson } from 'jsonpos';
 import semver from 'semver';
+import type { CodeActionProvider } from 'vscode';
 import vscode from 'vscode';
 
 import { configuration } from '../configuration';
@@ -109,8 +110,13 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     }
 }
 
-export const codeActionProvider: vscode.CodeActionProvider = {
-    provideCodeActions: async (document) => {
+export class DepsCheckCodeActionProvider implements CodeActionProvider {
+    async provideCodeActions(
+        document: vscode.TextDocument,
+        _range: vscode.Range | vscode.Selection,
+        _context: vscode.CodeActionContext,
+        _token: vscode.CancellationToken,
+    ): Promise<vscode.CodeAction[] | undefined> {
         const diagnostics = vscode.languages
             .getDiagnostics(document.uri)
             .filter(
@@ -135,5 +141,5 @@ export const codeActionProvider: vscode.CodeActionProvider = {
         };
         action.diagnostics = diagnostics;
         return [action];
-    },
-};
+    }
+}
