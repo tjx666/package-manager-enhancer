@@ -4,18 +4,60 @@ import type { CompletionItemProvider } from 'vscode';
 import vscode from 'vscode';
 
 import { options } from './options';
+import { registryList } from './registryList';
 
 export class NpmrcCompletionItemProvider implements CompletionItemProvider {
+    private async getAvailableValues(key: string): Promise<vscode.CompletionList | undefined> {
+        const [definitions, types] = await Promise.all([
+            import('@npmcli/config/lib/definitions').then((mod) => mod.definitions),
+            import('@pnpm/config').then((mod) => mod.types),
+        ]);
+
+        if (key === 'registry') {
+            return {
+                items: registryList.map((item) => {
+                    return new vscode.CompletionItem(
+                        item.registry,
+                        vscode.CompletionItemKind.Value,
+                    );
+                }),
+            };
+        }
+
+        const availableValues = types[key as keyof typeof types] ?? definitions[key]?.type;
+        if (availableValues) {
+            const isBoolean =
+                typeof availableValues === 'function' && availableValues.name === 'Boolean';
+
+            if (isBoolean) {
+                return {
+                    items: [
+                        new vscode.CompletionItem('true', vscode.CompletionItemKind.Value),
+                        new vscode.CompletionItem('false', vscode.CompletionItemKind.Value),
+                    ],
+                };
+            }
+
+            const values = Array.isArray(availableValues) ? availableValues : [availableValues];
+            const items = values
+                .filter((value) => typeof value === 'string')
+                .map((value) => {
+                    const item = new vscode.CompletionItem(value, vscode.CompletionItemKind.Value);
+                    item.insertText = value;
+                    return item;
+                });
+            return { items };
+        }
+
+        return;
+    }
+
     async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         _token: vscode.CancellationToken,
         _context: vscode.CompletionContext,
     ): Promise<vscode.CompletionList | undefined> {
-        const [definitions, types] = await Promise.all([
-            import('@npmcli/config/lib/definitions').then((mod) => mod.definitions),
-            import('@pnpm/config').then((mod) => mod.types),
-        ]);
         const char = position.character;
         const lineBefore = document.lineAt(position).text.slice(0, char);
 
@@ -24,34 +66,8 @@ export class NpmrcCompletionItemProvider implements CompletionItemProvider {
             if (!options.has(key)) {
                 return;
             }
-            const availableValues = types[key as keyof typeof types] ?? definitions[key]?.type;
-            if (availableValues) {
-                const isBoolean =
-                    typeof availableValues === 'function' && availableValues.name === 'Boolean';
 
-                if (isBoolean) {
-                    return {
-                        items: [
-                            new vscode.CompletionItem('true', vscode.CompletionItemKind.Value),
-                            new vscode.CompletionItem('false', vscode.CompletionItemKind.Value),
-                        ],
-                    };
-                }
-
-                const values = Array.isArray(availableValues) ? availableValues : [availableValues];
-                const items = values
-                    .filter((value) => typeof value === 'string')
-                    .map((value) => {
-                        const item = new vscode.CompletionItem(
-                            value,
-                            vscode.CompletionItemKind.Value,
-                        );
-                        item.insertText = value;
-                        return item;
-                    });
-                return { items };
-            }
-            return;
+            return this.getAvailableValues(key);
         }
 
         return {
