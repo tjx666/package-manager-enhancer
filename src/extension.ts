@@ -10,10 +10,10 @@ import { PackageJsonDependenciesCodeLensProvider } from './codeLens/packageJsonD
 import { PackageJsonFilesCodeLensProvider } from './codeLens/packageJsonFiles';
 import { PackageJsonVersionCodeLensProvider } from './codeLens/packageJsonVersion';
 import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
-import { npmrcCompletionItemProvider } from './completion/npmrc';
+import { NpmrcCompletionItemProvider } from './completion/npmrc';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
-import { codeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
+import { DepsCheckCodeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -165,7 +165,10 @@ export function activate(context: vscode.ExtensionContext) {
             pkgJsonSelector,
             new DependenciesDefinitionProvider(),
         ),
-        vscode.languages.registerCompletionItemProvider(npmrcSelector, npmrcCompletionItemProvider),
+        vscode.languages.registerCompletionItemProvider(
+            npmrcSelector,
+            new NpmrcCompletionItemProvider(),
+        ),
     );
 
     for (const editor of vscode.window.visibleTextEditors) {
@@ -179,9 +182,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeTextDocument((event) => {
             updateDiagnostic(event.document);
         }),
-        vscode.languages.registerCodeActionsProvider(pkgJsonSelector, codeActionProvider, {
-            providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-        }),
+        vscode.languages.registerCodeActionsProvider(
+            pkgJsonSelector,
+            new DepsCheckCodeActionProvider(),
+            {
+                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+            },
+        ),
     );
 
     const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lockb'].map(

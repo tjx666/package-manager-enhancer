@@ -1,12 +1,20 @@
 // @ts-expect-error missing types
 import { definitions } from '@npmcli/config/lib/definitions';
 import { types } from '@pnpm/config';
+import type { CompletionItemProvider } from 'vscode';
 import vscode from 'vscode';
 
 import { options } from './options';
 
-export const npmrcCompletionItemProvider: vscode.CompletionItemProvider = {
-    provideCompletionItems(document, position) {
+export class NpmrcCompletionItemProvider implements CompletionItemProvider {
+    provideCompletionItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        _token: vscode.CancellationToken,
+        _context: vscode.CompletionContext,
+    ): vscode.ProviderResult<
+        vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>
+    > {
         const char = position.character;
         const lineBefore = document.lineAt(position).text.slice(0, char);
 
@@ -50,8 +58,12 @@ export const npmrcCompletionItemProvider: vscode.CompletionItemProvider = {
                 (key) => new vscode.CompletionItem(key, vscode.CompletionItemKind.Property),
             ),
         };
-    },
-    resolveCompletionItem(item) {
+    }
+
+    resolveCompletionItem?(
+        item: vscode.CompletionItem,
+        _token: vscode.CancellationToken,
+    ): vscode.ProviderResult<vscode.CompletionItem> {
         if (item.kind !== vscode.CompletionItemKind.Property) {
             return item;
         }
@@ -93,5 +105,5 @@ export const npmrcCompletionItemProvider: vscode.CompletionItemProvider = {
         }
         item.insertText = `${key}=`;
         return item;
-    },
-};
+    }
+}
