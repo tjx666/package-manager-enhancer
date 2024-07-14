@@ -1,4 +1,6 @@
 import fs from 'fs';
+import { resolve } from 'path';
+import process from 'process';
 
 import * as cheerio from 'cheerio';
 
@@ -41,7 +43,7 @@ async function fetchNpmrc() {
 
     await Promise.all([handleNpmNpmrc(), handlePnpmNpmrc()]);
     fs.writeFileSync(
-        'options.ts',
+        resolve(process.cwd(), 'src/completion/npmrc/options.ts'),
         `export const options = new Set([\n${[...options].map((option) => `    '${option}',`).join('\n')}\n]);`,
     );
     return options;
