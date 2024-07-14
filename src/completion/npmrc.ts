@@ -241,7 +241,7 @@ export const npmrcCompletionItemProvider: vscode.CompletionItemProvider = {
             if (!options.has(key)) {
                 return;
             }
-            const availableValues = types[key as keyof typeof types];
+            const availableValues = types[key as keyof typeof types] ?? definitions[key]?.type;
             if (availableValues) {
                 const isBoolean =
                     typeof availableValues === 'function' && availableValues.name === 'Boolean';
