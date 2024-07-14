@@ -1,5 +1,4 @@
 import allNodeVersions from 'all-node-versions';
-import axios from 'axios';
 import ExpiryMap from 'expiry-map';
 import pMemoize from 'p-memoize';
 import fetchPackageJson from 'package-json';
@@ -56,9 +55,8 @@ export const fetchRemotePackageJson = (() => {
 export const fetchBundleSize = (() => {
     const request = async (pkgNameAndVersion: string) => {
         const url = `https://bundlephobia.com/api/size?package=${pkgNameAndVersion}`;
-        const { data } = await axios.get<{ gzip?: number; size?: number }>(url, {
-            timeout: 3 * 1000,
-        });
+        const response = await fetch(url);
+        const data = (await response.json()) as { gzip?: number; size?: number };
         if (data && typeof data.size === 'number') {
             return {
                 gzip: data.gzip!,

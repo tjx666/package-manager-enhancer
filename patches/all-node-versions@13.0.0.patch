@@ -1,0 +1,23 @@
+diff --git a/build/src/main.js b/build/src/main.js
+index 4d2f1549cb2793091846f0b9b3ab9a04be218ffe..15d60c4edfaa0bb8d2b7fa695ac680bc23b4be23 100644
+--- a/build/src/main.js
++++ b/build/src/main.js
+@@ -2,7 +2,6 @@ import{env}from"node:process";
+ 
+ import{handleOfflineError}from"./cache/offline.js";
+ import{readCachedVersions,writeCachedVersions}from"./cache/read.js";
+-import{fetchIndex}from"./fetch.js";
+ import{normalizeIndex}from"./normalize.js";
+ import{getOpts}from"./options.js";
+ 
+@@ -55,3 +54,10 @@ return versionsInfo
+ return handleOfflineError(error)
+ }
+ };
++
++const fetchIndex=async(fetchNodeOpts)=>{
++    const mirror=fetchNodeOpts?.mirror ?? "https://nodejs.org/dist";
++    const url=`${mirror}/index.json`;
++    const response=await fetch(url);
++    return response.json()
++};
