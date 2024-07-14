@@ -1,20 +1,21 @@
-// @ts-expect-error missing types
-import { definitions } from '@npmcli/config/lib/definitions';
-import { types } from '@pnpm/config';
+import { types } from 'util';
+
 import type { CompletionItemProvider } from 'vscode';
 import vscode from 'vscode';
 
 import { options } from './options';
 
 export class NpmrcCompletionItemProvider implements CompletionItemProvider {
-    provideCompletionItems(
+    async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         _token: vscode.CancellationToken,
         _context: vscode.CompletionContext,
-    ): vscode.ProviderResult<
-        vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>
-    > {
+    ): Promise<vscode.CompletionList | undefined> {
+        const [definitions, types] = await Promise.all([
+            import('@npmcli/config/lib/definitions').then((mod) => mod.definitions),
+            import('@pnpm/config').then((mod) => mod.types),
+        ]);
         const char = position.character;
         const lineBefore = document.lineAt(position).text.slice(0, char);
 
@@ -60,15 +61,18 @@ export class NpmrcCompletionItemProvider implements CompletionItemProvider {
         };
     }
 
-    resolveCompletionItem?(
+    async resolveCompletionItem?(
         item: vscode.CompletionItem,
         _token: vscode.CancellationToken,
-    ): vscode.ProviderResult<vscode.CompletionItem> {
+    ): Promise<vscode.CompletionItem> {
         if (item.kind !== vscode.CompletionItemKind.Property) {
             return item;
         }
 
-        const key = item.label;
+        const key = item.label as string;
+        const definitions = await import('@npmcli/config/lib/definitions').then(
+            (mod) => mod.definitions,
+        );
         const type = types[key as keyof typeof types] ?? definitions[key]?.type;
         const availableValueTypes = type
             ? (Array.isArray(type) ? type : [type])
