@@ -1,5 +1,21 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.16.1 (2024-07-15)
+
+### 🏎 Performance
+
+- Remove axios and got ([dcb99fe](https://github.com/tjx666/package-manager-enhancer/commit/dcb99fe))
+
+### 🐞 Bug Fixes
+
+- Skip check for devDependencies from node_modules ([f526234](https://github.com/tjx666/package-manager-enhancer/commit/f526234))
+
+### ❤️ Contributors
+
+- Stephen Zhou ([@hyoban](http://github.com/hyoban))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.16.0...v0.16.1 '2024-07-15')
+
 ## v0.16.0 (2024-07-14)
 
 ### 🚀 Features
