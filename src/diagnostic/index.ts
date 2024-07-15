@@ -39,6 +39,8 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     }
 
     async function checkDependency(key: string) {
+        if (document.uri.fsPath.includes('node_modules') && key === 'devDependencies') return;
+
         const nodePath = key.split('.');
         if (nodePath.length === 0) return;
 
