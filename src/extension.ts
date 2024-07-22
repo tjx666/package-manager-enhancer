@@ -97,7 +97,9 @@ export function activate(context: vscode.ExtensionContext) {
             (mod.runNpmScriptInTerminal as any)(...args),
         ),
     );
-
+    registerCommand(commands.keepInstalledVersion, (arg) =>
+        import('./commands/keepInstalledVersion').then((mod) => mod.keepInstalledVersion(arg)),
+    );
     registerTextEditorCommand(commands.addMissingDeps, (editor) =>
         import('./commands/addMissingDeps').then((mod) => mod.addMissingDeps(editor)),
     );

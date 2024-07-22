@@ -12,6 +12,10 @@ type Args =
     | {
           command: string;
           cwd: string;
+      }
+    | {
+          packageNameWithVersion: string;
+          cwd: string;
       };
 
 export async function runNpmScriptInTerminal(args: Args) {
@@ -33,6 +37,8 @@ export async function runNpmScriptInTerminal(args: Args) {
     }
     if ('command' in args) {
         terminal.sendText(`${pm} ${args.command}`);
+    } else if ('packageNameWithVersion' in args) {
+        terminal.sendText(`${pm} install ${args.packageNameWithVersion}`);
     } else {
         terminal.sendText(`${pm} run ${args.scriptName}`);
     }

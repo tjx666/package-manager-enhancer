@@ -130,8 +130,11 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
 
         const pm = await detectPm(vscode.workspace.getWorkspaceFolder(document.uri)!.uri);
 
-        const action = new vscode.CodeAction(`Run ${pm} install`, vscode.CodeActionKind.QuickFix);
-        action.command = {
+        const runInstall = new vscode.CodeAction(
+            `Run ${pm} install`,
+            vscode.CodeActionKind.QuickFix,
+        );
+        runInstall.command = {
             command: commands.runNpmScriptInTerminal,
             title: `Run ${pm} install`,
             arguments: [
@@ -141,7 +144,58 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
                 },
             ],
         };
-        action.diagnostics = diagnostics;
-        return [action];
+        runInstall.diagnostics = diagnostics;
+
+        const packageNameRegex = /"([\s\S]*?)"/g;
+        const packageData = document
+            .lineAt(_range.start.line)
+            .text.match(packageNameRegex)!
+            .map((p) => JSON.parse(p)) as [string, string];
+        const packageName = packageData[0];
+        const packageVersion = packageData[1];
+        const runInstallSingle = new vscode.CodeAction(
+            `Upgrade package ${packageName} to ${packageVersion}`,
+            vscode.CodeActionKind.QuickFix,
+        );
+        runInstallSingle.command = {
+            command: commands.runNpmScriptInTerminal,
+            title: `Upgrade package ${packageName} to ${packageVersion}`,
+            arguments: [
+                {
+                    packageNameWithVersion: `${packageName}@${packageVersion}`,
+                    cwd: vscode.workspace.getWorkspaceFolder(document.uri)!.uri.fsPath,
+                },
+            ],
+        };
+        runInstallSingle.diagnostics = diagnostics;
+
+        const packageInfo = await getPackageInfo(packageName, {
+            packageInstallDir: await findPkgInstallDir(packageName, document.uri.fsPath),
+            fetchBundleSize: false,
+            remoteFetch: false,
+            skipBuiltinModuleCheck: true,
+        });
+
+        const fallbackVersion: vscode.CodeAction[] = [];
+        if (!packageInfo?.isBuiltinModule) {
+            const _fallbackVersion = new vscode.CodeAction(
+                `package ${packageName} lock to ${packageInfo?.installedVersion}`,
+                vscode.CodeActionKind.QuickFix,
+            );
+            _fallbackVersion.command = {
+                command: commands.keepInstalledVersion,
+                title: `package ${packageName} lock to ${packageInfo?.installedVersion}`,
+                arguments: [
+                    {
+                        versionRange: _range,
+                        installedVersion: `\"${packageInfo?.installedVersion}\"`,
+                    },
+                ],
+            };
+            _fallbackVersion.diagnostics = diagnostics;
+            fallbackVersion.push(_fallbackVersion);
+        }
+
+        return [runInstall, runInstallSingle, ...fallbackVersion];
     }
 }

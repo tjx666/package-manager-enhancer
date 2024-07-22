@@ -12,6 +12,7 @@ const commandsArray = [
     'upgradeVersion',
     'findNpmPackage',
     'findPathInNodeModules',
+    'keepInstalledVersion',
 ] as const;
 
 type CommandsArrayUnion = (typeof commandsArray)[number];
