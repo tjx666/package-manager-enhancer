@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.16.2 (2024-07-22)
+
+### 🐞 Bug Fixes
+
+- Bring back timeout for bundlephobia api ([c283d23](https://github.com/tjx666/package-manager-enhancer/commit/c283d23))
+
+### ❤️ Contributors
+
+- Stephen Zhou ([@hyoban](http://github.com/hyoban))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.16.1...v0.16.2 '2024-07-22')
+
 ## v0.16.1 (2024-07-15)
 
 ### 🏎 Performance
