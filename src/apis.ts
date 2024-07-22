@@ -55,7 +55,9 @@ export const fetchRemotePackageJson = (() => {
 export const fetchBundleSize = (() => {
     const request = async (pkgNameAndVersion: string) => {
         const url = `https://bundlephobia.com/api/size?package=${pkgNameAndVersion}`;
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            signal: AbortSignal.timeout(3000),
+        });
         const data = (await response.json()) as { gzip?: number; size?: number };
         if (data && typeof data.size === 'number') {
             return {
