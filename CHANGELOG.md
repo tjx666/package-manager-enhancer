@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.17.1 (2024-07-25)
+
+### 🐞 Bug Fixes
+
+- Ts validate errors ([90a0f83](https://github.com/tjx666/package-manager-enhancer/commit/90a0f83))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.17.0...v0.17.1 '2024-07-25')
+
 ## v0.17.0 (2024-07-25)
 
 ### 🚀 Features
