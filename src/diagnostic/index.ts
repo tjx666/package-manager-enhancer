@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import type { ParsedJson } from 'jsonpos';
@@ -8,13 +7,18 @@ import vscode from 'vscode';
 
 import { configuration } from '../configuration';
 import { logger } from '../logger';
-import { commands, PACKAGE_JSON } from '../utils/constants';
+import { commands, EXT_NAME, PACKAGE_JSON } from '../utils/constants';
 import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
 import { detectPm } from '../utils/pm';
 
+enum DepsCheckDiagnosticCode {
+    PACKAGE_NOT_FOUND = `${EXT_NAME}.packageNotFound`,
+    UNMET_DEPENDENCY = `${EXT_NAME}.unmetDependency`,
+}
+
 export const diagnosticCollection = vscode.languages.createDiagnosticCollection(
-    'package-manager-enhancer:depsVersionCheck',
+    `${EXT_NAME}:depsVersionCheck`,
 );
 
 export async function updateDiagnostic(document: vscode.TextDocument) {
@@ -75,17 +79,23 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
 
                 if (packageInfo?.isBuiltinModule) return;
 
+                // not installed
                 if (!packageInfo || !packageInfo.installedVersion) {
                     const diagnostic = new vscode.Diagnostic(
                         range,
                         `Package "${name}" not installed`,
                         vscode.DiagnosticSeverity.Warning,
                     );
-                    diagnostic.code = 'package-manager-enhancer.packageNotFound';
+                    diagnostic.code = DepsCheckDiagnosticCode.PACKAGE_NOT_FOUND;
+                    diagnostic.data = {
+                        depName: name,
+                        depDeclaredVersion: version,
+                    };
                     diagnostics.push(diagnostic);
                     return;
                 }
 
+                // doesn't match declared version
                 const { version: installedVersion } = packageInfo;
                 if (semver.validRange(version) && !semver.satisfies(installedVersion, version)) {
                     const diagnostic = new vscode.Diagnostic(
@@ -93,42 +103,10 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                         `Installed ${name} version "${installedVersion}" doesn't match declared version: "${version}"`,
                         vscode.DiagnosticSeverity.Warning,
                     );
-                    diagnostic.code = 'package-manager-enhancer.unmetDependency';
-
-                    const targetUri = await fs
-                        .realpath(path.resolve(packageInstallDir!, PACKAGE_JSON))
-                        .then((p) => vscode.Uri.file(p));
-                    let versionRange: vscode.Range | undefined;
-                    try {
-                        const installedParsed = getParsedByString(
-                            await fs.readFile(targetUri.fsPath, 'utf8'),
-                        );
-                        const versionLocation = getLocation(installedParsed, {
-                            path: ['version'],
-                        });
-                        if (!versionLocation.start || !versionLocation.end) return;
-                        versionRange = new vscode.Range(
-                            versionLocation.start.line - 1,
-                            versionLocation.start.column - 1,
-                            versionLocation.end.line - 1,
-                            versionLocation.end.column - 1,
-                        );
-                    } catch (error: any) {
-                        logger.error(error);
-                    }
-                    diagnostic.relatedInformation = [
-                        new vscode.DiagnosticRelatedInformation(
-                            new vscode.Location(
-                                targetUri,
-                                versionRange ?? new vscode.Range(0, 0, 0, 0),
-                            ),
-                            `${name}@${version}`,
-                        ),
-                        new vscode.DiagnosticRelatedInformation(
-                            new vscode.Location(document.uri, range),
-                            `${installedVersion}`,
-                        ),
-                    ];
+                    diagnostic.code = DepsCheckDiagnosticCode.UNMET_DEPENDENCY;
+                    diagnostic.data = {
+                        depInstalledVersion: installedVersion,
+                    };
 
                     diagnostics.push(diagnostic);
                 }
@@ -150,75 +128,106 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
 }
 
 export class DepsCheckCodeActionProvider implements CodeActionProvider {
-    async provideCodeActions(
-        document: vscode.TextDocument,
-        _range: vscode.Range | vscode.Selection,
-        _context: vscode.CodeActionContext,
-        _token: vscode.CancellationToken,
-    ): Promise<vscode.CodeAction[] | undefined> {
-        const diagnostics = vscode.languages
-            .getDiagnostics(document.uri)
-            .filter(
-                (diagnostic) =>
-                    diagnostic.code === 'package-manager-enhancer.packageNotFound' ||
-                    diagnostic.code === 'package-manager-enhancer.unmetDependency',
-            );
-        if (diagnostics.length === 0) return;
-
-        const pm = await detectPm(vscode.workspace.getWorkspaceFolder(document.uri)!.uri);
-
-        const runInstall = new vscode.CodeAction(
-            `Run "${pm} install"`,
+    private createNpmInstallAction(diagnostics: vscode.Diagnostic[], pm: string, cwd: string) {
+        const runInstallTitle = `Run "${pm} install"`;
+        const runInstallAction = new vscode.CodeAction(
+            runInstallTitle,
             vscode.CodeActionKind.QuickFix,
         );
-        runInstall.command = {
+        runInstallAction.command = {
             command: commands.runNpmScriptInTerminal,
-            title: `Run ${pm} install`,
+            title: runInstallTitle,
             arguments: [
                 {
                     command: 'install',
-                    cwd: vscode.workspace.getWorkspaceFolder(document.uri)!.uri.fsPath,
+                    cwd,
                 },
             ],
         };
-        runInstall.diagnostics = diagnostics;
+        runInstallAction.diagnostics = diagnostics;
+        return runInstallAction;
+    }
 
-        const packageNameAndVersion = diagnostics[0].relatedInformation![0].message;
-
+    private createNpmInstallSingleAction(
+        diagnostics: vscode.Diagnostic[],
+        pm: string,
+        cwd: string,
+    ) {
+        const { depName, depDeclaredVersion } = diagnostics[0].data!;
+        const packageNameAndVersion = `${depName}@${depDeclaredVersion}`;
         const runInstallSingleTitle = `Run "${pm} install ${packageNameAndVersion}"`;
-        const runInstallSingle = new vscode.CodeAction(
+        const runInstallSingleAction = new vscode.CodeAction(
             runInstallSingleTitle,
             vscode.CodeActionKind.QuickFix,
         );
-        runInstallSingle.command = {
+        runInstallSingleAction.command = {
             command: commands.runNpmScriptInTerminal,
             title: runInstallSingleTitle,
             arguments: [
                 {
                     command: `install ${packageNameAndVersion}`,
-                    cwd: vscode.workspace.getWorkspaceFolder(document.uri)!.uri.fsPath,
+                    cwd,
                 },
             ],
         };
-        runInstallSingle.diagnostics = diagnostics;
+        runInstallSingleAction.diagnostics = diagnostics;
+        return runInstallSingleAction;
+    }
 
-        const installedVersion = diagnostics[0].relatedInformation![1].message;
-        const fallbackVersion = new vscode.CodeAction(
+    private createLockVersionAction(diagnostics: vscode.Diagnostic[], range: vscode.Range) {
+        const { depInstalledVersion: installedVersion } = diagnostics[0].data!;
+        const lockVersionActon = new vscode.CodeAction(
             `Lock to ${installedVersion}`,
             vscode.CodeActionKind.QuickFix,
         );
-        fallbackVersion.command = {
+        lockVersionActon.command = {
             command: commands.keepInstalledVersion,
             title: `Lock to ${installedVersion}`,
             arguments: [
                 {
-                    versionRange: _range,
+                    versionRange: range,
                     installedVersion: `\"${installedVersion}\"`,
                 },
             ],
         };
-        fallbackVersion.diagnostics = diagnostics;
+        lockVersionActon.diagnostics = diagnostics;
+        return lockVersionActon;
+    }
 
-        return [runInstall, runInstallSingle, fallbackVersion];
+    async provideCodeActions(
+        document: vscode.TextDocument,
+        range: vscode.Range | vscode.Selection,
+        _context: vscode.CodeActionContext,
+        _token: vscode.CancellationToken,
+    ): Promise<vscode.CodeAction[] | undefined> {
+        const codeActions: vscode.CodeAction[] = [];
+
+        const line = range.start.line;
+        const diagnostics = vscode.languages
+            .getDiagnostics(document.uri)
+            .filter(
+                (diagnostic) =>
+                    line === diagnostic.range.start.line &&
+                    (diagnostic.code === DepsCheckDiagnosticCode.PACKAGE_NOT_FOUND ||
+                        diagnostic.code === DepsCheckDiagnosticCode.UNMET_DEPENDENCY),
+            );
+        if (diagnostics.length === 0) return;
+
+        const pm = await detectPm(vscode.workspace.getWorkspaceFolder(document.uri)!.uri);
+        const cwd = vscode.workspace.getWorkspaceFolder(document.uri)!.uri.fsPath;
+
+        codeActions.push(
+            this.createNpmInstallAction(diagnostics, pm, cwd),
+            this.createNpmInstallSingleAction(diagnostics, pm, cwd),
+        );
+
+        const unmetDepDiagnostics = diagnostics.filter(
+            (diagnostic) => diagnostic.code === DepsCheckDiagnosticCode.UNMET_DEPENDENCY,
+        );
+        if (unmetDepDiagnostics.length > 0) {
+            codeActions.push(this.createLockVersionAction(unmetDepDiagnostics, range));
+        }
+
+        return codeActions;
     }
 }
