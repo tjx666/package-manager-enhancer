@@ -1,5 +1,22 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.17.0 (2024-07-25)
+
+### 🚀 Features
+
+- Quickfix action add lock installed version and upgrade single package ([5d185c4](https://github.com/tjx666/package-manager-enhancer/commit/5d185c4))
+- **diagnostic:** Fix the location of relatedInformation ([33b3552](https://github.com/tjx666/package-manager-enhancer/commit/33b3552))
+
+### 🐞 Bug Fixes
+
+- Amend by review ([41fd40b](https://github.com/tjx666/package-manager-enhancer/commit/41fd40b))
+
+### ❤️ Contributors
+
+- Rgehbt <rgehbt@gmail.com>
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.16.2...v0.17.0 '2024-07-25')
+
 ## v0.16.2 (2024-07-22)
 
 ### 🐞 Bug Fixes
