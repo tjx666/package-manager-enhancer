@@ -1,4 +1,5 @@
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import type { ParsedJson } from 'jsonpos';
 import semver from 'semver';
@@ -7,7 +8,7 @@ import vscode from 'vscode';
 
 import { configuration } from '../configuration';
 import { logger } from '../logger';
-import { commands } from '../utils/constants';
+import { commands, PACKAGE_JSON } from '../utils/constants';
 import { findPkgInstallDir } from '../utils/pkg';
 import { getPackageInfo } from '../utils/pkg-info';
 import { detectPm } from '../utils/pm';
@@ -20,7 +21,7 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
     if (!configuration.depsVersionCheck.enable) return;
 
     if (
-        !path.basename(document.uri.fsPath).includes('package.json') ||
+        !path.basename(document.uri.fsPath).includes(PACKAGE_JSON) ||
         document.languageId !== 'json'
     )
         return;
@@ -64,9 +65,9 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                     location.end.line - 1,
                     location.end.column - 1,
                 );
-
+                const packageInstallDir = await findPkgInstallDir(name, document.uri.fsPath);
                 const packageInfo = await getPackageInfo(name, {
-                    packageInstallDir: await findPkgInstallDir(name, document.uri.fsPath),
+                    packageInstallDir,
                     fetchBundleSize: false,
                     remoteFetch: false,
                     skipBuiltinModuleCheck: true,
@@ -93,9 +94,34 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                         vscode.DiagnosticSeverity.Warning,
                     );
                     diagnostic.code = 'package-manager-enhancer.unmetDependency';
+
+                    const targetUri = await fs
+                        .realpath(path.resolve(packageInstallDir!, PACKAGE_JSON))
+                        .then((p) => vscode.Uri.file(p));
+                    let versionRange: vscode.Range | undefined;
+                    try {
+                        const installedParsed = getParsedByString(
+                            await fs.readFile(targetUri.fsPath, 'utf8'),
+                        );
+                        const versionLocation = getLocation(installedParsed, {
+                            path: ['version'],
+                        });
+                        if (!versionLocation.start || !versionLocation.end) return;
+                        versionRange = new vscode.Range(
+                            versionLocation.start.line - 1,
+                            versionLocation.start.column - 1,
+                            versionLocation.end.line - 1,
+                            versionLocation.end.column - 1,
+                        );
+                    } catch (error: any) {
+                        logger.error(error);
+                    }
                     diagnostic.relatedInformation = [
                         new vscode.DiagnosticRelatedInformation(
-                            new vscode.Location(document.uri, range),
+                            new vscode.Location(
+                                targetUri,
+                                versionRange ?? new vscode.Range(0, 0, 0, 0),
+                            ),
                             `${name}@${version}`,
                         ),
                         new vscode.DiagnosticRelatedInformation(
@@ -182,7 +208,7 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
             vscode.CodeActionKind.QuickFix,
         );
         fallbackVersion.command = {
-            command: commands.upgradeVersion,
+            command: commands.keepInstalledVersion,
             title: `Lock to ${installedVersion}`,
             arguments: [
                 {
