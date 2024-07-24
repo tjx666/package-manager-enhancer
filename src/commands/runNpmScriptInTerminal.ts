@@ -19,6 +19,10 @@ export async function runNpmScriptInTerminal(args: Args) {
         Uri.file(resolve(args.cwd, 'package.json')),
     );
     if (!workspaceFolder) return;
+    const document = vscode.window.activeTextEditor?.document;
+    if (document?.isDirty) {
+        await document.save();
+    }
 
     const pm = await detectPm(workspaceFolder.uri);
     const terminalName = 'Run Script';
