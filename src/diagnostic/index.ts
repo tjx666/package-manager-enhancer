@@ -93,6 +93,17 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                         vscode.DiagnosticSeverity.Warning,
                     );
                     diagnostic.code = 'package-manager-enhancer.unmetDependency';
+                    diagnostic.relatedInformation = [
+                        new vscode.DiagnosticRelatedInformation(
+                            new vscode.Location(document.uri, range),
+                            `${name}@${version}`,
+                        ),
+                        new vscode.DiagnosticRelatedInformation(
+                            new vscode.Location(document.uri, range),
+                            `${installedVersion}`,
+                        ),
+                    ];
+
                     diagnostics.push(diagnostic);
                 }
             }),
@@ -131,7 +142,7 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
         const pm = await detectPm(vscode.workspace.getWorkspaceFolder(document.uri)!.uri);
 
         const runInstall = new vscode.CodeAction(
-            `Run ${pm} install`,
+            `Run "${pm} install"`,
             vscode.CodeActionKind.QuickFix,
         );
         runInstall.command = {
@@ -146,56 +157,42 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
         };
         runInstall.diagnostics = diagnostics;
 
-        const packageNameRegex = /"([\s\S]*?)"/g;
-        const packageData = document
-            .lineAt(_range.start.line)
-            .text.match(packageNameRegex)!
-            .map((p) => JSON.parse(p)) as [string, string];
-        const packageName = packageData[0];
-        const packageVersion = packageData[1];
+        const packageNameAndVersion = diagnostics[0].relatedInformation![0].message;
+
+        const runInstallSingleTitle = `Run "${pm} install ${packageNameAndVersion}"`;
         const runInstallSingle = new vscode.CodeAction(
-            `Upgrade package ${packageName} to ${packageVersion}`,
+            runInstallSingleTitle,
             vscode.CodeActionKind.QuickFix,
         );
         runInstallSingle.command = {
             command: commands.runNpmScriptInTerminal,
-            title: `Upgrade package ${packageName} to ${packageVersion}`,
+            title: runInstallSingleTitle,
             arguments: [
                 {
-                    packageNameWithVersion: `${packageName}@${packageVersion}`,
+                    command: `install ${packageNameAndVersion}`,
                     cwd: vscode.workspace.getWorkspaceFolder(document.uri)!.uri.fsPath,
                 },
             ],
         };
         runInstallSingle.diagnostics = diagnostics;
 
-        const packageInfo = await getPackageInfo(packageName, {
-            packageInstallDir: await findPkgInstallDir(packageName, document.uri.fsPath),
-            fetchBundleSize: false,
-            remoteFetch: false,
-            skipBuiltinModuleCheck: true,
-        });
+        const installedVersion = diagnostics[0].relatedInformation![1].message;
+        const fallbackVersion = new vscode.CodeAction(
+            `Lock to ${installedVersion}`,
+            vscode.CodeActionKind.QuickFix,
+        );
+        fallbackVersion.command = {
+            command: commands.upgradeVersion,
+            title: `Lock to ${installedVersion}`,
+            arguments: [
+                {
+                    versionRange: _range,
+                    installedVersion: `\"${installedVersion}\"`,
+                },
+            ],
+        };
+        fallbackVersion.diagnostics = diagnostics;
 
-        const fallbackVersion: vscode.CodeAction[] = [];
-        if (!packageInfo?.isBuiltinModule) {
-            const _fallbackVersion = new vscode.CodeAction(
-                `package ${packageName} lock to ${packageInfo?.installedVersion}`,
-                vscode.CodeActionKind.QuickFix,
-            );
-            _fallbackVersion.command = {
-                command: commands.keepInstalledVersion,
-                title: `package ${packageName} lock to ${packageInfo?.installedVersion}`,
-                arguments: [
-                    {
-                        versionRange: _range,
-                        installedVersion: `\"${packageInfo?.installedVersion}\"`,
-                    },
-                ],
-            };
-            _fallbackVersion.diagnostics = diagnostics;
-            fallbackVersion.push(_fallbackVersion);
-        }
-
-        return [runInstall, runInstallSingle, ...fallbackVersion];
+        return [runInstall, runInstallSingle, fallbackVersion];
     }
 }

@@ -12,10 +12,6 @@ type Args =
     | {
           command: string;
           cwd: string;
-      }
-    | {
-          packageNameWithVersion: string;
-          cwd: string;
       };
 
 export async function runNpmScriptInTerminal(args: Args) {
@@ -23,6 +19,10 @@ export async function runNpmScriptInTerminal(args: Args) {
         Uri.file(resolve(args.cwd, 'package.json')),
     );
     if (!workspaceFolder) return;
+    const document = vscode.window.activeTextEditor?.document;
+    if (document?.isDirty) {
+        await document.save();
+    }
 
     const pm = await detectPm(workspaceFolder.uri);
     const terminalName = 'Run Script';
@@ -37,8 +37,6 @@ export async function runNpmScriptInTerminal(args: Args) {
     }
     if ('command' in args) {
         terminal.sendText(`${pm} ${args.command}`);
-    } else if ('packageNameWithVersion' in args) {
-        terminal.sendText(`${pm} install ${args.packageNameWithVersion}`);
     } else {
         terminal.sendText(`${pm} run ${args.scriptName}`);
     }
