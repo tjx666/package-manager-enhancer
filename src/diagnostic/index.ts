@@ -105,6 +105,8 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                     );
                     diagnostic.code = DepsCheckDiagnosticCode.UNMET_DEPENDENCY;
                     diagnostic.data = {
+                        depName: name,
+                        depDeclaredVersion: version,
                         depInstalledVersion: installedVersion,
                     };
 
