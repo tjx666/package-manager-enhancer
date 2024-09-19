@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.17.3 (2024-09-19)
+
+### 🐞 Bug Fixes
+
+- Ignore invalid version first ([125bc9e](https://github.com/tjx666/package-manager-enhancer/commit/125bc9e))
+
+### ❤️ Contributors
+
+- Stephen Zhou ([@hyoban](http://github.com/hyoban))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.17.2...v0.17.3 '2024-09-19')
+
 ## v0.17.2 (2024-07-25)
 
 ### 🐞 Bug Fixes
