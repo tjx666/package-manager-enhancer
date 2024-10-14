@@ -55,7 +55,7 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
         });
         await Promise.all(
             Object.entries(dependencies).map(async ([name, version]) => {
-                if (typeof version !== 'string') return;
+                if (typeof version !== 'string' || !semver.validRange(version)) return;
 
                 const location = getLocation(parsed, {
                     path: [...nodePath, name],
@@ -97,7 +97,7 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
 
                 // doesn't match declared version
                 const { version: installedVersion } = packageInfo;
-                if (semver.validRange(version) && !semver.satisfies(installedVersion, version)) {
+                if (!semver.satisfies(installedVersion, version)) {
                     const diagnostic = new vscode.Diagnostic(
                         range,
                         `Installed ${name} version "${installedVersion}" doesn't match declared version: "${version}"`,
@@ -105,6 +105,8 @@ export async function updateDiagnostic(document: vscode.TextDocument) {
                     );
                     diagnostic.code = DepsCheckDiagnosticCode.UNMET_DEPENDENCY;
                     diagnostic.data = {
+                        depName: name,
+                        depDeclaredVersion: version,
                         depInstalledVersion: installedVersion,
                     };
 
