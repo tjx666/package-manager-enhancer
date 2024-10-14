@@ -86,8 +86,14 @@ async function getPackageInfo(
     }
 
     if (!result && options.remoteFetch) {
-        const remotePackageJsonData = await (!options.token?.isCancellationRequested &&
+        let remotePackageJsonData = await (!options.token?.isCancellationRequested &&
             tryFetch(fetchRemotePackageJson(packageName, options.searchVersionRange)));
+
+        // try fetch latest version
+        if (!remotePackageJsonData && !options.token?.isCancellationRequested) {
+            remotePackageJsonData = await tryFetch(fetchRemotePackageJson(packageName));
+        }
+
         if (remotePackageJsonData) {
             result = {
                 name: packageName,
