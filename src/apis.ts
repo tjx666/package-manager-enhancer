@@ -41,8 +41,8 @@ export const fetchNodeVersions = (() => {
 export const fetchRemotePackageJson = (() => {
     const cache = new ExpiryMap(min * 5);
     const request = async (pkgName: string, pkgVersion?: string) => {
-        const pkgNameAndVersion = `${pkgName}${pkgVersion ? `@${pkgVersion}` : ''}`;
-        return fetchPackageJson(pkgNameAndVersion, {
+        return fetchPackageJson(pkgName, {
+            version: pkgVersion,
             fullMetadata: true,
         }) as unknown as PackageJson | undefined;
     };
