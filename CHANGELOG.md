@@ -1,5 +1,23 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.17.4 (2024-10-15)
+
+### 🚀 Features
+
+- Upgrade deps ([2fa4c72](https://github.com/tjx666/package-manager-enhancer/commit/2fa4c72))
+- Update npmrc autocomplete options ([8485471](https://github.com/tjx666/package-manager-enhancer/commit/8485471))
+
+### 🐞 Bug Fixes
+
+- Fetch remote package info pass version wrong ([b73d3cd](https://github.com/tjx666/package-manager-enhancer/commit/b73d3cd))
+- Ry fetch latest version when fetch remote package info failed ([9e96754](https://github.com/tjx666/package-manager-enhancer/commit/9e96754))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.17.3...v0.17.4 '2024-10-15')
+
 ## v0.17.3 (2024-09-19)
 
 ### 🐞 Bug Fixes
