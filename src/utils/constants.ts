@@ -9,10 +9,8 @@ const commandsArray = [
     'runNpmScriptBackground',
     'runNpmScriptInTerminal',
     'addMissingDeps',
-    'upgradeVersion',
     'findNpmPackage',
     'findPathInNodeModules',
-    'keepInstalledVersion',
     'replaceDocument',
 ] as const;
 

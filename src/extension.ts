@@ -1,6 +1,4 @@
-import { watchFile } from 'fs';
 import fs from 'fs/promises';
-import path from 'path';
 
 import type { TextEditor } from 'vscode';
 import vscode from 'vscode';
@@ -13,12 +11,7 @@ import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { NpmrcCompletionItemProvider } from './completion/npmrc';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
-import { diagnosticCollection, updateDiagnostic } from './diagnostic/DepsCheckCodeActionProvider';
-import {
-    updateVSCodeExtensionDiagnostic,
-    VSCodeExtensionCodeActionProvider,
-    vscodeExtensionDiagnosticCollection,
-} from './diagnostic/VSCodeExtensionCodeActionProvider';
+import { disposeCodeActionsProviders, registerCodeActionsProviders } from './diagnostic';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -103,18 +96,8 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
-    registerCommand(commands.keepInstalledVersion, (arg) =>
-        import('./commands/keepInstalledVersion').then((mod) => mod.keepInstalledVersion(arg)),
-    );
-
     registerTextEditorCommand(commands.addMissingDeps, (editor) =>
         import('./commands/addMissingDeps').then((mod) => mod.addMissingDeps(editor)),
-    );
-
-    registerTextEditorCommand(commands.upgradeVersion, (...args: any[]) =>
-        import('./commands/upgradeVersion').then((mod) =>
-            mod.upgradeVersion(args[0], args[2], args[3]),
-        ),
     );
 
     registerCommand(commands.findNpmPackage, (uri) =>
@@ -180,62 +163,16 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
-    // 注册新的诊断和代码操作提供程序
-    subscriptions.push(
-        vscode.languages.registerCodeActionsProvider(
-            pkgJsonSelector,
-            new VSCodeExtensionCodeActionProvider(),
-            {
-                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-            },
-        ),
-    );
-
     registerCommand(commands.replaceDocument, (...args: any[]) =>
-        import('./diagnostic/VSCodeExtensionCodeActionProvider').then((mod) =>
+        import('./commands/replaceDocument').then((mod) =>
             mod.replaceDocument(args[0], args[1], args[2]),
         ),
     );
 
-    for (const editor of vscode.window.visibleTextEditors) {
-        updateDiagnostic(editor.document);
-        updateVSCodeExtensionDiagnostic(editor.document);
-    }
-
-    subscriptions.push(
-        vscode.workspace.onDidOpenTextDocument((document) => {
-            updateDiagnostic(document);
-            updateVSCodeExtensionDiagnostic(document);
-        }),
-        vscode.workspace.onDidChangeTextDocument((event) => {
-            updateDiagnostic(event.document);
-            updateVSCodeExtensionDiagnostic(event.document);
-        }),
-    );
-
-    const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lockb'].map(
-        (file) => path.resolve(vscode.workspace.workspaceFolders![0].uri.fsPath, file),
-    );
-    const watchers = filesToWatch.map((file) => {
-        const watcher = watchFile(file, () => {
-            for (const editor of vscode.window.visibleTextEditors) {
-                updateDiagnostic(editor.document);
-                updateVSCodeExtensionDiagnostic(editor.document);
-            }
-        });
-        return watcher;
-    });
-    subscriptions.push({
-        dispose() {
-            for (const watcher of watchers) {
-                watcher.removeAllListeners();
-            }
-        },
-    });
+    registerCodeActionsProviders(context);
 }
 
 export function deactivate() {
-    diagnosticCollection.dispose();
-    vscodeExtensionDiagnosticCollection.dispose();
+    disposeCodeActionsProviders();
     logger.dispose();
 }

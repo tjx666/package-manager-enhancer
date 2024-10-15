@@ -75,9 +75,13 @@ export class NodeVersionCodeLensProvider extends BaseCodeLensProvider {
         }
 
         codeLens.command = {
-            command: commands.upgradeVersion,
+            command: commands.replaceDocument,
             title: version === satisfied ? `latest lts ${latest}` : `satisfied ${satisfied}`,
-            arguments: [codeLens.range, `v${version === satisfied ? latest : satisfied}`],
+            arguments: [
+                this._document!.uri,
+                codeLens.range,
+                `v${version === satisfied ? latest : satisfied}`,
+            ],
         };
         return codeLens;
     }

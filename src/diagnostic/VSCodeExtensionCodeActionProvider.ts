@@ -1,7 +1,7 @@
-import * as path from 'node:path';
+import path from 'node:path';
 
 import semver from 'semver';
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 
 import { logger } from '../logger';
 import { EXT_NAME, PACKAGE_JSON } from '../utils/constants';
@@ -17,11 +17,10 @@ interface VSCodeVersionMismatchData {
     enginesRange: vscode.Range;
 }
 
-export const vscodeExtensionDiagnosticCollection = vscode.languages.createDiagnosticCollection(
-    `${EXT_NAME}:vscodeExtensionCheck`,
-);
-
-export async function updateVSCodeExtensionDiagnostic(document: vscode.TextDocument) {
+export async function updateVSCodeExtensionDiagnostic(
+    diagnosticCollection: vscode.DiagnosticCollection,
+    document: vscode.TextDocument,
+) {
     if (
         !path.basename(document.uri.fsPath).includes(PACKAGE_JSON) ||
         document.languageId !== 'json'
@@ -102,7 +101,7 @@ export async function updateVSCodeExtensionDiagnostic(document: vscode.TextDocum
             }
         }
 
-        vscodeExtensionDiagnosticCollection.set(document.uri, diagnostics);
+        diagnosticCollection.set(document.uri, diagnostics);
     } catch (error: any) {
         logger.error(error);
     }
@@ -111,7 +110,7 @@ export async function updateVSCodeExtensionDiagnostic(document: vscode.TextDocum
 export class VSCodeExtensionCodeActionProvider implements vscode.CodeActionProvider {
     async provideCodeActions(
         document: vscode.TextDocument,
-        range: vscode.Range | vscode.Selection,
+        _range: vscode.Range | vscode.Selection,
         context: vscode.CodeActionContext,
         _token: vscode.CancellationToken,
     ): Promise<vscode.CodeAction[]> {
@@ -161,10 +160,4 @@ export class VSCodeExtensionCodeActionProvider implements vscode.CodeActionProvi
 
         return codeActions;
     }
-}
-
-export async function replaceDocument(uri: vscode.Uri, range: vscode.Range, newText: string) {
-    const edit = new vscode.WorkspaceEdit();
-    edit.replace(uri, range, newText);
-    await vscode.workspace.applyEdit(edit);
 }

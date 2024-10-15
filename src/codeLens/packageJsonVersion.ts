@@ -99,7 +99,7 @@ export class PackageJsonVersionCodeLensProvider extends BaseCodeLensProvider {
         const data = this._codeLensDataMap.get(codeLens);
         if (!data) return codeLens;
 
-        const { name, version } = data;
+        const { version } = data;
         let versions: Awaited<typeof data.fetchVersionsPromise>;
         try {
             versions = await data.fetchVersionsPromise;
@@ -121,8 +121,12 @@ export class PackageJsonVersionCodeLensProvider extends BaseCodeLensProvider {
 
         codeLens.command = {
             title: version === satisfied ? `latest ${latest}` : `satisfied ${satisfied}`,
-            command: commands.upgradeVersion,
-            arguments: [data.versionRange, `${name}@${version === satisfied ? latest : satisfied}`],
+            command: commands.replaceDocument,
+            arguments: [
+                this._document!.uri,
+                data.versionRange,
+                `${data.name}@${version === satisfied ? latest : satisfied}`,
+            ],
         };
         return codeLens;
     }

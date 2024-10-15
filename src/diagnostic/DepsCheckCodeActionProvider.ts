@@ -17,11 +17,10 @@ enum DepsCheckDiagnosticCode {
     UNMET_DEPENDENCY = `${EXT_NAME}.unmetDependency`,
 }
 
-export const diagnosticCollection = vscode.languages.createDiagnosticCollection(
-    `${EXT_NAME}:depsVersionCheck`,
-);
-
-export async function updateDiagnostic(document: vscode.TextDocument) {
+export async function updateDepsCheckDiagnostic(
+    diagnosticCollection: vscode.DiagnosticCollection,
+    document: vscode.TextDocument,
+) {
     if (!configuration.depsVersionCheck.enable) return;
 
     if (
@@ -176,21 +175,20 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
         return runInstallSingleAction;
     }
 
-    private createLockVersionAction(diagnostics: vscode.Diagnostic[], range: vscode.Range) {
+    private createLockVersionAction(
+        diagnostics: vscode.Diagnostic[],
+        document: vscode.TextDocument,
+        range: vscode.Range,
+    ) {
         const { depInstalledVersion: installedVersion } = diagnostics[0].data!;
         const lockVersionActon = new vscode.CodeAction(
             `Lock to ${installedVersion}`,
             vscode.CodeActionKind.QuickFix,
         );
         lockVersionActon.command = {
-            command: commands.keepInstalledVersion,
+            command: commands.replaceDocument,
             title: `Lock to ${installedVersion}`,
-            arguments: [
-                {
-                    versionRange: range,
-                    installedVersion: `\"${installedVersion}\"`,
-                },
-            ],
+            arguments: [document.uri, range, `\"${installedVersion}\"`],
         };
         lockVersionActon.diagnostics = diagnostics;
         return lockVersionActon;
@@ -227,7 +225,7 @@ export class DepsCheckCodeActionProvider implements CodeActionProvider {
             (diagnostic) => diagnostic.code === DepsCheckDiagnosticCode.UNMET_DEPENDENCY,
         );
         if (unmetDepDiagnostics.length > 0) {
-            codeActions.push(this.createLockVersionAction(unmetDepDiagnostics, range));
+            codeActions.push(this.createLockVersionAction(unmetDepDiagnostics, document, range));
         }
 
         return codeActions;
