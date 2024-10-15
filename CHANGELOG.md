@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.18.3 (2024-10-15)
+
+### 🐞 Bug Fixes
+
+- Ci node version not use .nvmrc ([d86b433](https://github.com/tjx666/package-manager-enhancer/commit/d86b433))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.18.2...v0.18.3 '2024-10-15')
+
 ## v0.18.2 (2024-10-15)
 
 ### 🐞 Bug Fixes
