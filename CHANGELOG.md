@@ -1,5 +1,17 @@
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## v0.18.0 (2024-10-15)
+
+### 🚀 Features
+
+- Package.json support validate engine.vscode and activationEvents ([142a48b](https://github.com/tjx666/package-manager-enhancer/commit/142a48b))
+
+### ❤️ Contributors
+
+- 余腾靖 ([@tjx666](http://github.com/tjx666))
+
+[View changes on GitHub](https://github.com/tjx666/package-manager-enhancer/compare/v0.17.4...v0.18.0 '2024-10-15')
+
 ## v0.17.4 (2024-10-15)
 
 ### 🚀 Features
