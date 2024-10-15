@@ -13,6 +13,7 @@ const commandsArray = [
     'findNpmPackage',
     'findPathInNodeModules',
     'keepInstalledVersion',
+    'replaceDocument',
 ] as const;
 
 type CommandsArrayUnion = (typeof commandsArray)[number];

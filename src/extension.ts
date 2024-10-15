@@ -13,7 +13,12 @@ import { PnpmWorkspaceCodeLensProvider } from './codeLens/pnpmWorkspace';
 import { NpmrcCompletionItemProvider } from './completion/npmrc';
 import { updateConfiguration } from './configuration';
 import { DependenciesDefinitionProvider } from './definitions/dependencies';
-import { DepsCheckCodeActionProvider, diagnosticCollection, updateDiagnostic } from './diagnostic';
+import { diagnosticCollection, updateDiagnostic } from './diagnostic/DepsCheckCodeActionProvider';
+import {
+    updateVSCodeExtensionDiagnostic,
+    VSCodeExtensionCodeActionProvider,
+    vscodeExtensionDiagnosticCollection,
+} from './diagnostic/VSCodeExtensionCodeActionProvider';
 import { DependenciesHoverProvider } from './hoverTooltips/dependencies';
 import { ModulesHoverProvider } from './hoverTooltips/modules';
 import { NpmScriptsHoverProvider } from './hoverTooltips/npmScripts';
@@ -175,24 +180,37 @@ export function activate(context: vscode.ExtensionContext) {
         ),
     );
 
+    // 注册新的诊断和代码操作提供程序
+    subscriptions.push(
+        vscode.languages.registerCodeActionsProvider(
+            pkgJsonSelector,
+            new VSCodeExtensionCodeActionProvider(),
+            {
+                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+            },
+        ),
+    );
+
+    registerCommand(commands.replaceDocument, (...args: any[]) =>
+        import('./diagnostic/VSCodeExtensionCodeActionProvider').then((mod) =>
+            mod.replaceDocument(args[0], args[1], args[2]),
+        ),
+    );
+
     for (const editor of vscode.window.visibleTextEditors) {
         updateDiagnostic(editor.document);
+        updateVSCodeExtensionDiagnostic(editor.document);
     }
 
     subscriptions.push(
         vscode.workspace.onDidOpenTextDocument((document) => {
             updateDiagnostic(document);
+            updateVSCodeExtensionDiagnostic(document);
         }),
         vscode.workspace.onDidChangeTextDocument((event) => {
             updateDiagnostic(event.document);
+            updateVSCodeExtensionDiagnostic(event.document);
         }),
-        vscode.languages.registerCodeActionsProvider(
-            pkgJsonSelector,
-            new DepsCheckCodeActionProvider(),
-            {
-                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-            },
-        ),
     );
 
     const filesToWatch = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lockb'].map(
@@ -202,6 +220,7 @@ export function activate(context: vscode.ExtensionContext) {
         const watcher = watchFile(file, () => {
             for (const editor of vscode.window.visibleTextEditors) {
                 updateDiagnostic(editor.document);
+                updateVSCodeExtensionDiagnostic(editor.document);
             }
         });
         return watcher;
@@ -217,5 +236,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
     diagnosticCollection.dispose();
+    vscodeExtensionDiagnosticCollection.dispose();
     logger.dispose();
 }

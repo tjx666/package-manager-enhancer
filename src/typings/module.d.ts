@@ -10,6 +10,8 @@ declare module 'vscode' {
             depName?: string;
             depDeclaredVersion?: string;
             depInstalledVersion?: string;
+            typesVersion?: string;
+            enginesRange?: vscode.Range;
         };
     }
 }
